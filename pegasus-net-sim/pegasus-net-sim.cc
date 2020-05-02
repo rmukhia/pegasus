@@ -50,9 +50,10 @@ main (int argc, char *argv[])
 
   GazeboNode gazeboNode;
 
-  gazeboNode.setup(argc, argv);
-  gazeboNode.setTopic("~/pose/info");
-  gazeboNode.subscribe();
+  gazeboNode.Setup(argc, argv);
+  gazeboNode.SetTopic("~/pose/info");
+  gazeboNode.SetModelsName({ "iris_0", "iris_1" });
+  gazeboNode.Subscribe();
 
   CommandLine cmd;
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
@@ -145,6 +146,6 @@ main (int argc, char *argv[])
 
   Simulator::Run ();
   Simulator::Destroy ();
-  gazeboNode.destroy();
+  gazeboNode.Destroy();
   return 0;
 }
