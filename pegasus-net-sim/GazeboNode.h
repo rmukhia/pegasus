@@ -12,6 +12,7 @@
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/gazebo_client.hh>
 #include "ns3/system-thread.h"
+#include "ns3/vector.h"
 
 #include "Drone.h"
 
@@ -32,7 +33,7 @@ class GazeboNode {
     void SetTopic(const std::string& topic);
     void Subscribe();
     void Destroy();
-    static std::unordered_map<std::string, Drone> poseMap;
+    static std::unordered_map<std::string, ns3::Vector> poseMap;
 };
 
 

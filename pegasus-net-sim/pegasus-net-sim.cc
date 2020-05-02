@@ -41,11 +41,26 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("PegasusNetSim");
 
+NodeContainer meshClientNodes;
+
+
+void changePosition()
+{
+  Ptr<Node> drone = meshClientNodes.Get(0);
+  Ptr<ConstantPositionMobilityModel> droneMobilityMdl = 
+    drone->GetObject<ConstantPositionMobilityModel>();
+  ns3::Simulator::ScheduleNow(&ConstantPositionMobilityModel::SetPosition,
+      droneMobilityMdl, GazeboNode::poseMap["iris_0"]);
+
+  ns3::Simulator::Schedule(MilliSeconds(100), &changePosition);
+}
+
+
 int 
 main (int argc, char *argv[])
 {
   bool verbose = true;
-  uint32_t nWifi = 18;
+  uint32_t nWifi = 1;
   bool tracing = false;
 
   GazeboNode gazeboNode;
@@ -53,7 +68,6 @@ main (int argc, char *argv[])
   gazeboNode.Setup(argc, argv);
   gazeboNode.SetTopic("~/pose/info");
   gazeboNode.SetModelsName({ "iris_0", "iris_1" });
-  gazeboNode.Subscribe();
 
   CommandLine cmd;
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
@@ -80,7 +94,6 @@ main (int argc, char *argv[])
 
   PacketMetadata::Enable ();
   /* Create mesh clients */
-  NodeContainer meshClientNodes;
   meshClientNodes.Create (nWifi);
 
   /* Create mesh gateway router */
@@ -113,8 +126,7 @@ main (int argc, char *argv[])
                                  "GridWidth", UintegerValue (3),
                                  "LayoutType", StringValue ("RowFirst"));
 
-  mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-                             "Bounds", RectangleValue (Rectangle (-300, 300, -300, 300)));
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (meshClientNodes);
 
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
@@ -137,13 +149,15 @@ main (int argc, char *argv[])
   address.Assign (routerDevices);
   clientInterfaces = address.Assign (clientDevices);
 
-  Simulator::Stop (Seconds (10.0));
+  Simulator::Stop (Seconds (1000.0));
 
   if (tracing == true)
     {
       phy.EnablePcap ("third", routerDevices.Get (0));
     }
 
+  gazeboNode.Subscribe();
+  Simulator::Schedule(Seconds(5), &changePosition);
   Simulator::Run ();
   Simulator::Destroy ();
   gazeboNode.Destroy();
