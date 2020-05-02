@@ -1,3 +1,3 @@
-# drone-mesh-sim
+# PegasusSim
 
 Masters thesis. Work in progress...

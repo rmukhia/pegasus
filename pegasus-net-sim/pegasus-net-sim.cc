@@ -25,6 +25,7 @@
 #include "ns3/internet-module.h"
 #include "ns3/olsr-helper.h"
 
+#include "GazeboNode.h"
 // Default Network Topology
 //
 //   Wifi 10.1.3.0
@@ -38,7 +39,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
+NS_LOG_COMPONENT_DEFINE ("PegasusNetSim");
 
 int 
 main (int argc, char *argv[])
@@ -46,6 +47,12 @@ main (int argc, char *argv[])
   bool verbose = true;
   uint32_t nWifi = 18;
   bool tracing = false;
+
+  GazeboNode gazeboNode;
+
+  gazeboNode.setup(argc, argv);
+  gazeboNode.setTopic("~/pose/info");
+  gazeboNode.subscribe();
 
   CommandLine cmd;
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
@@ -138,5 +145,6 @@ main (int argc, char *argv[])
 
   Simulator::Run ();
   Simulator::Destroy ();
+  gazeboNode.destroy();
   return 0;
 }
