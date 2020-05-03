@@ -19,7 +19,8 @@
 
 class NS3Runner {
   private:
-    int numDrones;
+    std::vector<std::string> droneNames;
+    unsigned int numDrones;
     ns3::NodeContainer controlStationNode;
     ns3::NodeContainer droneNodes;
     ns3::YansWifiChannelHelper channel;
@@ -37,8 +38,8 @@ class NS3Runner {
 
   public:
     NS3Runner();
-    void Create(int numDrones);
-    void CreateNode(int numDrones);
+    void Create(std::vector<std::string> &droneNames);
+    void CreateNode();
     void CreateWifiChnlPhy();
     void CreateMeshNetwork();
     void CreateNetDevices();
@@ -47,7 +48,6 @@ class NS3Runner {
     void CreateIpAddr();
     void EnableTracing();
     
-
     const ns3::NodeContainer& GetDroneNodes() const { return droneNodes; };
 };
 

@@ -4,23 +4,28 @@ NS3Runner::NS3Runner() {
   ns3::PacketMetadata::Enable ();
 }
 
-void NS3Runner::Create(int numDrones)
+void NS3Runner::Create(std::vector<std::string> &droneNames)
 {
-  this->CreateNode(numDrones);
-  this->CreateWifiChnlPhy();
-  this->CreateMeshNetwork();
-  this->CreateNetDevices();
-  this->CreateMobility();
-  this->CreateRouting();
-  this->CreateIpAddr();
+  this->droneNames = droneNames;
+  this->numDrones = droneNames.size();
+  CreateNode();
+  CreateWifiChnlPhy();
+  CreateMeshNetwork();
+  CreateNetDevices();
+  CreateMobility();
+  CreateRouting();
+  CreateIpAddr();
 }
 
-void NS3Runner::CreateNode(int numDrones)
+void NS3Runner::CreateNode()
 {
-  numDrones = numDrones;
   droneNodes.Create (numDrones);
+  for (unsigned int i = 0; i < numDrones; i++) {
+    ns3::Names::Add("/Pegasus/drones", droneNames[i], droneNodes.Get(i));
+  }
   /* One Control Station */
   controlStationNode.Create(1);
+  ns3::Names::Add("/Pegasus", "controlStation", controlStationNode.Get(0));
 }
 
 void NS3Runner::CreateWifiChnlPhy()

@@ -16,20 +16,6 @@ void GazeboNode::_subscribe()
   this->sub = node->Subscribe(this->topic, this->MsgHandlerCb);
 }
 
-void GazeboNode::_parsePoseStampedMsg(const gazebo::msgs::Pose& pose)
-{
-
-  if (std::find(modelsName.begin(), modelsName.end(), pose.name())
-      != modelsName.end()) {
-    std::cout << "[" << pose.name() << "]" <<
-      " x:" << pose.position().x() <<
-      " y:" << pose.position().y() <<
-      " z:" << pose.position().z() << std::endl;
-    poseMap[pose.name()] = ns3::Vector(pose.position().x(), pose.position().y(), pose.position().z());
-    // callback(pose.name(), poseMap[pose.name()]);
-  }
-}
-
 GazeboNode::GazeboNode()
 {
   //poseMap = new std::unordered_map<std::string, int>();
@@ -39,7 +25,23 @@ void GazeboNode::MsgHandlerCb(ConstPosesStampedPtr& _msg)
 {
   // Dump the message contents to stdout.
   // std::cout << _msg->DebugString();
-  for_each(_msg->pose().begin(), _msg->pose().end(), _parsePoseStampedMsg);
+  std::for_each(_msg->pose().begin(), _msg->pose().end(), 
+    [] (const gazebo::msgs::Pose& pose) {
+      if (std::find(modelsName.begin(), modelsName.end(), pose.name())
+          != modelsName.end()) {
+#if 0
+        std::cout << "[" << pose.name() << "]" <<
+        " x:" << pose.position().x() <<
+        " y:" << pose.position().y() <<
+        " z:" << pose.position().z() << std::endl;
+#endif
+        poseMap[pose.name()] = ns3::Vector(
+            pose.position().x(),
+            pose.position().y(),
+            pose.position().z()
+          );
+      }
+    });
 }
 
 void GazeboNode::SetModelsName(const std::vector<std::string>& models)

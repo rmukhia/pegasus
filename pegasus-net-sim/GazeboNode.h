@@ -24,7 +24,6 @@ class GazeboNode {
     gazebo::transport::SubscriberPtr sub;
     static std::vector<std::string> modelsName;
     void _subscribe();
-    static void _parsePoseStampedMsg(const gazebo::msgs::Pose& pose);
   public:
     GazeboNode();
     static void MsgHandlerCb(ConstPosesStampedPtr& _msg);
