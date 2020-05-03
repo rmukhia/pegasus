@@ -20,7 +20,7 @@ void GazeboNode::_parsePoseStampedMsg(const gazebo::msgs::Pose& pose)
 {
 
   if (std::find(modelsName.begin(), modelsName.end(), pose.name())
-        != modelsName.end()) {
+      != modelsName.end()) {
     std::cout << "[" << pose.name() << "]" <<
       " x:" << pose.position().x() <<
       " y:" << pose.position().y() <<
