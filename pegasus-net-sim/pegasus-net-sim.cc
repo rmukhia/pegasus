@@ -1,7 +1,6 @@
 #include "NS3Runner.h"
 #include "GazeboNode.h"
 
-
 /** Set this list to the name of the drones you are simulating **/
 
 std::vector<std::string> droneNames = {
@@ -9,8 +8,6 @@ std::vector<std::string> droneNames = {
   "iris_1",
   "iris_2",
 };
-
-NS_LOG_COMPONENT_DEFINE ("PegasusNetSim");
 
 GazeboNode *gazeboNode;
 NS3Runner *ns3runner;
@@ -64,6 +61,9 @@ int main (int argc, char *argv[])
     ns3::LogComponentEnable ("UdpEchoServerApplication", ns3::LOG_LEVEL_INFO);
   }
 #endif
+
+  ns3::LogComponentEnable ("PegasusNS3Runner", ns3::LOG_LEVEL_ALL);
+  ns3::LogComponentEnable ("PegasusGazeboNode", ns3::LOG_LEVEL_ALL);
 
   ns3runner = new NS3Runner();
 

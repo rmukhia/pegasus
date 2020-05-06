@@ -6,6 +6,7 @@
 #define PEGASUS_SIM_NS3RUNNER_H
 
 #include "ns3/core-module.h"
+#include "ns3/log.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/network-module.h"
 #include "ns3/applications-module.h"
@@ -17,24 +18,26 @@
 #include "ns3/internet-module.h"
 #include "ns3/olsr-helper.h"
 
+using namespace ns3;
+
 class NS3Runner {
   private:
     std::vector<std::string> droneNames;
     unsigned int numDrones;
-    ns3::NodeContainer controlStationNode;
-    ns3::NodeContainer droneNodes;
-    ns3::YansWifiChannelHelper channel;
-    ns3::YansWifiPhyHelper physical;
-    ns3::MeshHelper mesh;
-    ns3::NetDeviceContainer controlStationDevice;
-    ns3::NetDeviceContainer droneDevices;
-    ns3::MobilityHelper mobility;
-    ns3::OlsrHelper olsr;
-    ns3::Ipv4ListRoutingHelper list;
-    ns3::InternetStackHelper stack;
-    ns3::Ipv4AddressHelper address;
-    ns3::Ipv4InterfaceContainer controlStationInterfaces;
-    ns3::Ipv4InterfaceContainer droneInterfaces;
+    NodeContainer controlStationNode;
+    NodeContainer droneNodes;
+    YansWifiChannelHelper channel;
+    YansWifiPhyHelper physical;
+    MeshHelper mesh;
+    NetDeviceContainer controlStationDevice;
+    NetDeviceContainer droneDevices;
+    MobilityHelper mobility;
+    OlsrHelper olsr;
+    Ipv4ListRoutingHelper list;
+    InternetStackHelper stack;
+    Ipv4AddressHelper address;
+    Ipv4InterfaceContainer controlStationInterfaces;
+    Ipv4InterfaceContainer droneInterfaces;
 
   public:
     NS3Runner();
@@ -48,7 +51,7 @@ class NS3Runner {
     void CreateIpAddr();
     void EnableTracing();
     
-    const ns3::NodeContainer& GetDroneNodes() const { return droneNodes; };
+    const NodeContainer& GetDroneNodes() const { return droneNodes; };
 };
 
 

@@ -12,14 +12,15 @@
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/gazebo_client.hh>
 #include "ns3/system-thread.h"
+#include "ns3/log.h"
 #include "ns3/vector.h"
 
-#include "Drone.h"
+using namespace ns3;
 
 class GazeboNode {
   private:
     std::string topic;
-    ns3::Ptr<ns3::SystemThread> st;
+    Ptr<SystemThread> st;
     gazebo::transport::NodePtr node;
     gazebo::transport::SubscriberPtr sub;
     static std::vector<std::string> modelsName;
@@ -32,7 +33,7 @@ class GazeboNode {
     void SetTopic(const std::string& topic);
     void Subscribe();
     void Destroy();
-    static std::unordered_map<std::string, ns3::Vector> poseMap;
+    static std::unordered_map<std::string, Vector> poseMap;
 };
 
 

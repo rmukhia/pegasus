@@ -3,26 +3,30 @@
 //
 
 #include "GazeboNode.h"
+#include <cstring>
 #include "ns3/simulator.h"
 
-#include <cstring>
 
+NS_LOG_COMPONENT_DEFINE ("PegasusGazeboNode");
 
 std::vector<std::string> GazeboNode::modelsName;
-std::unordered_map<std::string, ns3::Vector> GazeboNode::poseMap;
+std::unordered_map<std::string, Vector> GazeboNode::poseMap;
 
 void GazeboNode::_subscribe()
 {
-  this->sub = node->Subscribe(this->topic, this->MsgHandlerCb);
+  NS_LOG_FUNCTION(this);
+  sub = node->Subscribe(this->topic, this->MsgHandlerCb);
 }
 
 GazeboNode::GazeboNode()
 {
+  NS_LOG_FUNCTION(this);
   //poseMap = new std::unordered_map<std::string, int>();
 }
 
 void GazeboNode::MsgHandlerCb(ConstPosesStampedPtr& _msg)
 {
+  NS_LOG_FUNCTION(&GazeboNode::MsgHandlerCb);
   // Dump the message contents to stdout.
   // std::cout << _msg->DebugString();
   std::for_each(_msg->pose().begin(), _msg->pose().end(), 
@@ -35,7 +39,7 @@ void GazeboNode::MsgHandlerCb(ConstPosesStampedPtr& _msg)
         " y:" << pose.position().y() <<
         " z:" << pose.position().z() << std::endl;
 #endif
-        poseMap[pose.name()] = ns3::Vector(
+        poseMap[pose.name()] = Vector(
             pose.position().x(),
             pose.position().y(),
             pose.position().z()
@@ -46,28 +50,33 @@ void GazeboNode::MsgHandlerCb(ConstPosesStampedPtr& _msg)
 
 void GazeboNode::SetModelsName(const std::vector<std::string>& models)
 {
+  NS_LOG_FUNCTION(this);
   modelsName = models;
 }
 
 void GazeboNode::Setup(int argc, char **argv)
 {
+  NS_LOG_FUNCTION(this);
   gazebo::client::setup(argc, argv);
-  this->node =  gazebo::transport::NodePtr(new gazebo::transport::Node());
-  this->node->Init();
+  node =  gazebo::transport::NodePtr(new gazebo::transport::Node());
+  node->Init();
 }
 
 void GazeboNode::SetTopic(const std::string &topic)
 {
+  NS_LOG_FUNCTION(this);
   this->topic.assign(topic);
 }
 
 void GazeboNode::Subscribe()
 {
-  this->st = ns3::Create<ns3::SystemThread>(ns3::MakeCallback(&GazeboNode::_subscribe, this));
-  this->st->Start();
+  NS_LOG_FUNCTION(this);
+  st = Create<SystemThread>(MakeCallback(&GazeboNode::_subscribe, this));
+  st->Start();
 }
 
 void GazeboNode::Destroy()
 {
+  NS_LOG_FUNCTION(this);
   gazebo::client::shutdown();
 }
