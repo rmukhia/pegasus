@@ -1,5 +1,4 @@
-#include "NS3Runner.h"
-#include "GazeboNode.h"
+#include "PegasusNetSim.h"
 
 /** Set this list to the name of the drones you are simulating **/
 
@@ -9,8 +8,8 @@ std::vector<std::string> droneNames = {
   "iris_2",
 };
 
-GazeboNode *gazeboNode;
-NS3Runner *ns3runner;
+
+PegasusNetSim *pegasusNetSim;
 
 void changePosition()
 {
@@ -42,11 +41,11 @@ int main (int argc, char *argv[])
   bool verbose = true;
   bool tracing = false;
 
-  gazeboNode = new GazeboNode();
+  pegasusNetSim = PegasusNetSim::Instance();
 
-  gazeboNode->Setup(argc, argv);
-  gazeboNode->SetTopic("~/pose/info");
-  gazeboNode->SetModelsName(droneNames);
+  pegasusNetSim->gazeboNode->Setup(argc, argv);
+  pegasusNetSim->gazeboNode->SetTopic("~/pose/info");
+  pegasusNetSim->gazeboNode->SetModelsName(droneNames);
 
   ns3::CommandLine cmd;
   // cmd.AddValue ("nDrones", "Number of drones (max 18)", nDrones);
@@ -65,14 +64,12 @@ int main (int argc, char *argv[])
   ns3::LogComponentEnable ("PegasusNS3Runner", ns3::LOG_LEVEL_ALL);
   ns3::LogComponentEnable ("PegasusGazeboNode", ns3::LOG_LEVEL_ALL);
 
-  ns3runner = new NS3Runner();
-
-  ns3runner->Create(droneNames);
+  pegasusNetSim->ns3Runner->Create(droneNames);
 
   if (tracing == true)
-    ns3runner->EnableTracing();
+    pegasusNetSim->ns3Runner->EnableTracing();
 
-  gazeboNode->Subscribe();
+  pegasusNetSim->gazeboNode->Subscribe();
 
   ns3::Simulator::Stop (ns3::Seconds (3.0));
 
@@ -80,9 +77,9 @@ int main (int argc, char *argv[])
   ns3::Simulator::Run ();
   ns3::Simulator::Destroy ();
 
-  gazeboNode->Destroy();
+  pegasusNetSim->gazeboNode->Destroy();
 
-  delete gazeboNode;
-  delete ns3runner;
+  delete pegasusNetSim;
+
   return 0;
 }
