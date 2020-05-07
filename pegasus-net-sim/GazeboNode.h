@@ -1,13 +1,9 @@
-//
-// Created by rmukhia on 2/5/63.
-//
+#ifndef _GAZEBONODE_H
+#define _GAZEBONODE_H
 
-#ifndef PEGASUS_SIM_GAZEBONODE_H
-#define PEGASUS_SIM_GAZEBONODE_H
 
 #include <string>
-#include <vector>
-#include <unordered_map>
+
 #include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/gazebo_client.hh>
@@ -17,24 +13,37 @@
 
 using namespace ns3;
 
+class PegasusVariables;
+
 class GazeboNode {
   private:
-    std::string topic;
-    Ptr<SystemThread> st;
-    gazebo::transport::NodePtr node;
-    gazebo::transport::SubscriberPtr sub;
-    static std::vector<std::string> modelsName;
-    void _subscribe();
+    static PegasusVariables * m_pegasusVars;
+
+    std::string m_topic;
+
+    Ptr<SystemThread> m_st;
+
+    gazebo::transport::NodePtr m_node;
+
+    gazebo::transport::SubscriberPtr m_sub;
+
+
   public:
     GazeboNode();
-    static void MsgHandlerCb(ConstPosesStampedPtr& _msg);
-    void SetModelsName(const std::vector<std::string>& models);
-    void Setup(int argc, char **argv);
-    void SetTopic(const std::string& topic);
+
+    ~GazeboNode();
+
+    static void MsgHandlerCb(const ConstPosesStampedPtr & msg);
+
+    void Setup(int argc, char** argv);
+
+    void SetTopic(const std::string & topic);
+
     void Subscribe();
+
     void Destroy();
-    static std::unordered_map<std::string, Vector> poseMap;
+
+    static void Set_m_pegasusVars(PegasusVariables * value);
+
 };
-
-
-#endif //PEGASUS_SIM_GAZEBONODE_H
+#endif

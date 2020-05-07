@@ -1,9 +1,6 @@
-//
-// Created by rmukhia on 2/5/63.
-//
+#ifndef _NS3RUNNER_H
+#define _NS3RUNNER_H
 
-#ifndef PEGASUS_SIM_NS3RUNNER_H
-#define PEGASUS_SIM_NS3RUNNER_H
 
 #include "ns3/core-module.h"
 #include "ns3/log.h"
@@ -20,39 +17,67 @@
 
 using namespace ns3;
 
+class PegasusVariables;
+
 class NS3Runner {
   private:
-    std::vector<std::string> droneNames;
-    unsigned int numDrones;
-    NodeContainer controlStationNode;
-    NodeContainer droneNodes;
-    YansWifiChannelHelper channel;
-    YansWifiPhyHelper physical;
-    MeshHelper mesh;
-    NetDeviceContainer controlStationDevice;
-    NetDeviceContainer droneDevices;
-    MobilityHelper mobility;
-    OlsrHelper olsr;
-    Ipv4ListRoutingHelper list;
-    InternetStackHelper stack;
-    Ipv4AddressHelper address;
-    Ipv4InterfaceContainer controlStationInterfaces;
-    Ipv4InterfaceContainer droneInterfaces;
+    static PegasusVariables * m_pegasusVars;
+
+    NodeContainer m_controlStationNode;
+
+    NodeContainer m_droneNodes;
+
+    YansWifiChannelHelper m_channel;
+
+    YansWifiPhyHelper m_physical;
+
+    MeshHelper m_mesh;
+
+    NetDeviceContainer m_controlStationDevice;
+
+    NetDeviceContainer m_droneDevices;
+
+    MobilityHelper m_mobility;
+
+    OlsrHelper m_olsr;
+
+    Ipv4ListRoutingHelper m_list;
+
+    InternetStackHelper m_stack;
+
+    Ipv4AddressHelper m_address;
+
+    Ipv4InterfaceContainer m_controlStationInterfaces;
+
+    Ipv4InterfaceContainer m_droneInterfaces;
+
+    void CreateNode();
+
+    void CreateWifiChnlPhy();
+
+    void CreateMeshNetwork();
+
+    void CreateNetDevices();
+
+    void CreateMobility();
+
+    void CreateRouting();
+
+    void CreateIpAddr();
+
+    void InstallApplications();
+
 
   public:
     NS3Runner();
-    void Create(std::vector<std::string> &droneNames);
-    void CreateNode();
-    void CreateWifiChnlPhy();
-    void CreateMeshNetwork();
-    void CreateNetDevices();
-    void CreateMobility();
-    void CreateRouting();
-    void CreateIpAddr();
+
+    ~NS3Runner();
+
+    void Create();
+
     void EnableTracing();
-    
-    const NodeContainer& GetDroneNodes() const { return droneNodes; };
+
+    static void Set_m_pegasusVars(PegasusVariables * value);
+
 };
-
-
-#endif //PEGASUS_SIM_NS3RUNNER_H
+#endif

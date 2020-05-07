@@ -1,82 +1,69 @@
-//
-// Created by rmukhia on 2/5/63.
-//
 
 #include "GazeboNode.h"
-#include <cstring>
-#include "ns3/simulator.h"
-
+#include "PegasusVariables.h"
+#include <algorithm>
 
 NS_LOG_COMPONENT_DEFINE ("PegasusGazeboNode");
+PegasusVariables * GazeboNode::m_pegasusVars;
 
-std::vector<std::string> GazeboNode::modelsName;
-std::unordered_map<std::string, Vector> GazeboNode::poseMap;
-
-void GazeboNode::_subscribe()
-{
+GazeboNode::GazeboNode(){
   NS_LOG_FUNCTION(this);
-  sub = node->Subscribe(this->topic, this->MsgHandlerCb);
 }
 
-GazeboNode::GazeboNode()
-{
+GazeboNode::~GazeboNode(){
   NS_LOG_FUNCTION(this);
-  //poseMap = new std::unordered_map<std::string, int>();
 }
 
-void GazeboNode::MsgHandlerCb(ConstPosesStampedPtr& _msg)
+void GazeboNode::MsgHandlerCb(const ConstPosesStampedPtr & msg)
 {
   NS_LOG_FUNCTION(&GazeboNode::MsgHandlerCb);
   // Dump the message contents to stdout.
   // std::cout << _msg->DebugString();
-  std::for_each(_msg->pose().begin(), _msg->pose().end(), 
+  std::for_each(msg->pose().begin(), msg->pose().end(), 
     [] (const gazebo::msgs::Pose& pose) {
-      if (std::find(modelsName.begin(), modelsName.end(), pose.name())
-          != modelsName.end()) {
+      if (std::find(m_pegasusVars->m_modelsName.begin(), m_pegasusVars->m_modelsName.end(), pose.name())
+          != m_pegasusVars->m_modelsName.end()) {
 #if 0
         std::cout << "[" << pose.name() << "]" <<
         " x:" << pose.position().x() <<
         " y:" << pose.position().y() <<
         " z:" << pose.position().z() << std::endl;
 #endif
-        poseMap[pose.name()] = Vector(
-            pose.position().x(),
-            pose.position().y(),
-            pose.position().z()
-          );
+        {
+          CriticalSection(m_pegasusVars->m_poseMapMutex);
+          m_pegasusVars->m_poseMap[pose.name()] = Vector(
+              pose.position().x(),
+              pose.position().y(),
+              pose.position().z()
+              );
+        }
       }
-    });
+    }); 
 }
 
-void GazeboNode::SetModelsName(const std::vector<std::string>& models)
-{
-  NS_LOG_FUNCTION(this);
-  modelsName = models;
-}
-
-void GazeboNode::Setup(int argc, char **argv)
-{
+void GazeboNode::Setup(int argc, char** argv) {
   NS_LOG_FUNCTION(this);
   gazebo::client::setup(argc, argv);
-  node =  gazebo::transport::NodePtr(new gazebo::transport::Node());
-  node->Init();
+  m_node =  gazebo::transport::NodePtr(new gazebo::transport::Node());
+  m_node->Init();
 }
 
-void GazeboNode::SetTopic(const std::string &topic)
-{
+void GazeboNode::SetTopic(const std::string & topic) {
   NS_LOG_FUNCTION(this);
-  this->topic.assign(topic);
+  m_topic.assign(topic);
 }
 
-void GazeboNode::Subscribe()
-{
+void GazeboNode::Subscribe() {
   NS_LOG_FUNCTION(this);
-  st = Create<SystemThread>(MakeCallback(&GazeboNode::_subscribe, this));
-  st->Start();
+  m_sub = m_node->Subscribe(m_topic, MsgHandlerCb);
 }
 
-void GazeboNode::Destroy()
-{
+void GazeboNode::Destroy() {
   NS_LOG_FUNCTION(this);
   gazebo::client::shutdown();
+}
+
+void GazeboNode::Set_m_pegasusVars(PegasusVariables * value) {
+  NS_LOG_FUNCTION(&GazeboNode::Set_m_pegasusVars);
+  m_pegasusVars = value;
 }
