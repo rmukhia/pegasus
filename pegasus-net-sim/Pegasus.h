@@ -13,7 +13,7 @@
 using namespace ns3;
 
 class PegasusSocket;
-class NS3PegasusApp;
+class NS3PegasusDroneApp;
 
 class Pegasus {
   private:
@@ -32,8 +32,6 @@ class Pegasus {
     PegasusSocketRunner m_pegasusSocketRunner;
 
     std::vector<PegasusSocket> m_pegasusSockets;
-
-    std::vector<NS3PegasusApp> m_ns3PegasusApp;
 
     ~Pegasus();
 

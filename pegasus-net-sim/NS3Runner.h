@@ -2,6 +2,9 @@
 #define _NS3RUNNER_H
 
 
+#include "NS3PegasusDroneApp.h"
+#include "NS3PegasusControlStationApp.h"
+
 #include "ns3/core-module.h"
 #include "ns3/log.h"
 #include "ns3/point-to-point-module.h"
@@ -22,10 +25,6 @@ class PegasusVariables;
 class NS3Runner {
   private:
     static PegasusVariables * m_pegasusVars;
-
-    NodeContainer m_controlStationNode;
-
-    NodeContainer m_droneNodes;
 
     YansWifiChannelHelper m_channel;
 
@@ -78,6 +77,8 @@ class NS3Runner {
     void EnableTracing();
 
     static void Set_m_pegasusVars(PegasusVariables * value);
+
+    void CreateProxyRoute(int srcPort, int proxyDstPort, int proxySrcPort, int dstPort);
 
 };
 #endif

@@ -1,8 +1,7 @@
 
 #include "Pegasus.h"
-#include "PegasusVariables.h"
 #include "PegasusSocket.h"
-#include "NS3PegasusApp.h"
+#include "NS3PegasusDroneApp.h"
 
 PegasusVariables Pegasus::m_pegasusVars;
 
@@ -20,6 +19,8 @@ Pegasus* Pegasus::GetInstance()
     sm_instance = new Pegasus();
     sm_instance->m_gazeboNode.Set_m_pegasusVars(&sm_instance->m_pegasusVars);
     sm_instance->m_ns3Runner.Set_m_pegasusVars(&sm_instance->m_pegasusVars);
+    NS3PegasusDroneApp::Set_m_pegasusVars(&sm_instance->m_pegasusVars);
+
   }
 
   return sm_instance;
@@ -66,6 +67,8 @@ void Pegasus::Run(int argc, char** argv, const std::vector<std::string> & droneN
   if (verbose) {
     LogComponentEnable ("PegasusNS3Runner", LOG_LEVEL_ALL);
     LogComponentEnable ("PegasusGazeboNode", LOG_LEVEL_ALL);
+    LogComponentEnable ("PegasusNS3ControlStationApp", LOG_LEVEL_ALL);
+    LogComponentEnable ("PegasusNS3DroneApp", LOG_LEVEL_ALL);
   }
 
   m_gazeboNode.Setup(argc, argv);
@@ -79,7 +82,7 @@ void Pegasus::Run(int argc, char** argv, const std::vector<std::string> & droneN
 
   m_gazeboNode.Subscribe();
 
-  Simulator::Stop (Seconds (3.0));
+  Simulator::Stop (Seconds (1000));
 
   Simulator::Schedule(Seconds(1), &Pegasus::ChangeDronesPosition);
   Simulator::Run ();

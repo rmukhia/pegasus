@@ -2,7 +2,7 @@
 #include "Pegasus.h"
 
 std::vector<std::string> drones = {
-  "iris_0",
+  "iris",
   "iris_1",
   "iris_2"
 };

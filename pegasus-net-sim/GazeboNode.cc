@@ -16,7 +16,7 @@ GazeboNode::~GazeboNode(){
 
 void GazeboNode::MsgHandlerCb(const ConstPosesStampedPtr & msg)
 {
-  NS_LOG_FUNCTION(&GazeboNode::MsgHandlerCb);
+  //NS_LOG_FUNCTION(&GazeboNode::MsgHandlerCb);
   // Dump the message contents to stdout.
   // std::cout << _msg->DebugString();
   std::for_each(msg->pose().begin(), msg->pose().end(), 
