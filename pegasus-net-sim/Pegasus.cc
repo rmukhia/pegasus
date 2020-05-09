@@ -1,7 +1,7 @@
 
 #include "Pegasus.h"
-#include "PegasusSocket.h"
 #include "NS3PegasusDroneApp.h"
+#include "PegasusUDPSocket.h"
 
 PegasusVariables Pegasus::m_pegasusVars;
 
@@ -10,7 +10,29 @@ Pegasus * Pegasus::sm_instance= NULL;
 Pegasus::Pegasus(){
 }
 
+void Pegasus::SetupProxy() {
+  PegasusUDPSocket *psoc;
+
+  psoc = new PegasusUDPSocket();
+  psoc->SetAttributes(5550, 5440, m_pegasusVars.m_nodes.Get(0));
+  m_pegasusVars.m_pegasusSockets.push_back(psoc);
+
+  psoc = new PegasusUDPSocket();
+  psoc->SetAttributes(5551, 5510, m_pegasusVars.m_nodes.Get(1));
+  m_pegasusVars.m_pegasusSockets.push_back(psoc);
+
+  std::for_each(m_pegasusVars.m_pegasusSockets.begin(), m_pegasusVars.m_pegasusSockets.end(),
+      [] (PegasusSocket *pegasusSock) {
+      pegasusSock->Create();
+      pegasusSock->Bind();
+  });
+}
+
 Pegasus::~Pegasus(){
+  std::for_each(m_pegasusVars.m_pegasusSockets.begin(), m_pegasusVars.m_pegasusSockets.end(),
+      [] (PegasusSocket *pegasusSock) {
+      delete pegasusSock;
+  });
 }
 
 Pegasus* Pegasus::GetInstance()
@@ -55,6 +77,7 @@ void Pegasus::ChangeDronesPosition() {
 void Pegasus::Run(int argc, char** argv, const std::vector<std::string> & droneNames) {
   bool verbose = true;
   bool tracing = false;
+
   m_pegasusVars.m_modelsName = droneNames;
 
   CommandLine cmd;
@@ -69,12 +92,15 @@ void Pegasus::Run(int argc, char** argv, const std::vector<std::string> & droneN
     LogComponentEnable ("PegasusGazeboNode", LOG_LEVEL_ALL);
     LogComponentEnable ("PegasusNS3ControlStationApp", LOG_LEVEL_ALL);
     LogComponentEnable ("PegasusNS3DroneApp", LOG_LEVEL_ALL);
+    LogComponentEnable ("PegasusUDPSocket", LOG_LEVEL_ALL);
   }
 
   m_gazeboNode.Setup(argc, argv);
   m_gazeboNode.SetTopic("~/pose/info");
 
   m_ns3Runner.Create();
+
+  SetupProxy();
 
 
   if (tracing == true)

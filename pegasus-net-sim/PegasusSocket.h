@@ -7,30 +7,55 @@
 using namespace ns3;
 
 class PegasusSocket {
-  private:
+  protected:
     int m_sd;
 
+    //Port this socket is bound to.
     int m_port;
 
-    Ptr<Node> m_simNode;
-
-    unsigned int m_simSockIndex;
-
-    Ptr<Node> m_simDstNode;
-
-    Ptr<Node> m_simDstPort;
-
+    //Port this socket will send to.
     int m_peerPort;
+
+    //The virtual device corrosponding to this socket.
+    Ptr<Node> m_node;
+
+    PegasusSocket();
 
 
   public:
-    PegasusSocket();
-
-    ~PegasusSocket();
-
-    virtual void Send() = 0;
+    virtual ~PegasusSocket();
 
     virtual void Create() = 0;
 
+    virtual void Bind() = 0;
+
+    virtual void Send(const char* buffer, const unsigned int & len) = 0;
+
+    void SetAttributes(int port, int peerPort, const Ptr<Node> & node);
+
+    inline const int Get_m_sd() const;
+
+    inline const int Get_m_port() const;
+
+    inline const int Get_m_peerPort() const;
+
+    inline const Ptr<Node> & Get_m_node() const;
+
 };
+inline const int PegasusSocket::Get_m_sd() const {
+  return m_sd;
+}
+
+inline const int PegasusSocket::Get_m_port() const {
+  return m_port;
+}
+
+inline const int PegasusSocket::Get_m_peerPort() const {
+  return m_peerPort;
+}
+
+inline const Ptr<Node> & PegasusSocket::Get_m_node() const {
+  return m_node;
+}
+
 #endif

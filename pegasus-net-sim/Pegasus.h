@@ -12,8 +12,8 @@
 
 using namespace ns3;
 
-class PegasusSocket;
 class NS3PegasusDroneApp;
+class PegasusUDPSocket;
 
 class Pegasus {
   private:
@@ -23,6 +23,8 @@ class Pegasus {
 
     Pegasus();
 
+    void SetupProxy();
+
 
   public:
     NS3Runner m_ns3Runner;
@@ -30,8 +32,6 @@ class Pegasus {
     GazeboNode m_gazeboNode;
 
     PegasusSocketRunner m_pegasusSocketRunner;
-
-    std::vector<PegasusSocket> m_pegasusSockets;
 
     ~Pegasus();
 

@@ -14,6 +14,7 @@ using namespace ns3;
 
 class NS3PegasusDroneApp;
 class NS3PegasusControlStationApp;
+class PegasusSocket;
 
 class PegasusVariables {
   public:
@@ -33,6 +34,8 @@ class PegasusVariables {
     std::vector<Ptr<NS3PegasusDroneApp>> m_ns3PegasusDroneApps;
 
     Ptr<NS3PegasusControlStationApp> m_ns3PegasusControlStationApp;
+
+    std::vector<PegasusSocket *> m_pegasusSockets;
 
 };
 #endif

@@ -1,4 +1,0 @@
-class GazeboNode
-!!!133513.cpp!!!	Destroy() : void
-  NS_LOG_FUNCTION(this);
-  gazebo::client::shutdown();

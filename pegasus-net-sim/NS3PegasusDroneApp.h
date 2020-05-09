@@ -30,10 +30,12 @@ class NS3PegasusDroneApp : public Application{
 
     virtual void StopApplication(void );
 
+    Address GetAddressFromRealDstPort(int realDstPort);
+
+    PegasusSocket* FindPegasusSocket(int port);
+
 
   protected:
-    PegasusSocket& FindPegasusSocket(const Ptr<Node> & node, const unsigned int & simSockIndex);
-
     virtual void DoInitialize();
 
     virtual void DoDispose(void );
@@ -55,7 +57,7 @@ class NS3PegasusDroneApp : public Application{
 
     void ScheduleSend();
 
-    void Send(int realDstPort, const Ptr<Packet> & packet, int peerRealDstPort);
+    void Send(int realDstPort, int peerRealDstPort, const char * buffer, const unsigned int len);
 
     void HandleRead(Ptr<Socket> socket);
 

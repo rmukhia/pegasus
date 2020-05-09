@@ -1,7 +1,0 @@
-class Pegasus
-!!!130441.cpp!!!	GetInstance() : Pegasus*
-  if (!sm_instance) {
-    sm_instance = new Pegasus();
-  }
-
-  return sm_instance;

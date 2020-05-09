@@ -95,7 +95,7 @@ void NS3Runner::InstallApplications() {
 
         app->m_realDstPortMapVirtualSocket[i] = app->CreateVirtualSocket(i, app);
 
-        Simulator::Schedule(Seconds(5), &NS3PegasusDroneApp::Send, app, i, (Ptr<Packet>) NULL, i);
+        Simulator::Schedule(Seconds(5), &NS3PegasusDroneApp::Send, app, i, 5551, "hello world", 24);
         i++;
       }
     );

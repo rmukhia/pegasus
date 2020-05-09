@@ -1,6 +1,6 @@
 format 222
-"Pegasus"
-  revision 15
+"pegasus-net-sim"
+  revision 28
   modified_by 9 "rmukhia"
   cpp_root_dir "/home/rmukhia/thesis/pegasus-sim/pegasus-net-sim/"
 
@@ -45,6 +45,326 @@ format 222
 
   mark_for_import
   
+  deploymentview 128009 "pegasus-net-sim"
+    //deployment diagram settings
+    deploymentdiagramsettings
+     end
+    artifact 141961 "PegasusVariables"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+#include \"ns3/system-mutex.h\"
+#include \"ns3/vector.h\"
+#include \"ns3/node-container.h\"
+
+using namespace ns3;
+
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      associated_elems
+	class_ref 135561 // PegasusVariables
+      end
+    end
+
+    artifact 128649 "Pegasus"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+
+using namespace ns3;
+
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_elems
+	class_ref 128777 // Pegasus
+      end
+    end
+
+    artifact 128777 "NS3Runner"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+#include \"ns3/core-module.h\"
+#include \"ns3/log.h\"
+#include \"ns3/point-to-point-module.h\"
+#include \"ns3/network-module.h\"
+#include \"ns3/applications-module.h\"
+#include \"ns3/wifi-module.h\"
+#include \"ns3/mesh-helper.h\"
+#include \"ns3/yans-wifi-phy.h\"
+#include \"ns3/minstrel-wifi-manager.h\"
+#include \"ns3/mobility-module.h\"
+#include \"ns3/internet-module.h\"
+#include \"ns3/olsr-helper.h\"
+
+using namespace ns3;
+
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+NS_LOG_COMPONENT_DEFINE (\"PegasusNS3Runner\");
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_elems
+	class_ref 128905 // NS3Runner
+      end
+    end
+
+    artifact 128137 "PegasusUDPSocket"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+using namespace ns3;
+
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+#include \"ns3/log.h\"
+#include \"ns3/names.h\"
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+NS_LOG_COMPONENT_DEFINE (\"PegasusUDPSocket\");
+
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_elems
+	class_ref 128265 // PegasusUDPSocket
+      end
+    end
+
+    artifact 128009 "PegasusSocket"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+#include <ns3/node.h>
+
+using namespace ns3;
+
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_elems
+	class_ref 128137 // PegasusSocket
+      end
+    end
+
+    artifact 128393 "PegasusSocketRunner"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+#include \"ns3/system-thread.h\"
+
+using namespace ns3;
+
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_elems
+	class_ref 128521 // PegasusSocketRunner
+      end
+    end
+
+    artifact 128521 "NS3PegasusControlStationApp"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+#include \"ns3/event-id.h\"
+#include \"ns3/ptr.h\"
+#include \"ns3/address.h\"
+#include \"ns3/socket.h\"
+#include \"ns3/traced-callback.h\"
+
+using namespace ns3;
+
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+# include \"ns3/log.h\"
+
+NS_LOG_COMPONENT_DEFINE (\"PegasusNS3ControlStationApp\");
+NS_OBJECT_ENSURE_REGISTERED (NS3PegasusControlStationApp);
+
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_elems
+	class_ref 128649 // NS3PegasusControlStationApp
+      end
+    end
+
+    artifact 148489 "NS3PegasusDroneApp"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+#include \"ns3/event-id.h\"
+#include \"ns3/ptr.h\"
+#include \"ns3/address.h\"
+#include \"ns3/socket.h\"
+#include \"ns3/traced-callback.h\"
+
+using namespace ns3;
+
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+#include <algorithm>
+#include \"ns3/log.h\"
+#include \"ns3/ipv4.h\"
+#include \"ns3/names.h\"
+
+NS_LOG_COMPONENT_DEFINE (\"PegasusNS3DroneApp\");
+NS_OBJECT_ENSURE_REGISTERED (NS3PegasusDroneApp);
+
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_elems
+	class_ref 142089 // NS3PegasusDroneApp
+      end
+    end
+
+    artifact 128905 "GazeboNode"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+#include <gazebo/transport/transport.hh>
+#include <gazebo/msgs/msgs.hh>
+#include <gazebo/gazebo_client.hh>
+#include \"ns3/system-thread.h\"
+#include \"ns3/log.h\"
+#include \"ns3/vector.h\"
+
+using namespace ns3;
+
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+NS_LOG_COMPONENT_DEFINE (\"PegasusGazeboNode\");
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_elems
+	class_ref 129033 // GazeboNode
+      end
+    end
+
+    artifact 135433 "pegasus-net-sim"
+      stereotype "source"
+      cpp_src "/* Raunak Mukhia 2020 */
+#include \"Pegasus.h\"
+
+std::vector<std::string> drones = {
+  \"iris_0\",
+  \"iris_1\",
+  \"iris_2\"
+};
+
+
+
+
+int main(int argc, char **argv)
+{
+  Pegasus *pegasus = Pegasus::GetInstance();
+  ns3::LogComponentEnable (\"PegasusNS3Runner\", ns3::LOG_LEVEL_ALL);
+  ns3::LogComponentEnable (\"PegasusGazeboNode\", ns3::LOG_LEVEL_ALL);
+  pegasus->Run(drones);
+
+}
+"
+      associated_elems
+      end
+    end
+
+    deploymentdiagram 134665 "deployement"
+      deploymentdiagramsettings draw_all_relations no
+       end
+      size A4
+    end
+  end
+
   classview 128137 "pegasus-net-sim"
     
     classdiagramsettings member_max_width 0 end
@@ -66,9 +386,9 @@ format 222
     activitydiagramsettings
      end
     associated_deployment_view deploymentview_ref 128009 // pegasus-net-sim
-    classdiagram 128137 "PegasusSocket"
+    classdiagram 128137 "Pegaus"
       classdiagramsettings draw_all_relations no show_members_full_definition yes show_members_visibility yes show_members_stereotype yes show_members_context uml show_members_multiplicity yes member_max_width 0 show_parameter_name yes drawing_language uml auto_label_position yes gradient none end
-      size C-Landscape
+      size D-Landscape
     end
 
     class 135561 "PegasusVariables"
@@ -121,6 +441,72 @@ ${inlines}
 	mysql_decl ""
 	MysqlColumn
       end
+
+      attribute 166025 "m_nodes"
+	public explicit_type "NodeContainer"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "All nodes"
+      end
+
+      attribute 129929 "m_controlStationNode"
+	public explicit_type "NodeContainer"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 130057 "m_droneNodes"
+	public explicit_type "NodeContainer"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      classrelation 165897 // m_ns3PegasusDroneApps (<directional composition>)
+	relation 163721 *-->
+	  stereotype "vector"
+	  a role_name "m_ns3PegasusDroneApps" multiplicity "*" public
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<Ptr<${type}>> ${name}${value};
+"
+	    classrelation_ref 165897 // m_ns3PegasusDroneApps (<directional composition>)
+	  b parent class_ref 142089 // NS3PegasusDroneApp
+      end
+
+      classrelation 166025 // m_ns3PegasusControlStationApp (<directional composition>)
+	relation 163849 *-->
+	  a role_name "m_ns3PegasusControlStationApp" multiplicity "1" public
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}Ptr<${type}> ${name}${value};
+"
+	    classrelation_ref 166025 // m_ns3PegasusControlStationApp (<directional composition>)
+	  b parent class_ref 128649 // NS3PegasusControlStationApp
+      end
+
+      classrelation 179337 // m_pegasusSockets (<directional aggregation>)
+	relation 177161 o-->
+	  stereotype "vector"
+	  a role_name "m_pegasusSockets" multiplicity "*" public
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type} *> ${name}${value};
+"
+	    classrelation_ref 179337 // m_pegasusSockets (<directional aggregation>)
+	  b parent class_ref 128137 // PegasusSocket
+      end
     end
 
     class 128777 "Pegasus"
@@ -138,7 +524,7 @@ ${inlines}
       
       classrelation 151305 // m_pegasusVars (<directional composition>)
 	relation 149513 *-->
-	  a role_name "m_pegasusVars" class_relation private
+	  a role_name "m_pegasusVars" multiplicity "1" class_relation private
 	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
 "
 	    classrelation_ref 151305 // m_pegasusVars (<directional composition>)
@@ -161,6 +547,20 @@ ${inlines}
 "
 	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${throw}{
 ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 216841 "SetupProxy"
+	private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
 "
 	
 	
@@ -193,26 +593,6 @@ ${body}}
 "
 	    classrelation_ref 129801 // m_pegasusSocketRunner (<directional composition>)
 	  b parent class_ref 128521 // PegasusSocketRunner
-      end
-
-      classrelation 130057 // m_pegasusSockets (<directional composition>)
-	relation 129289 *-->
-	  stereotype "vector"
-	  a role_name "m_pegasusSockets" multiplicity "*" public
-	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
-"
-	    classrelation_ref 130057 // m_pegasusSockets (<directional composition>)
-	  b parent class_ref 128137 // PegasusSocket
-      end
-
-      classrelation 137737 // m_ns3PegasusApp (<directional composition>)
-	relation 136329 *-->
-	  stereotype "vector"
-	  a role_name "m_ns3PegasusApp" multiplicity "*" public
-	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
-"
-	    classrelation_ref 137737 // m_ns3PegasusApp (<directional composition>)
-	  b parent class_ref 128649 // NS3PegasusApp
       end
 
       operation 148489 "~Pegasus"
@@ -273,6 +653,24 @@ ${body}}
 	
 	
 	
+      end
+
+      classrelation 172809 // <dependency>
+	relation 170633 -_->
+	  stereotype "import"
+	  a public
+	    cpp default "#include in source"
+	    classrelation_ref 172809 // <dependency>
+	  b parent class_ref 142089 // NS3PegasusDroneApp
+      end
+
+      classrelation 179465 // <dependency>
+	relation 177289 -_->
+	  stereotype "import"
+	  a public
+	    cpp default "#include in source"
+	    classrelation_ref 179465 // <dependency>
+	  b parent class_ref 128265 // PegasusUDPSocket
       end
     end
 
@@ -501,30 +899,6 @@ ${inlines}
 	  b parent class_ref 135561 // PegasusVariables
 	  association_type class_ref 135561 // PegasusVariables
 	set_oper operation_ref 168585 // set_m_pegasusVars
-      end
-
-      attribute 129929 "m_controlStationNode"
-	private explicit_type "NodeContainer"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-      end
-
-      attribute 130057 "m_droneNodes"
-	private explicit_type "NodeContainer"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
       end
 
       attribute 130185 "m_channel"
@@ -861,6 +1235,42 @@ ${body}}
 	idl_name_spec "set_${name}"
 	set_of_relation classrelation_ref 151689 // m_pegasusVars (<directional aggregation>)
       end
+
+      classrelation 165257 // <dependency>
+	relation 163337 -_->
+	  stereotype "import"
+	  a private
+	    cpp default "#include in header"
+	    classrelation_ref 165257 // <dependency>
+	  b parent class_ref 142089 // NS3PegasusDroneApp
+      end
+
+      classrelation 165513 // <dependency>
+	relation 163465 -_->
+	  stereotype "import"
+	  a private
+	    cpp default "#include in header"
+	    classrelation_ref 165513 // <dependency>
+	  b parent class_ref 128649 // NS3PegasusControlStationApp
+      end
+
+      operation 190345 "CreateProxyRoute"
+	public explicit_return_type "void"
+	nparams 4
+	  param in name "srcPort" explicit_type "int"
+	  param in name "proxyDstPort" explicit_type "int"
+	  param in name "proxySrcPort" explicit_type "int"
+	  param in name "dstPort" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}, ${t1} ${p1}${v1}, ${t2} ${p2}${v2}, ${t3} ${p3}${v3}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
     end
 
     class 128521 "PegasusSocketRunner"
@@ -998,7 +1408,7 @@ ${inlines}
       mysql_decl ""
       
       attribute 128137 "m_sd"
-	private explicit_type "int"
+	protected explicit_type "int"
 	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
 "
 	java_decl ""
@@ -1007,10 +1417,11 @@ ${inlines}
 	idl_decl ""
 	mysql_decl ""
 	MysqlColumn
+	get_oper operation_ref 217225 // get_m_sd
       end
 
       attribute 128265 "m_port"
-	private explicit_type "int"
+	protected explicit_type "int"
 	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
 "
 	java_decl ""
@@ -1019,61 +1430,12 @@ ${inlines}
 	idl_decl ""
 	mysql_decl ""
 	MysqlColumn
-      end
-
-      attribute 128521 "m_simNode"
-	private explicit_type "Node"
-	stereotype "Ptr"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-      end
-
-      attribute 129033 "m_simSockIndex"
-	private explicit_type "unsigned int"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-      end
-
-      attribute 129161 "m_simDstNode"
-	private explicit_type "Node"
-	stereotype "Ptr"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-      end
-
-      attribute 128649 "m_simDstPort"
-	private explicit_type "Node"
-	stereotype "Ptr"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
+	get_oper operation_ref 217353 // get_m_port
+	comment "Port this socket is bound to."
       end
 
       attribute 129673 "m_peerPort"
-	private explicit_type "int"
+	protected explicit_type "int"
 	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
 "
 	java_decl ""
@@ -1082,15 +1444,32 @@ ${inlines}
 	idl_decl ""
 	mysql_decl ""
 	MysqlColumn
+	get_oper operation_ref 217481 // get_m_peerPort
+	comment "Port this socket will send to."
       end
 
-      operation 148873 "PegasusSocket"
-	public explicit_return_type ""
-	nparams 0
-	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw}${abstract};
+      attribute 128521 "m_node"
+	protected explicit_type "Node"
+	stereotype "Ptr"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
 "
-	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${throw}{
-${body}}
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	get_oper operation_ref 217609 // get_m_node
+	comment "The virtual device corrosponding to this socket."
+      end
+
+      operation 217097 "PegasusSocket"
+	cpp_virtual protected explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${typeprefix}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
 "
 	
 	
@@ -1099,23 +1478,12 @@ ${body}}
       end
 
       operation 147081 "~PegasusSocket"
-	public explicit_return_type ""
+	cpp_virtual public explicit_return_type ""
 	nparams 0
-	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw}${abstract};
+	cpp_decl "    ${comment}${inline}${virtual}${typeprefix}${name}${(}${)}${volatile}${throw};
 "
-	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${throw}{
-${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 130569 "Send"
-	abstract cpp_virtual public explicit_return_type "void"
-	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
 "
 	
 	
@@ -1133,64 +1501,24 @@ ${body}}
 	
 	
       end
-    end
 
-    class 128393 "PegasusClientSocket"
-      visibility package 
-      cpp_decl "${comment}${template}class ${name}${inherit} {
-${members}};
-${inlines}
-"
-      java_decl ""
-      php_decl ""
-      python_2_2 python_decl ""
-      idl_decl ""
-      explicit_switch_type ""
-      mysql_decl ""
-      
-      classrelation 128393 // <generalisation>
-	relation 128393 ---|>
-	  a public
-	    cpp default "${type}"
-	    classrelation_ref 128393 // <generalisation>
-	  b parent class_ref 128137 // PegasusSocket
-      end
-
-      operation 148233 "PegasusClientSocket"
-	public explicit_return_type ""
-	nparams 0
-	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${throw}{
-${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 148361 "~PegasusClientSocket"
-	public explicit_return_type ""
-	nparams 0
-	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${throw}{
-${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 131081 "Create"
-	cpp_virtual public explicit_return_type "void"
+      operation 216969 "Bind"
+	abstract cpp_virtual public explicit_return_type "void"
 	nparams 0
 	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
 "
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-${body}}
+	
+	
+	
+	
+      end
+
+      operation 130569 "Send"
+	abstract cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param in name "buffer" explicit_type "char*"
+	  param in name "len" explicit_type "unsigned int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}const ${t0} ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
 "
 	
 	
@@ -1198,22 +1526,110 @@ ${body}}
 	
       end
 
-      operation 130697 "Send"
-	cpp_virtual public explicit_return_type "void"
+      operation 210185 "SetAttributes"
+	public explicit_return_type "void"
+	nparams 3
+	  param in name "port" explicit_type "int"
+	  param in name "peerPort" explicit_type "int"
+	  param in name "node" explicit_type "Ptr<Node>"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}, ${t1} ${p1}${v1}, const ${t2} & ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}, ${t1} ${p1}, const ${t2} & ${p2}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 217225 "get_m_sd"
+	force_body_gen const cpp_inline public explicit_return_type "int"
 	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
 "
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-${body}}
+	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_sd;
+}
 "
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
 	
+	python_name_spec "get${Name}"
 	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 128137 // m_sd
+      end
+
+      operation 217353 "get_m_port"
+	force_body_gen const cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_port;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
 	
+	python_name_spec "get${Name}"
 	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 128265 // m_port
+      end
+
+      operation 217481 "get_m_peerPort"
+	force_body_gen const cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_peerPort;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 129673 // m_peerPort
+      end
+
+      operation 217609 "get_m_node"
+	stereotype "Ptr"
+	force_body_gen const cpp_inline public explicit_return_type "Node"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${stereotype}<${type}> & ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}const ${stereotype}<${type}> & ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_node;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 128521 // m_node
       end
     end
 
-    class 128265 "PegasusServerSocket"
+    class 128265 "PegasusUDPSocket"
       visibility package 
       cpp_decl "${comment}${template}class ${name}${inherit} {
 ${members}};
@@ -1234,7 +1650,7 @@ ${inlines}
 	  b parent class_ref 128137 // PegasusSocket
       end
 
-      operation 147721 "PegasusServerSocket"
+      operation 147721 "PegasusUDPSocket"
 	public explicit_return_type ""
 	nparams 0
 	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw}${abstract};
@@ -1248,7 +1664,7 @@ ${body}}
 	
       end
 
-      operation 147849 "~PegasusServerSocket"
+      operation 147849 "~PegasusUDPSocket"
 	public explicit_return_type ""
 	nparams 0
 	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw}${abstract};
@@ -1262,13 +1678,27 @@ ${body}}
 	
       end
 
+      operation 216713 "Create"
+	public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
       operation 128137 "Bind"
-	cpp_virtual public explicit_return_type "void"
+	public explicit_return_type "void"
 	nparams 0
 	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
 "
 	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-${body}}
+  ${body}}
 "
 	
 	
@@ -1276,27 +1706,15 @@ ${body}}
 	
       end
 
-      operation 131209 "Create"
-	cpp_virtual public explicit_return_type "void"
-	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+      operation 217865 "Send"
+	public explicit_return_type "void"
+	nparams 2
+	  param in name "buffer" explicit_type "char*"
+	  param in name "len" explicit_type "unsigned int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}const ${t0} ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
 "
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 130825 "Send"
-	cpp_virtual public explicit_return_type "void"
-	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-${body}}
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}const ${t0} ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
 "
 	
 	
@@ -1305,9 +1723,9 @@ ${body}}
       end
     end
 
-    class 128649 "NS3PegasusApp"
+    class 142089 "NS3PegasusDroneApp"
       visibility package 
-      cpp_decl "${comment}${template}class ${name}${inherit} {
+      cpp_decl "${comment}${template}class ${name}${inherit}{
 ${members}};
 ${inlines}
 "
@@ -1319,7 +1737,306 @@ ${inlines}
       mysql_decl ""
       
       comment "Inherits from ns3::Application Module."
-      attribute 128905 "m_socket"
+      classrelation 158601 // <generalisation>
+	relation 156681 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 158601 // <generalisation>
+	  b parent class_ref 142345 // Application
+      end
+
+      classrelation 172553 // m_pegasusVars (<directional aggregation>)
+	relation 170377 o-->
+	  a role_name "m_pegasusVars" multiplicity "1" class_relation private
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	    classrelation_ref 172553 // m_pegasusVars (<directional aggregation>)
+	  b multiplicity "*" parent class_ref 135561 // PegasusVariables
+	set_oper operation_ref 197129 // set_m_pegasusVars
+      end
+
+      attribute 152457 "m_rxTraceWithAddresses"
+	private explicit_type "TracedCallback<Ptr<const Packet>, const Address &, const Address &>"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 152585 "m_rxTrace"
+	private explicit_type "TracedCallback<Ptr<const Packet> >"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      operation 182665 "StartApplication"
+	cpp_virtual private explicit_return_type "void"
+	nparams 1
+	  param in name "" explicit_type "void"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 182793 "StopApplication"
+	cpp_virtual private explicit_return_type "void"
+	nparams 1
+	  param in name "" explicit_type "void"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 203657 "GetAddressFromRealDstPort"
+	private explicit_return_type "Address"
+	nparams 1
+	  param in name "realDstPort" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 182537 "FindPegasusSocket"
+	private explicit_return_type "PegasusSocket*"
+	multiplicity "1"
+	nparams 1
+	  param in name "port" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 182921 "DoInitialize"
+	cpp_virtual protected explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 183049 "DoDispose"
+	cpp_virtual protected explicit_return_type "void"
+	nparams 1
+	  param in name "" explicit_type "void"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      attribute 165897 "m_realDstPortMapVirtualSocket"
+	public explicit_type "int, Ptr<Socket>"
+	multiplicity "*"
+	stereotype "map"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "Real port corrosponding to this node. "
+      end
+
+      operation 183177 "GetTypeId"
+	class_operation public explicit_return_type "TypeId"
+	nparams 1
+	  param in name "" explicit_type "void"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 183305 "NS3PegasusDroneApp"
+	public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${typeprefix}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 183433 "~NS3PegasusDroneApp"
+	cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${typeprefix}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 197129 "set_m_pegasusVars"
+	class_operation force_body_gen public explicit_return_type "void"
+	multiplicity "1"
+	nparams 1
+	  param in name "value" type class_ref 135561 // PegasusVariables
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  m_pegasusVars = ${p0};
+}
+"
+	cpp_name_spec "Set_${name}"
+	
+	java_name_spec "set${Name}"
+	
+	php_name_spec "set${Name}"
+	
+	python_name_spec "set${Name}"
+	
+	idl_name_spec "set_${name}"
+	set_of_relation classrelation_ref 172553 // m_pegasusVars (<directional aggregation>)
+      end
+
+      operation 197001 "CreateVirtualSocket"
+	public explicit_return_type "Ptr<Socket>"
+	nparams 2
+	  param in name "virtPort" explicit_type "int"
+	  param in name "app" explicit_type "Ptr<NS3PegasusDroneApp>"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 183561 "ScheduleSend"
+	public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 183689 "Send"
+	public explicit_return_type "void"
+	nparams 4
+	  param in name "realDstPort" explicit_type "int"
+	  param in name "peerRealDstPort" explicit_type "int"
+	  param in name "buffer" explicit_type "char *"
+	  param in name "len" explicit_type "unsigned int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}, ${t1} ${p1}${v1}, const ${t2} ${p2}${v2}, const ${t3} ${p3}${v3}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}, ${t1} ${p1}, const ${t2}${p2}, const ${t3} ${p3}${)}${const}${volatile}${throw}${staticnl}{
+${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 183817 "HandleRead"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "socket" explicit_type "Ptr<Socket>"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+    end
+
+    class 128649 "NS3PegasusControlStationApp"
+      abstract visibility protected 
+      cpp_decl "${comment}${template}class ${name}${inherit}{
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      comment "Inherits from ns3::Application Module."
+      classrelation 158729 // <generalisation>
+	relation 156809 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 158729 // <generalisation>
+	  b parent class_ref 142345 // Application
+      end
+
+      attribute 159113 "m_socket"
 	private explicit_type "Ptr<Socket>"
 	stereotype "std::vector"
 	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
@@ -1332,12 +2049,125 @@ ${inlines}
 	MysqlColumn
       end
 
-      operation 130185 "FindPegasusSocket"
-	private explicit_return_type "PegasusSocket&"
-	nparams 2
-	  param in name "node" explicit_type "Ptr<Node>"
-	  param in name "simSockIndex" explicit_type "unsigned int"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}const ${t0} & ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+      attribute 159241 "m_rxTraceWithAddresses"
+	private explicit_type "TracedCallback<Ptr<const Packet>, const Address &, const Address &>"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 159369 "m_rxTrace"
+	private explicit_type "TracedCallback<Ptr<const Packet> >"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      operation 175497 "StartApplication"
+	cpp_virtual private explicit_return_type "void"
+	nparams 1
+	  param in name "" explicit_type "void"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 175625 "StopApplication"
+	cpp_virtual private explicit_return_type "void"
+	nparams 1
+	  param in name "" explicit_type "void"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 182409 "DoInitialize"
+	cpp_virtual protected explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 175369 "DoDispose"
+	cpp_virtual protected explicit_return_type "void"
+	nparams 1
+	  param in name "" explicit_type "void"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 175881 "GetTypeId"
+	class_operation public explicit_return_type "TypeId"
+	nparams 1
+	  param in name "" explicit_type "void"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 175113 "NS3PegasusControlStationApp"
+	public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${typeprefix}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 175241 "~NS3PegasusControlStationApp"
+	cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${typeprefix}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
 "
 	
 	
@@ -1387,291 +2217,19 @@ ${body}}
 	
       end
     end
-  end
 
-  deploymentview 128009 "pegasus-net-sim"
-    //deployment diagram settings
-    deploymentdiagramsettings
-     end
-    artifact 141961 "PegasusVariables"
-      stereotype "source"
-      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
-#define ${NAMESPACE}_${NAME}_H
-
-${comment}
-${includes}
-#include \"ns3/system-mutex.h\"
-#include \"ns3/vector.h\"
-
-using namespace ns3;
-
-${declarations}
-${namespace_start}
-${definition}
-${namespace_end}
-#endif
+    class 142345 "Application"
+      visibility package 
+      cpp_external cpp_decl "${name}
+#include \"ns3/application.h\"
 "
-      associated_elems
-	class_ref 135561 // PegasusVariables
-      end
-    end
-
-    artifact 128649 "Pegasus"
-      stereotype "source"
-      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
-#define ${NAMESPACE}_${NAME}_H
-
-${comment}
-${includes}
-
-using namespace ns3;
-
-${declarations}
-${namespace_start}
-${definition}
-${namespace_end}
-#endif"
-      cpp_src "${comment}
-${includes}
-${namespace_start}
-${members}
-${namespace_end}"
-      associated_elems
-	class_ref 128777 // Pegasus
-      end
-    end
-
-    artifact 128777 "NS3Runner"
-      stereotype "source"
-      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
-#define ${NAMESPACE}_${NAME}_H
-
-${comment}
-${includes}
-#include \"ns3/core-module.h\"
-#include \"ns3/log.h\"
-#include \"ns3/point-to-point-module.h\"
-#include \"ns3/network-module.h\"
-#include \"ns3/applications-module.h\"
-#include \"ns3/wifi-module.h\"
-#include \"ns3/mesh-helper.h\"
-#include \"ns3/yans-wifi-phy.h\"
-#include \"ns3/minstrel-wifi-manager.h\"
-#include \"ns3/mobility-module.h\"
-#include \"ns3/internet-module.h\"
-#include \"ns3/olsr-helper.h\"
-
-using namespace ns3;
-
-${declarations}
-${namespace_start}
-${definition}
-${namespace_end}
-#endif
-"
-      cpp_src "${comment}
-${includes}
-NS_LOG_COMPONENT_DEFINE (\"PegasusNS3Runner\");
-${namespace_start}
-${members}
-${namespace_end}"
-      associated_elems
-	class_ref 128905 // NS3Runner
-      end
-    end
-
-    artifact 128137 "PegasusServerSocket"
-      stereotype "source"
-      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
-#define ${NAMESPACE}_${NAME}_H
-
-${comment}
-${includes}
-${declarations}
-${namespace_start}
-${definition}
-${namespace_end}
-#endif
-"
-      cpp_src "${comment}
-${includes}
-${namespace_start}
-${members}
-${namespace_end}"
-      associated_elems
-	class_ref 128265 // PegasusServerSocket
-      end
-    end
-
-    artifact 128009 "PegasusSocket"
-      stereotype "source"
-      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
-#define ${NAMESPACE}_${NAME}_H
-
-${comment}
-${includes}
-#include <ns3/node.h>
-
-using namespace ns3;
-
-${declarations}
-${namespace_start}
-${definition}
-${namespace_end}
-#endif
-"
-      cpp_src "${comment}
-${includes}
-${namespace_start}
-${members}
-${namespace_end}"
-      associated_elems
-	class_ref 128137 // PegasusSocket
-      end
-    end
-
-    artifact 128265 "PegasusClientSocket"
-      stereotype "source"
-      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
-#define ${NAMESPACE}_${NAME}_H
-
-${comment}
-${includes}
-${declarations}
-${namespace_start}
-${definition}
-${namespace_end}
-#endif
-"
-      cpp_src "${comment}
-${includes}
-${namespace_start}
-${members}
-${namespace_end}"
-      associated_elems
-	class_ref 128393 // PegasusClientSocket
-      end
-    end
-
-    artifact 128393 "PegasusSocketRunner"
-      stereotype "source"
-      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
-#define ${NAMESPACE}_${NAME}_H
-
-${comment}
-${includes}
-#include \"ns3/system-thread.h\"
-
-using namespace ns3;
-
-${declarations}
-${namespace_start}
-${definition}
-${namespace_end}
-#endif
-"
-      cpp_src "${comment}
-${includes}
-${namespace_start}
-${members}
-${namespace_end}"
-      associated_elems
-	class_ref 128521 // PegasusSocketRunner
-      end
-    end
-
-    artifact 128521 "NS3PegasusApp"
-      stereotype "source"
-      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
-#define ${NAMESPACE}_${NAME}_H
-
-${comment}
-${includes}
-#include <ns3/socket.h>
-#include <ns3/application.h>
-
-using namespace ns3;
-
-${declarations}
-${namespace_start}
-${definition}
-${namespace_end}
-#endif
-"
-      cpp_src "${comment}
-${includes}
-${namespace_start}
-${members}
-${namespace_end}"
-      associated_elems
-	class_ref 128649 // NS3PegasusApp
-      end
-    end
-
-    artifact 128905 "GazeboNode"
-      stereotype "source"
-      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
-#define ${NAMESPACE}_${NAME}_H
-
-${comment}
-${includes}
-#include <gazebo/transport/transport.hh>
-#include <gazebo/msgs/msgs.hh>
-#include <gazebo/gazebo_client.hh>
-#include \"ns3/system-thread.h\"
-#include \"ns3/log.h\"
-#include \"ns3/vector.h\"
-
-using namespace ns3;
-
-${declarations}
-${namespace_start}
-${definition}
-${namespace_end}
-#endif
-"
-      cpp_src "${comment}
-${includes}
-NS_LOG_COMPONENT_DEFINE (\"PegasusGazeboNode\");
-${namespace_start}
-${members}
-${namespace_end}"
-      associated_elems
-	class_ref 129033 // GazeboNode
-      end
-    end
-
-    artifact 135433 "pegasus-net-sim"
-      stereotype "source"
-      cpp_src "/* Raunak Mukhia 2020 */
-#include \"Pegasus.h\"
-
-std::vector<std::string> drones = {
-  \"iris_0\",
-  \"iris_1\",
-  \"iris_2\"
-};
-
-
-
-
-int main(int argc, char **argv)
-{
-  Pegasus *pegasus = Pegasus::GetInstance();
-  ns3::LogComponentEnable (\"PegasusNS3Runner\", ns3::LOG_LEVEL_ALL);
-  ns3::LogComponentEnable (\"PegasusGazeboNode\", ns3::LOG_LEVEL_ALL);
-  pegasus->Run(drones);
-
-}
-"
-      associated_elems
-      end
-    end
-
-    deploymentdiagram 134665 "deployement"
-      deploymentdiagramsettings draw_all_relations no
-       end
-      size A4
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
     end
   end
 end
