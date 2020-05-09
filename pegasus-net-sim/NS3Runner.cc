@@ -78,9 +78,6 @@ void NS3Runner::InstallApplications() {
   NS_LOG_FUNCTION(this);
   ApplicationContainer apps;
   Ptr<Node> node = m_pegasusVars->m_controlStationNode.Get(0);
-  m_pegasusVars->m_ns3PegasusControlStationApp = CreateObject<NS3PegasusControlStationApp>();
-  node->AddApplication(m_pegasusVars->m_ns3PegasusControlStationApp);
-  apps.Add(m_pegasusVars->m_ns3PegasusControlStationApp);
 
   int i = 5550;
   std::for_each(m_pegasusVars->m_droneNodes.Begin(), m_pegasusVars->m_droneNodes.End(),
@@ -95,13 +92,13 @@ void NS3Runner::InstallApplications() {
 
         app->m_realDstPortMapVirtualSocket[i] = app->CreateVirtualSocket(i, app);
 
-        Simulator::Schedule(Seconds(5), &NS3PegasusDroneApp::Send, app, i, 5551, "hello world", 24);
+        //Simulator::Schedule(Seconds(5), &NS3PegasusDroneApp::Send, app, i, 5551, "hello world", 24);
         i++;
       }
     );
 
   apps.Start(Seconds(1));
-  apps.Stop(Seconds(60));
+  apps.Stop(Seconds(1000));
 }
 
 NS3Runner::NS3Runner(){

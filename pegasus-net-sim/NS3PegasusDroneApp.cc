@@ -7,6 +7,7 @@
 #include "ns3/log.h"
 #include "ns3/ipv4.h"
 #include "ns3/names.h"
+#include "ns3/simulator.h"
 
 NS_LOG_COMPONENT_DEFINE ("PegasusNS3DroneApp");
 NS_OBJECT_ENSURE_REGISTERED (NS3PegasusDroneApp);
@@ -111,21 +112,25 @@ Ptr<Socket> NS3PegasusDroneApp::CreateVirtualSocket(int virtPort, const Ptr<NS3P
   return socket;
 }
 
-void NS3PegasusDroneApp::ScheduleSend() {
+void NS3PegasusDroneApp::ScheduleSend(int port, int peerPort, const char * buffer, const unsigned int & len) {
   NS_LOG_FUNCTION(this);
-}
-
-void NS3PegasusDroneApp::Send(int realDstPort, int peerRealDstPort, const char *buffer, const unsigned int len) {
-  NS_LOG_FUNCTION(this);
-  Ptr<Socket> socket = m_realDstPortMapVirtualSocket[realDstPort];
+  Ptr<Socket> socket = m_realDstPortMapVirtualSocket[port];
   Ptr<Node> node = NULL;
-  Address addr = GetAddressFromRealDstPort(peerRealDstPort);
-  InetSocketAddress s_addr = InetSocketAddress (Ipv4Address::ConvertFrom(addr), peerRealDstPort);
+  Address addr = GetAddressFromRealDstPort(peerPort);
+  InetSocketAddress s_addr = InetSocketAddress (Ipv4Address::ConvertFrom(addr), peerPort);
   
   Ptr<Packet> p = Create<Packet>((uint8_t*)buffer, len);
 
-  int ret = socket->SendTo(p, 0, s_addr);
-  NS_LOG_DEBUG(ret);
+  Simulator::ScheduleWithContext(m_pegasusVars->m_simulatorContext,
+      Seconds(0), &NS3PegasusDroneApp::Send, this, socket, p, 0, s_addr);
+  //int ret = socket->SendTo(p, 0, s_addr);
+  //NS_LOG_DEBUG(ret);
+}
+
+void NS3PegasusDroneApp::Send(const Ptr<Socket> & socket, const Ptr<Packet> & packet, int flags, const InetSocketAddress & addr) {
+  NS_LOG_FUNCTION(this);
+  int ret = socket->SendTo(packet, 0, addr);
+  NS_LOG_DEBUG("Packet of size " << ret << " goes inside the matrix.");
 }
 
 void NS3PegasusDroneApp::HandleRead(Ptr<Socket> socket) {

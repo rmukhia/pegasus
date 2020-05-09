@@ -3,7 +3,6 @@
 
 
 #include "NS3PegasusDroneApp.h"
-#include "NS3PegasusControlStationApp.h"
 
 #include "ns3/core-module.h"
 #include "ns3/log.h"

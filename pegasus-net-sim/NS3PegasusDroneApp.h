@@ -55,9 +55,9 @@ class NS3PegasusDroneApp : public Application{
 
     Ptr<Socket> CreateVirtualSocket(int virtPort, const Ptr<NS3PegasusDroneApp> & app);
 
-    void ScheduleSend();
+    void ScheduleSend(int port, int peerPort, const char * buffer, const unsigned int & len);
 
-    void Send(int realDstPort, int peerRealDstPort, const char * buffer, const unsigned int len);
+    void Send(const Ptr<Socket> & socket, const Ptr<Packet> & packet, int flags, const InetSocketAddress & addr);
 
     void HandleRead(Ptr<Socket> socket);
 

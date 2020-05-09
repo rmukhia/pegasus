@@ -13,11 +13,13 @@
 using namespace ns3;
 
 class NS3PegasusDroneApp;
-class NS3PegasusControlStationApp;
 class PegasusSocket;
 
 class PegasusVariables {
   public:
+    //Store the main simulator context to make ns3 simulation thread safe.
+    uint32_t m_simulatorContext;
+
     std::unordered_map<std::string, Vector> m_poseMap;
 
     SystemMutex m_poseMapMutex;
@@ -32,8 +34,6 @@ class PegasusVariables {
     NodeContainer m_droneNodes;
 
     std::vector<Ptr<NS3PegasusDroneApp>> m_ns3PegasusDroneApps;
-
-    Ptr<NS3PegasusControlStationApp> m_ns3PegasusControlStationApp;
 
     std::vector<PegasusSocket *> m_pegasusSockets;
 

@@ -2,18 +2,16 @@ window_sizes 1916 1032 356 1554 936 44
 cleanlooks_style
 diagrams
   active  classdiagram_ref 128137 // Pegaus
-    1573 887 96 D-Landscape 312 598
+    1573 874 56 D-Landscape 60 0
 end
 show_stereotypes
 marked
   operation_ref 140041 // Run
 end
-selected artifact_ref 128137 // PegasusUDPSocket
+selected artifact_ref 128393 // PegasusSocketRunner
 open
   deploymentview_ref 128009 // pegasus-net-sim
-  attribute_ref 128265 // m_port
-  attribute_ref 172553 // m_peerAddr
-  class_ref 128265 // PegasusUDPSocket
+  attribute_ref 179849 // m_simulatorContext
 end
 end
 verbose

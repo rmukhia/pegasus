@@ -6,16 +6,22 @@
 
 using namespace ns3;
 
+class PegasusVariables;
 class PegasusSocket;
+class NS3PegasusDroneApp;
 
 class PegasusSocketRunner {
   private:
+    static PegasusVariables * m_pegasusVars;
+
     //systemThread
     Ptr<SystemThread> m_st;
 
-    void SendUDPSimulation(const PegasusSocket & pegasusSocket, const char * & buffer, const size_t & len);
+    bool m_running;
 
-    void SendTCPSimulation(const PegasusSocket & pegasusSocket, const char * & buffer, const size_t & len);
+    void SendUDPSimulation(const PegasusSocket* pegasusSocket, const char* buffer, const size_t & len);
+
+    void SendTCPSimulation(const PegasusSocket* pegasusSocket, const char* buffer, const size_t & len);
 
 
   public:
@@ -23,9 +29,15 @@ class PegasusSocketRunner {
 
     ~PegasusSocketRunner();
 
+    static void Set_m_pegasusVars(PegasusVariables * value);
+
     void Read();
 
-    void SendSimulation(const PegasusSocket & pegasusSocket, char buffer, const size_t & len);
+    void SendSimulation(const PegasusSocket* pegasusSocket, const char* buffer, const size_t & len);
+
+    void Start();
+
+    void Stop();
 
 };
 #endif

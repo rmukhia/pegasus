@@ -15,13 +15,12 @@ using namespace ns3;
 
 class PegasusVariables;
 
+//Gazebo Subscriber starts a new thread, so we don't need to explicitly do it.
 class GazeboNode {
   private:
     static PegasusVariables * m_pegasusVars;
 
     std::string m_topic;
-
-    Ptr<SystemThread> m_st;
 
     gazebo::transport::NodePtr m_node;
 

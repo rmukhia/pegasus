@@ -19,10 +19,10 @@ void GazeboNode::MsgHandlerCb(const ConstPosesStampedPtr & msg)
   //NS_LOG_FUNCTION(&GazeboNode::MsgHandlerCb);
   // Dump the message contents to stdout.
   // std::cout << _msg->DebugString();
+  auto * modelsName = &m_pegasusVars->m_modelsName;
   std::for_each(msg->pose().begin(), msg->pose().end(), 
-    [] (const gazebo::msgs::Pose& pose) {
-      if (std::find(m_pegasusVars->m_modelsName.begin(), m_pegasusVars->m_modelsName.end(), pose.name())
-          != m_pegasusVars->m_modelsName.end()) {
+    [&modelsName] (const gazebo::msgs::Pose& pose) {
+      if (std::find(modelsName->begin(), modelsName->end(), pose.name()) != modelsName->end()) {
 #if 0
         std::cout << "[" << pose.name() << "]" <<
         " x:" << pose.position().x() <<

@@ -11,6 +11,7 @@ NS_LOG_COMPONENT_DEFINE ("PegasusUDPSocket");
 
 PegasusUDPSocket::PegasusUDPSocket(){
   NS_LOG_FUNCTION(this);
+  m_type = PEGASUS_SOCKET_UDP;
 }
 
 PegasusUDPSocket::~PegasusUDPSocket(){

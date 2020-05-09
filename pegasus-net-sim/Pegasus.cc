@@ -3,6 +3,10 @@
 #include "NS3PegasusDroneApp.h"
 #include "PegasusUDPSocket.h"
 
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Pegasus");
+
 PegasusVariables Pegasus::m_pegasusVars;
 
 Pegasus * Pegasus::sm_instance= NULL;
@@ -14,11 +18,13 @@ void Pegasus::SetupProxy() {
   PegasusUDPSocket *psoc;
 
   psoc = new PegasusUDPSocket();
-  psoc->SetAttributes(5550, 5440, m_pegasusVars.m_nodes.Get(0));
+  // Bound to 5550, transmits to 5440, transmits in ns3 to to 5551
+  psoc->SetAttributes(5550, 5440, 5551, m_pegasusVars.m_nodes.Get(0));
   m_pegasusVars.m_pegasusSockets.push_back(psoc);
 
   psoc = new PegasusUDPSocket();
-  psoc->SetAttributes(5551, 5510, m_pegasusVars.m_nodes.Get(1));
+  // Bound to 5551, transmits to 5510, transmits in ns3 to to 5550
+  psoc->SetAttributes(5551, 5510, 5550, m_pegasusVars.m_nodes.Get(1));
   m_pegasusVars.m_pegasusSockets.push_back(psoc);
 
   std::for_each(m_pegasusVars.m_pegasusSockets.begin(), m_pegasusVars.m_pegasusSockets.end(),
@@ -41,8 +47,8 @@ Pegasus* Pegasus::GetInstance()
     sm_instance = new Pegasus();
     sm_instance->m_gazeboNode.Set_m_pegasusVars(&sm_instance->m_pegasusVars);
     sm_instance->m_ns3Runner.Set_m_pegasusVars(&sm_instance->m_pegasusVars);
+    sm_instance->m_pegasusSocketRunner.Set_m_pegasusVars(&sm_instance->m_pegasusVars);
     NS3PegasusDroneApp::Set_m_pegasusVars(&sm_instance->m_pegasusVars);
-
   }
 
   return sm_instance;
@@ -88,11 +94,13 @@ void Pegasus::Run(int argc, char** argv, const std::vector<std::string> & droneN
   cmd.Parse (argc,argv);
 
   if (verbose) {
-    LogComponentEnable ("PegasusNS3Runner", LOG_LEVEL_ALL);
-    LogComponentEnable ("PegasusGazeboNode", LOG_LEVEL_ALL);
-    LogComponentEnable ("PegasusNS3ControlStationApp", LOG_LEVEL_ALL);
-    LogComponentEnable ("PegasusNS3DroneApp", LOG_LEVEL_ALL);
-    LogComponentEnable ("PegasusUDPSocket", LOG_LEVEL_ALL);
+    LogComponentEnable ("PegasusNS3Runner", LOG_LEVEL_INFO);
+    LogComponentEnable ("PegasusGazeboNode", LOG_LEVEL_INFO);
+    LogComponentEnable ("PegasusNS3DroneApp", LOG_LEVEL_INFO);
+    LogComponentEnable ("PegasusUDPSocket", LOG_LEVEL_INFO);
+    LogComponentEnable ("PegasusSocket", LOG_LEVEL_INFO);
+    LogComponentEnable ("PegasusNS3SocketRunner", LOG_LEVEL_INFO);
+    LogComponentEnable ("Pegasus", LOG_LEVEL_INFO);
   }
 
   m_gazeboNode.Setup(argc, argv);
@@ -102,11 +110,15 @@ void Pegasus::Run(int argc, char** argv, const std::vector<std::string> & droneN
 
   SetupProxy();
 
+  m_pegasusVars.m_simulatorContext = Simulator::GetContext();
+
+  m_gazeboNode.Subscribe();
+  m_pegasusSocketRunner.Start();
 
   if (tracing == true)
     m_ns3Runner.EnableTracing();
 
-  m_gazeboNode.Subscribe();
+  // Start a new subscriber thread
 
   Simulator::Stop (Seconds (1000));
 
@@ -115,5 +127,6 @@ void Pegasus::Run(int argc, char** argv, const std::vector<std::string> & droneN
   Simulator::Destroy ();
 
   m_gazeboNode.Destroy();
+  m_pegasusSocketRunner.Stop();
 }
 
