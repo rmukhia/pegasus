@@ -16,7 +16,7 @@ class PegasusUDPSocket : public PegasusSocket {
 
     void Bind();
 
-    virtual void Send(const char* buffer, const unsigned int & len);
+    void Send(const char* buffer, const unsigned int & len);
 
 };
 #endif

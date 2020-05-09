@@ -2,7 +2,8 @@
 #define _PEGASUSSOCKET_H
 
 
-#include <ns3/node.h>
+#include "ns3/node.h"
+#include "netinet/in.h"
 
 using namespace ns3;
 
@@ -18,6 +19,8 @@ class PegasusSocket {
 
     //The virtual device corrosponding to this socket.
     Ptr<Node> m_node;
+
+    struct sockaddr_in m_peerAddr;
 
     PegasusSocket();
 

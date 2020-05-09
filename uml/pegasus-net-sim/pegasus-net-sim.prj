@@ -1,6 +1,6 @@
 format 222
 "pegasus-net-sim"
-  revision 28
+  revision 29
   modified_by 9 "rmukhia"
   cpp_root_dir "/home/rmukhia/thesis/pegasus-sim/pegasus-net-sim/"
 
@@ -157,7 +157,8 @@ ${includes}
 #include \"ns3/log.h\"
 #include \"ns3/names.h\"
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 NS_LOG_COMPONENT_DEFINE (\"PegasusUDPSocket\");
 
@@ -176,7 +177,8 @@ ${namespace_end}"
 
 ${comment}
 ${includes}
-#include <ns3/node.h>
+#include \"ns3/node.h\"
+#include \"netinet/in.h\"
 
 using namespace ns3;
 
@@ -1461,6 +1463,18 @@ ${inlines}
 	MysqlColumn
 	get_oper operation_ref 217609 // get_m_node
 	comment "The virtual device corrosponding to this socket."
+      end
+
+      attribute 172553 "m_peerAddr"
+	protected explicit_type "struct sockaddr_in"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
       end
 
       operation 217097 "PegasusSocket"

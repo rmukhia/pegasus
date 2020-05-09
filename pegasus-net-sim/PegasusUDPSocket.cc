@@ -4,7 +4,8 @@
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 NS_LOG_COMPONENT_DEFINE ("PegasusUDPSocket");
 
@@ -14,6 +15,7 @@ PegasusUDPSocket::PegasusUDPSocket(){
 
 PegasusUDPSocket::~PegasusUDPSocket(){
   NS_LOG_FUNCTION(this);
+  close(m_sd);
 }
 
 void PegasusUDPSocket::Create() {
@@ -37,12 +39,24 @@ void PegasusUDPSocket::Bind() {
   if (bind(m_sd, (struct sockaddr *)&serv, sizeof(serv)) < 0)
     NS_FATAL_ERROR("Bind Failed.");
 
+  // Setup peer port
+  memset(&m_peerAddr, 0, sizeof(m_peerAddr)); 
+  m_peerAddr.sin_family = AF_INET;
+  m_peerAddr.sin_port = htons(m_peerPort);
+  // Fix the following for distrbuted simulation support
+  m_peerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
   NS_LOG_INFO(Names::FindName(m_node) << ": Bound proxy socket " << m_sd
       << " to port " << m_port << " with peer port " << m_peerPort);
 }
 
 void PegasusUDPSocket::Send(const char* buffer, const unsigned int & len) {
   NS_LOG_FUNCTION(this);
-  NS_LOG_INFO(Names::FindName(m_node) << ": Sending real packet of size " << len);
+  size_t ret = sendto(m_sd, buffer, len, 0, (sockaddr*)&m_peerAddr, sizeof(m_peerAddr));
+
+  if (ret < 0)
+    NS_LOG_ERROR(Names::FindName(m_node) << ": Cannot send real packet.");
+  else 
+    NS_LOG_INFO(Names::FindName(m_node) << ": Sent real packet of size " << len << " in port " << m_peerPort);
 }
 
