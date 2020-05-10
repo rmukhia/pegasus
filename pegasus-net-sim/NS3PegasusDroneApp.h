@@ -30,7 +30,7 @@ class NS3PegasusDroneApp : public Application{
 
     virtual void StopApplication(void );
 
-    Address GetAddressFromRealDstPort(int realDstPort);
+    Address GetAddressFromVirtualPort(int port);
 
     PegasusSocket* FindPegasusSocket(int port);
 
@@ -42,8 +42,8 @@ class NS3PegasusDroneApp : public Application{
 
 
   public:
-    //Real port corrosponding to this node. 
-    std::map<int, Ptr<Socket>> m_realDstPortMapVirtualSocket;
+    //Real and virutal port corrosponding to this node.  A node shares the same real and ns3 port number.
+    std::map<int, Ptr<Socket>> m_portMapVirtualSocket;
 
     static TypeId GetTypeId(void );
 
@@ -53,7 +53,7 @@ class NS3PegasusDroneApp : public Application{
 
     static void Set_m_pegasusVars(PegasusVariables * value);
 
-    Ptr<Socket> CreateVirtualSocket(int virtPort, const Ptr<NS3PegasusDroneApp> & app);
+    Ptr<Socket> CreateVirtualSocket(int virtPort);
 
     void ScheduleSend(int port, int peerPort, const char * buffer, const unsigned int & len);
 

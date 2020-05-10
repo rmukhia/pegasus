@@ -22,13 +22,12 @@ void NS3PegasusDroneApp::StopApplication(void ) {
   NS_LOG_FUNCTION(this);
 }
 
-Address NS3PegasusDroneApp::GetAddressFromRealDstPort(int realDstPort) {
+Address NS3PegasusDroneApp::GetAddressFromVirtualPort(int port) {
   Ptr<Node> node = NULL;
 
-  for (unsigned int i = 0; i < m_pegasusVars->m_ns3PegasusDroneApps.size(); i++) {
-    Ptr<NS3PegasusDroneApp> app = m_pegasusVars->m_ns3PegasusDroneApps[i];
-    if (app->m_realDstPortMapVirtualSocket.find(realDstPort) !=
-        app->m_realDstPortMapVirtualSocket.end()) {
+  for(auto const &app: m_pegasusVars->m_ns3PegasusDroneApps) {
+    if (app->m_portMapVirtualSocket.find(port) !=
+        app->m_portMapVirtualSocket.end()) {
       node = app->GetNode();
       break;
     }
@@ -37,20 +36,22 @@ Address NS3PegasusDroneApp::GetAddressFromRealDstPort(int realDstPort) {
   if (!node) 
     NS_FATAL_ERROR ("Failed to find destination node address.");
 
-  Ptr<NetDevice> dev = node->GetDevice(0);
-  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
-  int ipv4_idx = ipv4->GetInterfaceForDevice(dev);
+  auto dev = node->GetDevice(0);
+  auto ipv4 = node->GetObject<Ipv4>();
+  auto ipv4_idx = ipv4->GetInterfaceForDevice(dev);
 
   return ipv4->GetAddress(ipv4_idx, 0).GetLocal();
 }
 
 PegasusSocket* NS3PegasusDroneApp::FindPegasusSocket(int port) {
-  std::vector<PegasusSocket *>::iterator res = std::find_if(
+
+  auto res = std::find_if(
       m_pegasusVars->m_pegasusSockets.begin(),
       m_pegasusVars->m_pegasusSockets.end(),
       [port] (PegasusSocket *psoc) {
         return psoc->Get_m_port() == port;
       });
+
   if (res == m_pegasusVars->m_pegasusSockets.end())
     return NULL;
 
@@ -97,29 +98,28 @@ void NS3PegasusDroneApp::Set_m_pegasusVars(PegasusVariables * value)
   m_pegasusVars = value;
 }
 
-Ptr<Socket> NS3PegasusDroneApp::CreateVirtualSocket(int virtPort, const Ptr<NS3PegasusDroneApp> &app) {
+Ptr<Socket> NS3PegasusDroneApp::CreateVirtualSocket(int virtPort) {
   NS_LOG_FUNCTION(this);
 
-  TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-  Ptr<Socket> socket = Socket::CreateSocket (app->GetNode (), tid);
-  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (),
-      virtPort);
+  auto tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+  auto socket = Socket::CreateSocket (GetNode (), tid);
+  auto local = InetSocketAddress (Ipv4Address::GetAny (), virtPort);
+
   if (socket->Bind (local) == -1)
     NS_FATAL_ERROR ("Failed to bind socket");
 
-  socket->SetRecvCallback (MakeCallback (&NS3PegasusDroneApp::HandleRead, app));
+  socket->SetRecvCallback (MakeCallback (&NS3PegasusDroneApp::HandleRead, this));
 
   return socket;
 }
 
 void NS3PegasusDroneApp::ScheduleSend(int port, int peerPort, const char * buffer, const unsigned int & len) {
   NS_LOG_FUNCTION(this);
-  Ptr<Socket> socket = m_realDstPortMapVirtualSocket[port];
-  Ptr<Node> node = NULL;
-  Address addr = GetAddressFromRealDstPort(peerPort);
-  InetSocketAddress s_addr = InetSocketAddress (Ipv4Address::ConvertFrom(addr), peerPort);
+  auto socket = m_portMapVirtualSocket[port];
+  auto addr = GetAddressFromVirtualPort(peerPort);
+  auto s_addr = InetSocketAddress (Ipv4Address::ConvertFrom(addr), peerPort);
   
-  Ptr<Packet> p = Create<Packet>((uint8_t*)buffer, len);
+  auto p = Create<Packet>((uint8_t*)buffer, len);
 
   Simulator::ScheduleWithContext(m_pegasusVars->m_simulatorContext,
       Seconds(0), &NS3PegasusDroneApp::Send, this, socket, p, 0, s_addr);
@@ -129,7 +129,7 @@ void NS3PegasusDroneApp::ScheduleSend(int port, int peerPort, const char * buffe
 
 void NS3PegasusDroneApp::Send(const Ptr<Socket> & socket, const Ptr<Packet> & packet, int flags, const InetSocketAddress & addr) {
   NS_LOG_FUNCTION(this);
-  int ret = socket->SendTo(packet, 0, addr);
+  auto ret = socket->SendTo(packet, 0, addr);
   NS_LOG_DEBUG("Packet of size " << ret << " goes inside the matrix.");
 }
 
@@ -138,17 +138,18 @@ void NS3PegasusDroneApp::HandleRead(Ptr<Socket> socket) {
   Ptr<Packet> packet;
   Address from;
   Address localAddress;
-  char buffer[9000]; // Huge packets
+  char buffer[MAX_PACKET_SIZE];
+
   while ((packet = socket->RecvFrom (from)))
   {
     socket->GetSockName (localAddress);
-    int port = InetSocketAddress::ConvertFrom (localAddress).GetPort();
+    auto port = InetSocketAddress::ConvertFrom (localAddress).GetPort();
 
-    PegasusSocket * psock = FindPegasusSocket(port);
+    auto psock = FindPegasusSocket(port);
     if (!psock)
       NS_LOG_INFO("Packet received on non bound port " << port);
     else {
-      unsigned int size = packet->CopyData((uint8_t *)buffer, 9000); 
+      auto size = packet->CopyData((uint8_t *)buffer, 9000); 
       if (size > 0)
         psock->Send(buffer, size);
     }

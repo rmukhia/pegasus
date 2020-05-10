@@ -1,19 +1,28 @@
 
 #include "NS3Runner.h"
 #include "PegasusVariables.h"
+#include "PegasusConfig.h"
 
 NS_LOG_COMPONENT_DEFINE ("PegasusNS3Runner");
 PegasusVariables * NS3Runner::m_pegasusVars;
 
 void NS3Runner::CreateNode() {
   NS_LOG_FUNCTION(this);
-  m_pegasusVars->m_droneNodes.Create (m_pegasusVars->m_modelsName.size());
-  for (unsigned int i = 0; i < m_pegasusVars->m_modelsName.size(); i++) {
-    Names::Add("/Pegasus/drones", m_pegasusVars->m_modelsName[i], m_pegasusVars->m_droneNodes.Get(i));
-  }
-  /* One Control Station */
+
+  auto numNodes = PegasusConfig::m_config.size();
+  // n - 1 drones 
+  m_pegasusVars->m_droneNodes.Create(numNodes - 1);
+  // 1 control station
   m_pegasusVars->m_controlStationNode.Create(1);
-  Names::Add("/Pegasus", "controlStation", m_pegasusVars->m_controlStationNode.Get(0));
+
+  int i = 0;
+  for(auto const &config: PegasusConfig::m_config) {
+    if (config.first.compare(CONTROL_STATION_STR)) // not equal
+      Names::Add("/Pegasus/drones", config.first, m_pegasusVars->m_droneNodes.Get(i++));
+  }
+
+  /* One Control Station */
+  Names::Add("/Pegasus", CONTROL_STATION_STR, m_pegasusVars->m_controlStationNode.Get(0));
 
   m_pegasusVars->m_nodes.Add(m_pegasusVars->m_droneNodes);
   m_pegasusVars->m_nodes.Add(m_pegasusVars->m_controlStationNode);
@@ -76,26 +85,31 @@ void NS3Runner::CreateIpAddr() {
 
 void NS3Runner::InstallApplications() {
   NS_LOG_FUNCTION(this);
+
   ApplicationContainer apps;
-  Ptr<Node> node = m_pegasusVars->m_controlStationNode.Get(0);
+  auto ns3PegasusDroneApps = &m_pegasusVars->m_ns3PegasusDroneApps;
 
-  int i = 5550;
-  std::for_each(m_pegasusVars->m_droneNodes.Begin(), m_pegasusVars->m_droneNodes.End(),
-      [this, &apps, &i] (const Ptr<Node> droneNode) {
-        m_pegasusVars->m_ns3PegasusDroneApps.push_back(CreateObject<NS3PegasusDroneApp>());
-        Ptr<NS3PegasusDroneApp> app = m_pegasusVars->m_ns3PegasusDroneApps[
-          m_pegasusVars->m_ns3PegasusDroneApps.size() -1
-        ];
+  for(auto const &config: PegasusConfig::m_config) {
+    auto name = config.first;
+    auto portParamList = config.second;
+    Ptr<Node> node;
 
-        droneNode->AddApplication(app);
-        apps.Add(app);
+    if (name.compare(CONTROL_STATION_STR)) // drone
+      node = Names::Find<Node>("/Pegasus/drones", name);
+    else // control station
+      node = Names::Find<Node>("/Pegasus", CONTROL_STATION_STR);
 
-        app->m_realDstPortMapVirtualSocket[i] = app->CreateVirtualSocket(i, app);
+    if (!node) continue;
 
-        //Simulator::Schedule(Seconds(5), &NS3PegasusDroneApp::Send, app, i, 5551, "hello world", 24);
-        i++;
-      }
-    );
+    for(auto const &portParam: portParamList) {
+      auto app = CreateObject<NS3PegasusDroneApp>();
+
+      node->AddApplication(app);
+      apps.Add(app);
+      app->m_portMapVirtualSocket[portParam.m_port] = app->CreateVirtualSocket(portParam.m_port);
+      ns3PegasusDroneApps->push_back(app);
+    }
+  }
 
   apps.Start(Seconds(1));
   apps.Stop(Seconds(1000));

@@ -14,7 +14,8 @@ PegasusVariables * PegasusSocketRunner::m_pegasusVars;
 
 void PegasusSocketRunner::SendUDPSimulation(const PegasusSocket* pegasusSocket, const char* buffer, const size_t & len) {
   NS_LOG_FUNCTION(this);
-  Ptr<Node> node = pegasusSocket->Get_m_node();
+
+  auto node = pegasusSocket->Get_m_node();
   auto ns3PegasusDroneApps = &m_pegasusVars->m_ns3PegasusDroneApps;
   auto appItr = std::find_if(ns3PegasusDroneApps->begin(), ns3PegasusDroneApps->end(),
       [&node] (Ptr<NS3PegasusDroneApp> app) {
@@ -50,7 +51,7 @@ void PegasusSocketRunner::Read() {
   auto pegasusSockets = &m_pegasusVars->m_pegasusSockets;
 
   // Get max fd + 1
-  int maxFd = (*std::max_element(pegasusSockets->begin(), pegasusSockets->end(),
+  auto maxFd = (*std::max_element(pegasusSockets->begin(), pegasusSockets->end(),
       [] (PegasusSocket* a, PegasusSocket* b) {
         return a->Get_m_sd() < b->Get_m_sd();
   }))->Get_m_sd() + 1;
@@ -59,29 +60,27 @@ void PegasusSocketRunner::Read() {
   while(m_running) {
     FD_ZERO(&rset);
     // Set the fd_set
-    std::for_each(pegasusSockets->begin(), pegasusSockets->end(),
-        [&rset] (PegasusSocket *psock) {
-          FD_SET(psock->Get_m_sd(), &rset);
-        });
 
+    for (auto const &psock: *pegasusSockets) {
+      FD_SET(psock->Get_m_sd(), &rset);
+    }
 
     NS_LOG_DEBUG("Waiting to read sockets...");
 
-    int nready = select(maxFd, &rset, NULL, NULL, NULL);
+    auto nready = select(maxFd, &rset, NULL, NULL, NULL);
 
     NS_LOG_DEBUG("Sockets ready for read: " << nready);
 
-    std::for_each(pegasusSockets->begin(), pegasusSockets->end(), 
-        [this, &rset] (PegasusSocket *psock) {
-          if (FD_ISSET(psock->Get_m_sd(), &rset)) {
-            char buffer[9000];
-            struct sockaddr_in cliAddr;
-            socklen_t addrLen;
-            unsigned int len = recvfrom(psock->Get_m_sd(), &buffer, sizeof(buffer), 0, 
-                         (struct sockaddr*)&cliAddr, &addrLen); 
-            SendSimulation(psock, buffer, len);
-          }
-        });
+    for (auto const &psock: *pegasusSockets) {
+      if (FD_ISSET(psock->Get_m_sd(), &rset)) {
+        char buffer[MAX_PACKET_SIZE];
+        struct sockaddr_in cliAddr;
+        socklen_t addrLen;
+        auto len = recvfrom(psock->Get_m_sd(), &buffer, sizeof(buffer), 0, 
+            (struct sockaddr*)&cliAddr, &addrLen); 
+        SendSimulation(psock, buffer, len);
+      }
+    }
   }
 }
 

@@ -2,6 +2,8 @@
 #define _PEGASUSSOCKETRUNNER_H
 
 
+#include "PegasusConfig.h"
+
 #include "ns3/system-thread.h"
 
 using namespace ns3;
@@ -10,7 +12,7 @@ class PegasusVariables;
 class PegasusSocket;
 class NS3PegasusDroneApp;
 
-class PegasusSocketRunner {
+class PegasusSocketRunner : public PegasusConfig {
   private:
     static PegasusVariables * m_pegasusVars;
 

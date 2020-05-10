@@ -6,14 +6,13 @@
 #include "NS3Runner.h"
 #include "GazeboNode.h"
 #include "PegasusSocketRunner.h"
-#include <vector>
-#include <string>
 
 
 using namespace ns3;
 
 class NS3PegasusDroneApp;
 class PegasusUDPSocket;
+class PegasusConfig;
 
 class Pegasus {
   private:
@@ -39,7 +38,7 @@ class Pegasus {
 
     static void ChangeDronesPosition();
 
-    void Run(int argc, char** argv, const std::vector<std::string> & droneNames);
+    void Run(int argc, char** argv);
 
 };
 #endif

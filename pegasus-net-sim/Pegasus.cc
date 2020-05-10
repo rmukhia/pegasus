@@ -12,33 +12,48 @@ PegasusVariables Pegasus::m_pegasusVars;
 Pegasus * Pegasus::sm_instance= NULL;
 
 Pegasus::Pegasus(){
+  NS_LOG_FUNCTION(this);
 }
 
 void Pegasus::SetupProxy() {
-  PegasusUDPSocket *psoc;
+  NS_LOG_FUNCTION(this);
 
-  psoc = new PegasusUDPSocket();
-  // Bound to 5550, transmits to 5440, transmits in ns3 to to 5551
-  psoc->SetAttributes(5550, 5440, 5551, m_pegasusVars.m_nodes.Get(0));
-  m_pegasusVars.m_pegasusSockets.push_back(psoc);
+  auto pegasusSockets = &m_pegasusVars.m_pegasusSockets;
 
-  psoc = new PegasusUDPSocket();
-  // Bound to 5551, transmits to 5510, transmits in ns3 to to 5550
-  psoc->SetAttributes(5551, 5510, 5550, m_pegasusVars.m_nodes.Get(1));
-  m_pegasusVars.m_pegasusSockets.push_back(psoc);
+  for(auto const &config: PegasusConfig::m_config) {
+    auto name = config.first;
+    auto portParamList = config.second;
+    Ptr<Node> node;
+    PegasusUDPSocket *psoc;
 
-  std::for_each(m_pegasusVars.m_pegasusSockets.begin(), m_pegasusVars.m_pegasusSockets.end(),
-      [] (PegasusSocket *pegasusSock) {
-      pegasusSock->Create();
-      pegasusSock->Bind();
-  });
+    if (name.compare(CONTROL_STATION_STR)) // drone
+      node = Names::Find<Node>("/Pegasus/drones", name);
+    else // control station
+      node = Names::Find<Node>("/Pegasus", CONTROL_STATION_STR);
+
+    if (!node) continue;
+
+    for(auto const &portParam: portParamList) {
+      psoc = new PegasusUDPSocket();
+      psoc->SetAttributes(portParam.m_port, portParam.m_peerPort, portParam.m_virtualPeerPort, node);
+      pegasusSockets->push_back(psoc);
+    }
+  }
+
+  for(auto const &psock: *pegasusSockets) {
+      psock->Create();
+      psock->Bind();
+  };
 }
 
 Pegasus::~Pegasus(){
-  std::for_each(m_pegasusVars.m_pegasusSockets.begin(), m_pegasusVars.m_pegasusSockets.end(),
-      [] (PegasusSocket *pegasusSock) {
-      delete pegasusSock;
-  });
+  NS_LOG_FUNCTION(this);
+
+  auto pegasusSockets = &m_pegasusVars.m_pegasusSockets;
+
+  for(auto const &psock: *pegasusSockets) {
+    delete psock;
+  }
 }
 
 Pegasus* Pegasus::GetInstance()
@@ -57,34 +72,32 @@ Pegasus* Pegasus::GetInstance()
 void Pegasus::ChangeDronesPosition() {
   {
     CriticalSection(m_pegasusVars.m_poseMapMutex);
-    std::for_each(m_pegasusVars.m_poseMap.begin(), m_pegasusVars.m_poseMap.end(),
-        [] (std::pair<std::string, Vector> element) {
-        // first is key, second is value
-        Ptr<Node> drone =  Names::Find<Node>(
-            "/Pegasus/drones",
-            element.first
-            );
 
-        if (!drone) return;
-        Ptr<ConstantPositionMobilityModel> droneMobilityModel
-        = drone->GetObject<ConstantPositionMobilityModel>();
+    for(auto const &element: m_pegasusVars.m_poseMap) {
+        auto drone = Names::Find<Node>("/Pegasus/drones", element.first);
+        if (!drone) continue;
+        auto droneMobilityModel = drone->GetObject<ConstantPositionMobilityModel>();
 
-        Simulator::ScheduleNow(
+        Simulator::ScheduleWithContext(
+            m_pegasusVars.m_simulatorContext,
+            Seconds(0),
             &ConstantPositionMobilityModel::SetPosition,
             droneMobilityModel, element.second
             );
-
-        }
-    );
+    }
   }
-  Simulator::Schedule(MilliSeconds(250), &Pegasus::ChangeDronesPosition);
+
+  Simulator::ScheduleWithContext(
+      m_pegasusVars.m_simulatorContext,
+      MilliSeconds(250),
+      &Pegasus::ChangeDronesPosition);
 }
 
-void Pegasus::Run(int argc, char** argv, const std::vector<std::string> & droneNames) {
+void Pegasus::Run(int argc, char** argv) {
+  NS_LOG_FUNCTION(this);
+
   bool verbose = true;
   bool tracing = false;
-
-  m_pegasusVars.m_modelsName = droneNames;
 
   CommandLine cmd;
   // cmd.AddValue ("nDrones", "Number of drones (max 18)", nDrones);
@@ -94,13 +107,13 @@ void Pegasus::Run(int argc, char** argv, const std::vector<std::string> & droneN
   cmd.Parse (argc,argv);
 
   if (verbose) {
-    LogComponentEnable ("PegasusNS3Runner", LOG_LEVEL_INFO);
-    LogComponentEnable ("PegasusGazeboNode", LOG_LEVEL_INFO);
-    LogComponentEnable ("PegasusNS3DroneApp", LOG_LEVEL_INFO);
-    LogComponentEnable ("PegasusUDPSocket", LOG_LEVEL_INFO);
-    LogComponentEnable ("PegasusSocket", LOG_LEVEL_INFO);
-    LogComponentEnable ("PegasusNS3SocketRunner", LOG_LEVEL_INFO);
-    LogComponentEnable ("Pegasus", LOG_LEVEL_INFO);
+    //LogComponentEnable ("PegasusNS3Runner", LOG_LEVEL_INFO);
+    //LogComponentEnable ("PegasusGazeboNode", LOG_LEVEL_INFO);
+    //LogComponentEnable ("PegasusNS3DroneApp", LOG_LEVEL_INFO);
+    //LogComponentEnable ("PegasusUDPSocket", LOG_LEVEL_INFO);
+    //LogComponentEnable ("PegasusSocket", LOG_LEVEL_INFO);
+    //LogComponentEnable ("PegasusNS3SocketRunner", LOG_LEVEL_INFO);
+    //LogComponentEnable ("Pegasus", LOG_LEVEL_INFO);
   }
 
   m_gazeboNode.Setup(argc, argv);

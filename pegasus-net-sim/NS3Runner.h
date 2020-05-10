@@ -20,6 +20,7 @@
 using namespace ns3;
 
 class PegasusVariables;
+class PegasusConfig;
 
 class NS3Runner {
   private:

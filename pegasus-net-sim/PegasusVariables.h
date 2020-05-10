@@ -10,6 +10,8 @@
 #include "ns3/vector.h"
 #include "ns3/node-container.h"
 
+#define MAX_PACKET_SIZE 4096
+
 using namespace ns3;
 
 class NS3PegasusDroneApp;
@@ -23,8 +25,6 @@ class PegasusVariables {
     std::unordered_map<std::string, Vector> m_poseMap;
 
     SystemMutex m_poseMapMutex;
-
-    std::vector<std::string> m_modelsName;
 
     //All nodes
     NodeContainer m_nodes;

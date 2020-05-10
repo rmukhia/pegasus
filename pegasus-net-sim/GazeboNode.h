@@ -14,6 +14,7 @@
 using namespace ns3;
 
 class PegasusVariables;
+class PegasusConfig;
 
 //Gazebo Subscriber starts a new thread, so we don't need to explicitly do it.
 class GazeboNode {

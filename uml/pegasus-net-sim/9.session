@@ -2,16 +2,20 @@ window_sizes 1916 1032 356 1554 936 44
 cleanlooks_style
 diagrams
   active  classdiagram_ref 128137 // Pegaus
-    1573 874 56 D-Landscape 60 0
+    1554 936 67 D-Landscape 144 265
 end
 show_stereotypes
 marked
   operation_ref 140041 // Run
 end
-selected artifact_ref 128393 // PegasusSocketRunner
+selected artifact_ref 141961 // PegasusVariables
 open
-  deploymentview_ref 128009 // pegasus-net-sim
+  deploymentdiagram_ref 134665 // deployement
+  class_ref 155529 // PegasusPortConfig
+  class_ref 155401 // PegasusConfig
   attribute_ref 179849 // m_simulatorContext
+  class_ref 128777 // Pegasus
+  class_ref 142089 // NS3PegasusDroneApp
 end
 end
 verbose
