@@ -6,13 +6,13 @@
 #include "NS3Runner.h"
 #include "GazeboNode.h"
 #include "PegasusSocketRunner.h"
+#include "PegasusConfig.h"
 
 
 using namespace ns3;
 
 class NS3PegasusDroneApp;
 class PegasusUDPSocket;
-class PegasusConfig;
 
 class Pegasus {
   private:

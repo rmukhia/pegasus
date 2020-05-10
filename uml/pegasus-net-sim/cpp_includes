@@ -9,3 +9,7 @@
 
 "std::unordered_map" "#include <unordered_map>"
 
+"std:deque" "#include <deque>"
+
+"deque" "#include <deque>"
+

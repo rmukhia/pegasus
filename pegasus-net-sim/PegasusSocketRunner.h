@@ -2,17 +2,17 @@
 #define _PEGASUSSOCKETRUNNER_H
 
 
-#include "PegasusConfig.h"
-
 #include "ns3/system-thread.h"
 
 using namespace ns3;
 
 class PegasusVariables;
 class PegasusSocket;
+class PegasusPacket;
 class NS3PegasusDroneApp;
+class PegasusConfig;
 
-class PegasusSocketRunner : public PegasusConfig {
+class PegasusSocketRunner {
   private:
     static PegasusVariables * m_pegasusVars;
 
@@ -21,21 +21,25 @@ class PegasusSocketRunner : public PegasusConfig {
 
     bool m_running;
 
-    void SendUDPSimulation(const PegasusSocket* pegasusSocket, const char* buffer, const size_t & len);
-
-    void SendTCPSimulation(const PegasusSocket* pegasusSocket, const char* buffer, const size_t & len);
+    void handleRead(int maxFd);
 
 
   public:
+    void handleWrite(int maxFd);
+
+
+  private:
+    void SendSimulation(PegasusSocket* pegasusSocket, const char* buffer, const size_t & len);
+
+
+  public:
+    static void Set_m_pegasusVars(PegasusVariables * value);
+
     PegasusSocketRunner();
 
     ~PegasusSocketRunner();
 
-    static void Set_m_pegasusVars(PegasusVariables * value);
-
-    void Read();
-
-    void SendSimulation(const PegasusSocket* pegasusSocket, const char* buffer, const size_t & len);
+    void ExecutionLoop();
 
     void Start();
 

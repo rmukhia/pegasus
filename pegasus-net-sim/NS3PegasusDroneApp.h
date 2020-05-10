@@ -16,6 +16,7 @@ using namespace ns3;
 
 class PegasusVariables;
 class PegasusSocket;
+class PegasusPacket;
 
 //Inherits from ns3::Application Module.
 class NS3PegasusDroneApp : public Application{
@@ -26,18 +27,26 @@ class NS3PegasusDroneApp : public Application{
 
     TracedCallback<Ptr<const Packet> > m_rxTrace;
 
+    bool m_running;
+
     virtual void StartApplication(void );
 
     virtual void StopApplication(void );
 
     Address GetAddressFromVirtualPort(int port);
 
-    PegasusSocket* FindPegasusSocket(int port);
-
 
   protected:
     virtual void DoInitialize();
 
+
+  private:
+    PegasusSocket* FindPegasusSocket(int port);
+
+    void IntoTheMatrix();
+
+
+  protected:
     virtual void DoDispose(void );
 
 

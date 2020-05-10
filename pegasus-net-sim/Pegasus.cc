@@ -107,13 +107,13 @@ void Pegasus::Run(int argc, char** argv) {
   cmd.Parse (argc,argv);
 
   if (verbose) {
-    //LogComponentEnable ("PegasusNS3Runner", LOG_LEVEL_INFO);
-    //LogComponentEnable ("PegasusGazeboNode", LOG_LEVEL_INFO);
-    //LogComponentEnable ("PegasusNS3DroneApp", LOG_LEVEL_INFO);
-    //LogComponentEnable ("PegasusUDPSocket", LOG_LEVEL_INFO);
-    //LogComponentEnable ("PegasusSocket", LOG_LEVEL_INFO);
-    //LogComponentEnable ("PegasusNS3SocketRunner", LOG_LEVEL_INFO);
-    //LogComponentEnable ("Pegasus", LOG_LEVEL_INFO);
+    //LogComponentEnable ("PegasusNS3Runner", LOG_LEVEL_LOGIC);
+    //LogComponentEnable ("PegasusGazeboNode", LOG_LEVEL_LOGIC);
+    //LogComponentEnable ("PegasusNS3DroneApp", LOG_LEVEL_LOGIC);
+    //LogComponentEnable ("PegasusUDPSocket", LOG_LEVEL_LOGIC);
+    //LogComponentEnable ("PegasusSocket", LOG_LEVEL_LOGIC);
+    //LogComponentEnable ("PegasusNS3SocketRunner", LOG_LEVEL_LOGIC);
+    //LogComponentEnable ("Pegasus", LOG_LEVEL_LOGIC);
   }
 
   m_gazeboNode.Setup(argc, argv);

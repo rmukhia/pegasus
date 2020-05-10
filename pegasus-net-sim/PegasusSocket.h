@@ -2,10 +2,14 @@
 #define _PEGASUSSOCKET_H
 
 
+#include <deque>
 #include "ns3/node.h"
 #include "netinet/in.h"
+#include "ns3/system-mutex.h"
 
 using namespace ns3;
+
+class PegasusPacket;
 
 class PegasusSocket {
   public:
@@ -39,6 +43,14 @@ class PegasusSocket {
 
 
   public:
+    SystemMutex m_rxMutex;
+
+    SystemMutex m_txMutex;
+
+    std::deque<PegasusPacket *> m_packetTxQueue;
+
+    std::deque<PegasusPacket *> m_packetRxQueue;
+
     virtual ~PegasusSocket();
 
     inline const PegasusSocketType Get_m_type() const;

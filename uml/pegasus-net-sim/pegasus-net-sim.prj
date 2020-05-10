@@ -1,6 +1,6 @@
 format 222
 "pegasus-net-sim"
-  revision 32
+  revision 36
   modified_by 9 "rmukhia"
   cpp_root_dir "/home/rmukhia/thesis/pegasus-sim/pegasus-net-sim/"
 
@@ -51,6 +51,31 @@ format 222
     //deployment diagram settings
     deploymentdiagramsettings
      end
+    artifact 161545 "PegasusPacket"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+#include <cstring>
+
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_elems
+	class_ref 162057 // PegasusPacket
+      end
+    end
+
     artifact 155017 "PegasusConfig"
       stereotype "source"
       cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
@@ -211,8 +236,10 @@ ${namespace_end}"
 
 ${comment}
 ${includes}
+#include <deque>
 #include \"ns3/node.h\"
 #include \"netinet/in.h\"
+#include \"ns3/system-mutex.h\"
 
 using namespace ns3;
 
@@ -258,6 +285,7 @@ ${includes}
 #include <algorithm>
 #include \"ns3/log.h\"
 #include \"ns3/names.h\"
+#include \"ns3/system-mutex.h\"
 
 NS_LOG_COMPONENT_DEFINE (\"PegasusNS3SocketRunner\");
 
@@ -266,13 +294,6 @@ ${members}
 ${namespace_end}"
       associated_elems
 	class_ref 128521 // PegasusSocketRunner
-      end
-    end
-
-    artifact 128521 "NS3PegasusControlStationApp"
-      stereotype "source"
-      associated_elems
-	class_ref 128649 // NS3PegasusControlStationApp
       end
     end
 
@@ -404,6 +425,11 @@ int main(int argc, char **argv)
     activitydiagramsettings
      end
     associated_deployment_view deploymentview_ref 128009 // pegasus-net-sim
+    classdiagram 128137 "Pegaus"
+      classdiagramsettings show_members_visibility yes show_members_context uml member_max_width 0 class_drawing_mode class drawing_language uml end
+      size D-Landscape
+    end
+
     class 155529 "PegasusPortConfig"
       visibility package 
       cpp_decl "${comment}${template}class ${name}${inherit} {
@@ -513,11 +539,6 @@ ${members}};
 	mysql_decl ""
 	MysqlColumn
       end
-    end
-
-    classdiagram 128137 "Pegaus"
-      classdiagramsettings draw_all_relations no show_members_full_definition yes show_members_visibility yes show_members_stereotype yes show_members_context uml show_members_multiplicity yes member_max_width 0 show_parameter_name yes drawing_language uml auto_label_position yes gradient none end
-      size D-Landscape
     end
 
     class 135561 "PegasusVariables"
@@ -795,7 +816,7 @@ ${body}}
 	relation 190857 -_->
 	  stereotype "import"
 	  a public
-	    cpp default "#include in source"
+	    cpp default "#include in header"
 	    classrelation_ref 193033 // <dependency>
 	  b multiplicity "1" parent class_ref 155401 // PegasusConfig
       end
@@ -1446,15 +1467,13 @@ ${inlines}
 	MysqlColumn
       end
 
-      operation 224905 "SendUDPSimulation"
+      operation 238345 "handleRead"
 	private explicit_return_type "void"
-	nparams 3
-	  param in name "pegasusSocket" explicit_type "PegasusSocket*"
-	  param in name "buffer" explicit_type "char*"
-	  param in name "len" explicit_type "size_t"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}const ${t0} ${p0}${v0}, const ${t1} ${p1}${v1}, const ${t2} & ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
+	nparams 1
+	  param in name "maxFd" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
 "
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}const ${t0} ${p0}, const ${t1} ${p1}, const ${t2} & ${p2}${)}${const}${volatile}${throw}${staticnl}{
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
   ${body}}
 "
 	
@@ -1463,15 +1482,13 @@ ${inlines}
 	
       end
 
-      operation 225033 "SendTCPSimulation"
-	private explicit_return_type "void"
-	nparams 3
-	  param in name "pegasusSocket" explicit_type "PegasusSocket*"
-	  param in name "buffer" explicit_type "char*"
-	  param in name "len" explicit_type "size_t"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}const ${t0} ${p0}${v0}, const ${t1} ${p1}${v1}, const ${t2} & ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
+      operation 238473 "handleWrite"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "maxFd" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
 "
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}const ${t0} ${p0}, const ${t1} ${p1}, const ${t2} & ${p2}${)}${const}${volatile}${throw}${staticnl}{
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
   ${body}}
 "
 	
@@ -1480,27 +1497,16 @@ ${inlines}
 	
       end
 
-      operation 147977 "PegasusSocketRunner"
-	public explicit_return_type ""
-	nparams 0
-	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw}${abstract};
+      operation 128521 "SendSimulation"
+	private explicit_return_type "void"
+	nparams 3
+	  param in name "pegasusSocket" explicit_type "PegasusSocket*"
+	  param in name "buffer" explicit_type "char*"
+	  param in name "len" explicit_type "size_t"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}, const ${t1} ${p1}${v1}, const ${t2} & ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
 "
-	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${throw}{
-${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 148105 "~PegasusSocketRunner"
-	public explicit_return_type ""
-	nparams 0
-	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${throw}{
-${body}}
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}const ${t0} ${p0}, const ${t1} ${p1}, const ${t2} & ${p2}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
 "
 	
 	
@@ -1531,12 +1537,12 @@ ${body}}
 	set_of_relation classrelation_ref 186121 // m_pegasusVars (<directional aggregation>)
       end
 
-      operation 128265 "Read"
-	public explicit_return_type "void"
+      operation 147977 "PegasusSocketRunner"
+	public explicit_return_type ""
 	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw}${abstract};
 "
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${throw}{
 ${body}}
 "
 	
@@ -1545,16 +1551,27 @@ ${body}}
 	
       end
 
-      operation 128521 "SendSimulation"
-	public explicit_return_type "void"
-	nparams 3
-	  param in name "pegasusSocket" explicit_type "PegasusSocket*"
-	  param in name "buffer" explicit_type "char*"
-	  param in name "len" explicit_type "size_t"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}const ${t0} ${p0}${v0}, const ${t1} ${p1}${v1}, const ${t2} & ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
+      operation 148105 "~PegasusSocketRunner"
+	public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw}${abstract};
 "
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}const ${t0} ${p0}, const ${t1} ${p1}, const ${t2} & ${p2}${)}${const}${volatile}${throw}${staticnl}{
-  ${body}}
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${throw}{
+${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 128265 "ExecutionLoop"
+	public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+${body}}
 "
 	
 	
@@ -1590,6 +1607,15 @@ ${body}}
 	
       end
 
+      classrelation 206345 // <dependency>
+	relation 204169 -_->
+	  stereotype "import"
+	  a public
+	    cpp default "#include in source"
+	    classrelation_ref 206345 // <dependency>
+	  b parent class_ref 162057 // PegasusPacket
+      end
+
       classrelation 186249 // <dependency>
 	relation 184073 -_->
 	  stereotype "import"
@@ -1599,11 +1625,12 @@ ${body}}
 	  b parent class_ref 142089 // NS3PegasusDroneApp
       end
 
-      classrelation 192905 // <realization>
-	relation 190729 -_-|>
+      classrelation 192905 // <dependency>
+	relation 190729 -_->
+	  stereotype "import"
 	  a public
-	    cpp default "${type}"
-	    classrelation_ref 192905 // <realization>
+	    cpp default "#include in source"
+	    classrelation_ref 192905 // <dependency>
 	  b parent class_ref 155401 // PegasusConfig
       end
     end
@@ -1773,6 +1800,50 @@ ${items}};
 	
 	
 	
+      end
+
+      attribute 194313 "m_rxMutex"
+	public explicit_type "SystemMutex"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 194441 "m_txMutex"
+	public explicit_type "SystemMutex"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      classrelation 199689 // m_packetTxQueue (<directional aggregation>)
+	relation 197513 o-->
+	  stereotype "deque"
+	  a role_name "m_packetTxQueue" multiplicity "*" public
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type} *> ${name}${value};
+"
+	    classrelation_ref 199689 // m_packetTxQueue (<directional aggregation>)
+	  b parent class_ref 162057 // PegasusPacket
+      end
+
+      classrelation 199817 // m_packetRxQueue (<directional aggregation>)
+	relation 197641 o-->
+	  stereotype "deque"
+	  a role_name "m_packetRxQueue" multiplicity "*" public
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type} *> ${name}${value};
+"
+	    classrelation_ref 199817 // m_packetRxQueue (<directional aggregation>)
+	  b parent class_ref 162057 // PegasusPacket
       end
 
       operation 147081 "~PegasusSocket"
@@ -2120,6 +2191,18 @@ ${inlines}
 	MysqlColumn
       end
 
+      attribute 200969 "m_running"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
       operation 182665 "StartApplication"
 	cpp_virtual private explicit_return_type "void"
 	nparams 1
@@ -2165,6 +2248,20 @@ ${inlines}
 	
       end
 
+      operation 182921 "DoInitialize"
+	cpp_virtual protected explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
       operation 182537 "FindPegasusSocket"
 	private explicit_return_type "PegasusSocket*"
 	multiplicity "1"
@@ -2181,8 +2278,8 @@ ${inlines}
 	
       end
 
-      operation 182921 "DoInitialize"
-	cpp_virtual protected explicit_return_type "void"
+      operation 251913 "IntoTheMatrix"
+	private explicit_return_type "void"
 	nparams 0
 	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
 "
@@ -2356,209 +2453,13 @@ ${body}}
 	
 	
       end
-    end
 
-    class 128649 "NS3PegasusControlStationApp"
-      abstract visibility protected 
-      cpp_decl "${comment}${template}class ${name}${inherit}{
-${members}};
-${inlines}
-"
-      java_decl ""
-      php_decl ""
-      python_2_2 python_decl ""
-      idl_decl ""
-      explicit_switch_type ""
-      mysql_decl ""
-      
-      comment "Inherits from ns3::Application Module."
-      classrelation 158729 // <generalisation>
-	relation 156809 ---|>
+      classrelation 213257 // <dependency>
+	relation 211081 -_->
 	  a public
-	    cpp default "${type}"
-	    classrelation_ref 158729 // <generalisation>
-	  b parent class_ref 142345 // Application
-      end
-
-      attribute 159113 "m_socket"
-	private explicit_type "Ptr<Socket>"
-	stereotype "std::vector"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-      end
-
-      attribute 159241 "m_rxTraceWithAddresses"
-	private explicit_type "TracedCallback<Ptr<const Packet>, const Address &, const Address &>"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-      end
-
-      attribute 159369 "m_rxTrace"
-	private explicit_type "TracedCallback<Ptr<const Packet> >"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-      end
-
-      operation 175497 "StartApplication"
-	cpp_virtual private explicit_return_type "void"
-	nparams 1
-	  param in name "" explicit_type "void"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
-  ${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 175625 "StopApplication"
-	cpp_virtual private explicit_return_type "void"
-	nparams 1
-	  param in name "" explicit_type "void"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
-  ${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 182409 "DoInitialize"
-	cpp_virtual protected explicit_return_type "void"
-	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-  ${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 175369 "DoDispose"
-	cpp_virtual protected explicit_return_type "void"
-	nparams 1
-	  param in name "" explicit_type "void"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
-  ${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 175881 "GetTypeId"
-	class_operation public explicit_return_type "TypeId"
-	nparams 1
-	  param in name "" explicit_type "void"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
-  ${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 175113 "NS3PegasusControlStationApp"
-	public explicit_return_type ""
-	nparams 0
-	cpp_decl "    ${comment}${inline}${typeprefix}${name}${(}${)}${volatile}${throw};
-"
-	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
-  ${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 175241 "~NS3PegasusControlStationApp"
-	cpp_virtual public explicit_return_type ""
-	nparams 0
-	cpp_decl "    ${comment}${inline}${virtual}${typeprefix}${name}${(}${)}${volatile}${throw};
-"
-	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
-  ${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 129033 "ScheduleSend"
-	public explicit_return_type "void"
-	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 128905 "Send"
-	public explicit_return_type "void"
-	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-${body}}
-"
-	
-	
-	
-	
-      end
-
-      operation 128777 "HandleRead"
-	public explicit_return_type "void"
-	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-${body}}
-"
-	
-	
-	
-	
+	    cpp default "#include in source"
+	    classrelation_ref 213257 // <dependency>
+	  b parent class_ref 162057 // PegasusPacket
       end
     end
 
@@ -2574,6 +2475,130 @@ ${body}}
       explicit_switch_type ""
       mysql_decl ""
       
+    end
+
+    class 162057 "PegasusPacket"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      attribute 193801 "m_buffer"
+	private explicit_type "char"
+	multiplicity "MAX_PACKET_SIZE"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${multiplicity}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	get_oper operation_ref 245129 // get_m_buffer
+      end
+
+      attribute 193929 "m_len"
+	private explicit_type "int"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	get_oper operation_ref 245257 // get_m_len
+      end
+
+      operation 245001 "PegasusPacket"
+	public explicit_return_type ""
+	nparams 2
+	  param in name "buffer" explicit_type "char*"
+	  param in name "len" explicit_type "int"
+	cpp_decl "    ${comment}${inline}${typeprefix}${name}${(}const ${t0} ${p0}${v0}, ${t1} ${p1}${v1}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}const ${t0} ${p0}, ${t1} ${p1}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 245129 "get_m_buffer"
+	force_body_gen const cpp_inline public explicit_return_type "char"
+	multiplicity "MAX_PACKET_SIZE"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} const (* ${name}${(}${)}${const})${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} const (* ${class}::${name}${(}${)}${const})${volatile}${throw}${staticnl}{
+  return m_buffer;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 193801 // m_buffer
+      end
+
+      operation 245257 "get_m_len"
+	force_body_gen const cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_len;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 193929 // m_len
+      end
+
+      classrelation 206601 // <dependency>
+	relation 204425 -_->
+	  stereotype "import"
+	  a public
+	    cpp default "#include in header"
+	    classrelation_ref 206601 // <dependency>
+	  b parent class_ref 135561 // PegasusVariables
+      end
+
+      operation 245385 "PegasusPacket"
+	public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${typeprefix}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
     end
   end
 end

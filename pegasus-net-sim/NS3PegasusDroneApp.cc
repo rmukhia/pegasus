@@ -2,6 +2,7 @@
 #include "NS3PegasusDroneApp.h"
 #include "PegasusVariables.h"
 #include "PegasusSocket.h"
+#include "PegasusPacket.h"
 
 #include <algorithm>
 #include "ns3/log.h"
@@ -16,6 +17,8 @@ PegasusVariables * NS3PegasusDroneApp::m_pegasusVars;
 
 void NS3PegasusDroneApp::StartApplication(void ) {
   NS_LOG_FUNCTION(this);
+  Simulator::ScheduleWithContext(m_pegasusVars->m_simulatorContext,
+      MilliSeconds(20), &NS3PegasusDroneApp::IntoTheMatrix, this);
 }
 
 void NS3PegasusDroneApp::StopApplication(void ) {
@@ -58,6 +61,29 @@ PegasusSocket* NS3PegasusDroneApp::FindPegasusSocket(int port) {
   if ((*res)->Get_m_node() != GetNode())
     NS_FATAL_ERROR(port << " has invalid node " << Names::FindName(GetNode()) << " reference");
   return *res;
+}
+
+void NS3PegasusDroneApp::IntoTheMatrix() {
+  NS_LOG_FUNCTION(this);
+  for(auto const &portMapVsock: m_portMapVirtualSocket) {
+    auto psock = FindPegasusSocket(portMapVsock.first);
+    // The size of the deque should not increase, so the other thread better wait.
+    {
+      CriticalSection(psock->m_rxMutex); 
+      while(psock->m_packetRxQueue.size() > 0) {
+        PegasusPacket * packet;
+        packet = psock->m_packetRxQueue.front();
+        psock->m_packetRxQueue.pop_front();
+        ScheduleSend(psock->Get_m_port(), psock->Get_m_virtualPeerPort(),
+            packet->Get_m_buffer(), packet->Get_m_len());
+        delete packet;
+      }
+    }
+  }
+
+  // Run every 20 milliseconds
+  Simulator::ScheduleWithContext(m_pegasusVars->m_simulatorContext,
+      MilliSeconds(20), &NS3PegasusDroneApp::IntoTheMatrix, this);
 }
 
 void NS3PegasusDroneApp::DoInitialize() {
@@ -149,9 +175,14 @@ void NS3PegasusDroneApp::HandleRead(Ptr<Socket> socket) {
     if (!psock)
       NS_LOG_INFO("Packet received on non bound port " << port);
     else {
-      auto size = packet->CopyData((uint8_t *)buffer, 9000); 
-      if (size > 0)
-        psock->Send(buffer, size);
+      auto size = packet->CopyData((uint8_t *)buffer, MAX_PACKET_SIZE); 
+      if (size > 0) {
+        auto pegasusPacket = new PegasusPacket(buffer, size);
+        {
+          CriticalSection(psock->m_txMutex);
+          psock->m_packetTxQueue.push_back(pegasusPacket);
+        }
+      }
     }
 
     m_rxTrace (packet);
