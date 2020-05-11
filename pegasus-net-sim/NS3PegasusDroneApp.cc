@@ -67,23 +67,30 @@ void NS3PegasusDroneApp::IntoTheMatrix() {
   NS_LOG_FUNCTION(this);
   for(auto const &portMapVsock: m_portMapVirtualSocket) {
     auto psock = FindPegasusSocket(portMapVsock.first);
-    // The size of the deque should not increase, so the other thread better wait.
-    {
-      //CriticalSection(psock->m_rxMutex); 
-      while(psock->m_packetRxQueue.size() > 0) {
-        PegasusPacket * packet;
-        packet = psock->m_packetRxQueue.front();
-        psock->m_packetRxQueue.pop_front();
+    while(true) {
+      PegasusPacket * packet = NULL;
+      // The size of the deque should not increase, so the other thread better wait.
+      {
+        CriticalSection(psock->m_rxMutex); 
+        if (!psock->m_packetRxQueue.empty()) {
+          packet = psock->m_packetRxQueue.front();
+          psock->m_packetRxQueue.pop_front();
+        }
+      }
+
+      if (packet) {
         ScheduleSend(psock->Get_m_portConfig()->Get_m_port(), psock->Get_m_portConfig()->Get_m_virtualPeerPort(),
             packet->Get_m_buffer(), packet->Get_m_len());
         delete packet;
       }
+      else
+        break;
     }
   }
 
   // Run every 20 milliseconds
   Simulator::ScheduleWithContext(m_pegasusVars->m_simulatorContext,
-      MilliSeconds(5), &NS3PegasusDroneApp::IntoTheMatrix, this);
+      MilliSeconds(1), &NS3PegasusDroneApp::IntoTheMatrix, this);
 }
 
 void NS3PegasusDroneApp::DoInitialize() {
@@ -185,6 +192,8 @@ void NS3PegasusDroneApp::HandleRead(Ptr<Socket> socket) {
       }
     }
 
+    /*
+
     m_rxTrace (packet);
     m_rxTraceWithAddresses (packet, from, localAddress);
     if (packet->GetSize () > 0)
@@ -192,7 +201,8 @@ void NS3PegasusDroneApp::HandleRead(Ptr<Socket> socket) {
         NS_LOG_INFO ("TraceDelay: RX " << packet->GetSize () <<
             " bytes from "<< InetSocketAddress::ConvertFrom (from).GetIpv4 () <<
             " Uid: " << packet->GetUid ());
-      }
+    }
+    */
   }
 }
 

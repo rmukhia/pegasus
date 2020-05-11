@@ -10,7 +10,7 @@ PegasusPortConfig::PegasusPortConfig(int port, int peerPort, int virtualPeerPort
 std::map<std::string, std::vector<PegasusPortConfig>> PegasusConfig::m_config {
   {
     "iris", {
-      {14550, 18570, 14558},
+      {14540, 14580, 14541},
     }
   },
     /*
@@ -23,7 +23,7 @@ std::map<std::string, std::vector<PegasusPortConfig>> PegasusConfig::m_config {
   */
   {
     CONTROL_STATION_STR , {
-      {14558, 14541, 14550},
+      {14541, 14545, 14540},
     }
   },
 };

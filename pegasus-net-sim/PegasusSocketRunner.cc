@@ -54,18 +54,21 @@ void PegasusSocketRunner::handleWrite(int maxFd) {
 
   for (auto const &psock: *pegasusSockets) {
     // The size of the deque should not increase, so the other thread better wait.
+    PegasusPacket * packet = NULL;
+
     {
       CriticalSection(psock->m_txMutex); 
-      while(psock->m_packetTxQueue.size() > 0) {
-        PegasusPacket * packet;
+      if (!psock->m_packetTxQueue.empty()) {
         packet = psock->m_packetTxQueue.front();
         psock->m_packetTxQueue.pop_front();
-        psock->Send(packet->Get_m_buffer(), packet->Get_m_len());
-        delete packet;
       }
     }
-  }
 
+    if (packet) {
+      psock->Send(packet->Get_m_buffer(), packet->Get_m_len());
+      delete packet;
+    }
+  }
 }
 
 void PegasusSocketRunner::SendSimulation(PegasusSocket* pegasusSocket, const char* buffer, const size_t & len)
@@ -103,8 +106,13 @@ void PegasusSocketRunner::ExecutionLoop() {
   }))->Get_m_sd() + 1;
   
   while(m_running) {
-    handleWrite(maxFd);
-    handleRead(maxFd);
+    int itr = 16;
+    while(itr-- > 0)
+      handleWrite(maxFd);
+    
+    itr = 1;
+    while(itr-- > 0)
+      handleRead(maxFd);
   }
 
 }

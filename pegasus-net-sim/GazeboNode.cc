@@ -62,6 +62,5 @@ void GazeboNode::Destroy() {
 }
 
 void GazeboNode::Set_m_pegasusVars(PegasusVariables * value) {
-  NS_LOG_FUNCTION(&GazeboNode::Set_m_pegasusVars);
   m_pegasusVars = value;
 }
