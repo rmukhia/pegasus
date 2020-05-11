@@ -6,9 +6,11 @@
 #include "ns3/node.h"
 #include "netinet/in.h"
 #include "ns3/system-mutex.h"
+#include "PegasusConfig.h"
 
 using namespace ns3;
 
+class PegasusPortConfig;
 class PegasusPacket;
 
 class PegasusSocket {
@@ -25,14 +27,7 @@ class PegasusSocket {
 
     int m_sd;
 
-    //Real port this socket is bound to. NS3 also shares the same port number.
-    int m_port;
-
-    //Real port this socket will send to.
-    int m_peerPort;
-
-    //NS3 port that this socket will send to.
-    int m_virtualPeerPort;
+    PegasusPortConfig * m_portConfig;
 
     //The virtual device corrosponding to this socket.
     Ptr<Node> m_node;
@@ -57,11 +52,7 @@ class PegasusSocket {
 
     inline const int Get_m_sd() const;
 
-    inline const int Get_m_port() const;
-
-    inline const int Get_m_peerPort() const;
-
-    inline const int Get_m_virtualPeerPort() const;
+    inline const PegasusPortConfig * Get_m_portConfig() const;
 
     inline const Ptr<Node> & Get_m_node() const;
 
@@ -71,7 +62,7 @@ class PegasusSocket {
 
     virtual void Send(const char* buffer, const unsigned int & len) = 0;
 
-    void SetAttributes(int port, int peerPort, int virtualPeerPort, const Ptr<Node> & node);
+    void SetAttributes(PegasusPortConfig * portConfig, const Ptr<Node> & node);
 
 };
 inline const PegasusSocket::PegasusSocketType PegasusSocket::Get_m_type() const {
@@ -82,16 +73,8 @@ inline const int PegasusSocket::Get_m_sd() const {
   return m_sd;
 }
 
-inline const int PegasusSocket::Get_m_port() const {
-  return m_port;
-}
-
-inline const int PegasusSocket::Get_m_peerPort() const {
-  return m_peerPort;
-}
-
-inline const int PegasusSocket::Get_m_virtualPeerPort() const {
-  return m_virtualPeerPort;
+inline const PegasusPortConfig * PegasusSocket::Get_m_portConfig() const {
+  return m_portConfig;
 }
 
 inline const Ptr<Node> & PegasusSocket::Get_m_node() const {

@@ -18,6 +18,7 @@ void PegasusSocketRunner::handleRead(int maxFd) {
   NS_LOG_FUNCTION(this);
 
   fd_set rset;
+  struct timeval timeout = { 0 , 0 };
   auto pegasusSockets = &m_pegasusVars->m_pegasusSockets;
 
   FD_ZERO(&rset);
@@ -29,7 +30,7 @@ void PegasusSocketRunner::handleRead(int maxFd) {
 
   NS_LOG_DEBUG("Waiting to read sockets...");
 
-  auto nready = select(maxFd, &rset, NULL, NULL, NULL);
+  auto nready = select(maxFd, &rset, NULL, NULL, &timeout);
 
   NS_LOG_DEBUG("Sockets ready for read: " << nready);
 
@@ -40,7 +41,8 @@ void PegasusSocketRunner::handleRead(int maxFd) {
       socklen_t addrLen;
       auto len = recvfrom(psock->Get_m_sd(), &buffer, sizeof(buffer), 0, 
           (struct sockaddr*)&cliAddr, &addrLen); 
-      SendSimulation(psock, buffer, len);
+      if (len > 0)
+        SendSimulation(psock, buffer, len);
     }
   }
 }

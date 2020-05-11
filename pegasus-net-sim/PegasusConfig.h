@@ -20,7 +20,25 @@ class PegasusPortConfig {
 
     PegasusPortConfig(int port, int peerPort, int virtualPeerPort);
 
+    inline const int Get_m_port() const;
+
+    inline const int Get_m_peerPort() const;
+
+    inline const int Get_m_virtualPeerPort() const;
+
 };
+inline const int PegasusPortConfig::Get_m_port() const {
+  return m_port;
+}
+
+inline const int PegasusPortConfig::Get_m_peerPort() const {
+  return m_peerPort;
+}
+
+inline const int PegasusPortConfig::Get_m_virtualPeerPort() const {
+  return m_virtualPeerPort;
+}
+
 class PegasusConfig {
   public:
     static std::map<std::string, std::vector<PegasusPortConfig>> m_config;

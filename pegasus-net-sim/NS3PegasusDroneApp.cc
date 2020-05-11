@@ -52,7 +52,7 @@ PegasusSocket* NS3PegasusDroneApp::FindPegasusSocket(int port) {
       m_pegasusVars->m_pegasusSockets.begin(),
       m_pegasusVars->m_pegasusSockets.end(),
       [port] (PegasusSocket *psoc) {
-        return psoc->Get_m_port() == port;
+        return psoc->Get_m_portConfig()->Get_m_port() == port;
       });
 
   if (res == m_pegasusVars->m_pegasusSockets.end())
@@ -69,12 +69,12 @@ void NS3PegasusDroneApp::IntoTheMatrix() {
     auto psock = FindPegasusSocket(portMapVsock.first);
     // The size of the deque should not increase, so the other thread better wait.
     {
-      CriticalSection(psock->m_rxMutex); 
+      //CriticalSection(psock->m_rxMutex); 
       while(psock->m_packetRxQueue.size() > 0) {
         PegasusPacket * packet;
         packet = psock->m_packetRxQueue.front();
         psock->m_packetRxQueue.pop_front();
-        ScheduleSend(psock->Get_m_port(), psock->Get_m_virtualPeerPort(),
+        ScheduleSend(psock->Get_m_portConfig()->Get_m_port(), psock->Get_m_portConfig()->Get_m_virtualPeerPort(),
             packet->Get_m_buffer(), packet->Get_m_len());
         delete packet;
       }
@@ -83,7 +83,7 @@ void NS3PegasusDroneApp::IntoTheMatrix() {
 
   // Run every 20 milliseconds
   Simulator::ScheduleWithContext(m_pegasusVars->m_simulatorContext,
-      MilliSeconds(20), &NS3PegasusDroneApp::IntoTheMatrix, this);
+      MilliSeconds(5), &NS3PegasusDroneApp::IntoTheMatrix, this);
 }
 
 void NS3PegasusDroneApp::DoInitialize() {

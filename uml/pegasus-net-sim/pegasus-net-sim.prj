@@ -1,6 +1,6 @@
 format 222
 "pegasus-net-sim"
-  revision 36
+  revision 38
   modified_by 9 "rmukhia"
   cpp_root_dir "/home/rmukhia/thesis/pegasus-sim/pegasus-net-sim/"
 
@@ -240,6 +240,7 @@ ${includes}
 #include \"ns3/node.h\"
 #include \"netinet/in.h\"
 #include \"ns3/system-mutex.h\"
+#include \"PegasusConfig.h\"
 
 using namespace ns3;
 
@@ -427,7 +428,7 @@ int main(int argc, char **argv)
     associated_deployment_view deploymentview_ref 128009 // pegasus-net-sim
     classdiagram 128137 "Pegaus"
       classdiagramsettings show_members_visibility yes show_members_context uml member_max_width 0 class_drawing_mode class drawing_language uml end
-      size D-Landscape
+      size D
     end
 
     class 155529 "PegasusPortConfig"
@@ -457,6 +458,7 @@ A node simulation has udp socket bound to 'port' and ' virtualPeerPort' is the s
 	idl_decl ""
 	mysql_decl ""
 	MysqlColumn
+	get_oper operation_ref 258697 // get_m_port
       end
 
       attribute 186505 "m_peerPort"
@@ -469,6 +471,7 @@ A node simulation has udp socket bound to 'port' and ' virtualPeerPort' is the s
 	idl_decl ""
 	mysql_decl ""
 	MysqlColumn
+	get_oper operation_ref 258825 // get_m_peerPort
       end
 
       attribute 186633 "m_virtualPeerPort"
@@ -481,6 +484,7 @@ A node simulation has udp socket bound to 'port' and ' virtualPeerPort' is the s
 	idl_decl ""
 	mysql_decl ""
 	MysqlColumn
+	get_oper operation_ref 258953 // get_m_virtualPeerPort
       end
 
       extra_member 128009 ""
@@ -509,6 +513,69 @@ A node simulation has udp socket bound to 'port' and ' virtualPeerPort' is the s
 	
 	
       end
+
+      operation 258697 "get_m_port"
+	force_body_gen const cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_port;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 186377 // m_port
+      end
+
+      operation 258825 "get_m_peerPort"
+	force_body_gen const cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_peerPort;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 186505 // m_peerPort
+      end
+
+      operation 258953 "get_m_virtualPeerPort"
+	force_body_gen const cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_virtualPeerPort;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 186633 // m_virtualPeerPort
+      end
     end
 
     class 155401 "PegasusConfig"
@@ -526,18 +593,14 @@ ${members}};
       explicit_switch_type ""
       mysql_decl ""
       
-      attribute 187017 "m_config"
-	class_attribute public explicit_type "std::string, std::vector<PegasusPortConfig>"
-	multiplicity "*"
-	stereotype "map"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+      classrelation 219785 // m_config (<directional composition>)
+	relation 217609 *-->
+	  stereotype "map"
+	  a role_name "m_config" multiplicity "*" class_relation public
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<std::string, std::vector<${type}>> ${name}${value};
 "
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
+	    classrelation_ref 219785 // m_config (<directional composition>)
+	  b parent class_ref 155529 // PegasusPortConfig
       end
     end
 
@@ -1483,7 +1546,7 @@ ${inlines}
       end
 
       operation 238473 "handleWrite"
-	public explicit_return_type "void"
+	private explicit_return_type "void"
 	nparams 1
 	  param in name "maxFd" explicit_type "int"
 	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
@@ -1719,46 +1782,14 @@ ${items}};
 	get_oper operation_ref 217225 // get_m_sd
       end
 
-      attribute 128265 "m_port"
-	protected explicit_type "int"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+      classrelation 219913 // m_portConfig (<directional aggregation>)
+	relation 217737 o-->
+	  a role_name "m_portConfig" multiplicity "1" protected
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} * ${name}${value};
 "
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-	get_oper operation_ref 217353 // get_m_port
-	comment "Real port this socket is bound to. NS3 also shares the same port number."
-      end
-
-      attribute 129673 "m_peerPort"
-	protected explicit_type "int"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-	get_oper operation_ref 217481 // get_m_peerPort
-	comment "Real port this socket will send to."
-      end
-
-      attribute 179337 "m_virtualPeerPort"
-	protected explicit_type "int"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-	get_oper operation_ref 224777 // get_m_virtualPeerPort
-	comment "NS3 port that this socket will send to."
+	    classrelation_ref 219913 // m_portConfig (<directional aggregation>)
+	  b parent class_ref 155529 // PegasusPortConfig
+	get_oper operation_ref 258441 // get_m_portConfig
       end
 
       attribute 128521 "m_node"
@@ -1902,13 +1933,14 @@ ${items}};
 	get_of_attribute attribute_ref 128137 // m_sd
       end
 
-      operation 217353 "get_m_port"
-	force_body_gen const cpp_inline public explicit_return_type "int"
+      operation 258441 "get_m_portConfig"
+	force_body_gen const cpp_inline public return_type class_ref 155529 // PegasusPortConfig
+	multiplicity "1"
 	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} * ${name}${(}${)}${const}${volatile}${throw};
 "
-	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-  return m_port;
+	cpp_def "${comment}${inline}${typeprefix}const ${type} * ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_portConfig;
 }
 "
 	cpp_name_spec "Get_${name}"
@@ -1920,49 +1952,7 @@ ${items}};
 	python_name_spec "get${Name}"
 	
 	idl_name_spec "get_${name}"
-	get_of_attribute attribute_ref 128265 // m_port
-      end
-
-      operation 217481 "get_m_peerPort"
-	force_body_gen const cpp_inline public explicit_return_type "int"
-	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
-"
-	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-  return m_peerPort;
-}
-"
-	cpp_name_spec "Get_${name}"
-	final 
-	java_name_spec "get${Name}"
-	php_final 
-	php_name_spec "get${Name}"
-	
-	python_name_spec "get${Name}"
-	
-	idl_name_spec "get_${name}"
-	get_of_attribute attribute_ref 129673 // m_peerPort
-      end
-
-      operation 224777 "get_m_virtualPeerPort"
-	force_body_gen const cpp_inline public explicit_return_type "int"
-	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
-"
-	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-  return m_virtualPeerPort;
-}
-"
-	cpp_name_spec "Get_${name}"
-	final 
-	java_name_spec "get${Name}"
-	php_final 
-	php_name_spec "get${Name}"
-	
-	python_name_spec "get${Name}"
-	
-	idl_name_spec "get_${name}"
-	get_of_attribute attribute_ref 179337 // m_virtualPeerPort
+	get_of_relation classrelation_ref 219913 // m_portConfig (<directional aggregation>)
       end
 
       operation 217609 "get_m_node"
@@ -2024,14 +2014,12 @@ ${items}};
 
       operation 210185 "SetAttributes"
 	public explicit_return_type "void"
-	nparams 4
-	  param in name "port" explicit_type "int"
-	  param in name "peerPort" explicit_type "int"
-	  param in name "virtualPeerPort" explicit_type "int"
+	nparams 2
+	  param in name "portConfig" type class_ref 155529 // PegasusPortConfig
 	  param in name "node" explicit_type "Ptr<Node>"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}, ${t1} ${p1}${v1}, ${t2} ${p2}${v2}, const ${t3} & ${p3}${v3}${)}${const}${volatile}${throw}${abstract};
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
 "
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, const ${t3} & ${p3}${)}${const}${volatile}${throw}${staticnl}{
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
   ${body}}
 "
 	
@@ -2598,7 +2586,6 @@ ${inlines}
 	
 	
       end
-
     end
   end
 end

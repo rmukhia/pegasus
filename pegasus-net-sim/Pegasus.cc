@@ -20,7 +20,7 @@ void Pegasus::SetupProxy() {
 
   auto pegasusSockets = &m_pegasusVars.m_pegasusSockets;
 
-  for(auto const &config: PegasusConfig::m_config) {
+  for(auto &config: PegasusConfig::m_config) {
     auto name = config.first;
     auto portParamList = config.second;
     Ptr<Node> node;
@@ -33,14 +33,17 @@ void Pegasus::SetupProxy() {
 
     if (!node) continue;
 
-    for(auto const &portParam: portParamList) {
+    for(auto i = 0u; i < portParamList.size(); i++) {
+      // skip the iterator pointer management to get the actual static location
+      auto portParam = &PegasusConfig::m_config[config.first][i];
       psoc = new PegasusUDPSocket();
-      psoc->SetAttributes(portParam.m_port, portParam.m_peerPort, portParam.m_virtualPeerPort, node);
+      psoc->SetAttributes(portParam, node);
       pegasusSockets->push_back(psoc);
     }
   }
 
   for(auto const &psock: *pegasusSockets) {
+    NS_LOG_INFO(psock->Get_m_portConfig());
       psock->Create();
       psock->Bind();
   };

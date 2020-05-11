@@ -1,5 +1,7 @@
 
 #include "PegasusSocket.h"
+#include "PegasusConfig.h"
+#include "PegasusPacket.h"
 
 #include "ns3/log.h"
 
@@ -13,10 +15,8 @@ PegasusSocket::~PegasusSocket() {
   NS_LOG_FUNCTION(this);
 }
 
-void PegasusSocket::SetAttributes(int port, int peerPort, int virtualPeerPort, const Ptr<Node> & node) {
+void PegasusSocket::SetAttributes(PegasusPortConfig * portConfig, const Ptr<Node> & node) {
   NS_LOG_FUNCTION(this);
-  m_port = port;
-  m_peerPort = peerPort;
-  m_virtualPeerPort = virtualPeerPort;
+  m_portConfig = portConfig;
   m_node = node;
 }

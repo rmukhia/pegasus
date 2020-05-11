@@ -23,12 +23,8 @@ class PegasusSocketRunner {
 
     void handleRead(int maxFd);
 
-
-  public:
     void handleWrite(int maxFd);
 
-
-  private:
     void SendSimulation(PegasusSocket* pegasusSocket, const char* buffer, const size_t & len);
 
 
