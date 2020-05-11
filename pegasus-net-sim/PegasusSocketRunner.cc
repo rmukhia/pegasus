@@ -18,7 +18,7 @@ void PegasusSocketRunner::handleRead(int maxFd) {
   NS_LOG_FUNCTION(this);
 
   fd_set rset;
-  struct timeval timeout = { 0 , 0 };
+  //struct timeval timeout = { 0 , 0 };
   auto pegasusSockets = &m_pegasusVars->m_pegasusSockets;
 
   FD_ZERO(&rset);
@@ -30,7 +30,10 @@ void PegasusSocketRunner::handleRead(int maxFd) {
 
   NS_LOG_DEBUG("Waiting to read sockets...");
 
-  auto nready = select(maxFd, &rset, NULL, NULL, &timeout);
+  //auto nready = select(maxFd, &rset, NULL, NULL, &timeout);
+  auto nready = select(maxFd, &rset, NULL, NULL, NULL);
+
+  if(nready <=0) return;
 
   NS_LOG_DEBUG("Sockets ready for read: " << nready);
 
@@ -54,20 +57,9 @@ void PegasusSocketRunner::handleWrite(int maxFd) {
 
   for (auto const &psock: *pegasusSockets) {
     // The size of the deque should not increase, so the other thread better wait.
-    PegasusPacket * packet = NULL;
-
-    {
-      CriticalSection(psock->m_txMutex); 
-      if (!psock->m_packetTxQueue.empty()) {
-        packet = psock->m_packetTxQueue.front();
-        psock->m_packetTxQueue.pop_front();
-      }
-    }
-
-    if (packet) {
-      psock->Send(packet->Get_m_buffer(), packet->Get_m_len());
-      delete packet;
-    }
+    PegasusPacket packet;
+    if (psock->m_packetTxQueue.pop(packet))
+      psock->Send(packet.Get_m_buffer(), packet.Get_m_len());
   }
 }
 
@@ -75,10 +67,32 @@ void PegasusSocketRunner::SendSimulation(PegasusSocket* pegasusSocket, const cha
 {
   NS_LOG_FUNCTION(this);
 
-  auto packet = new PegasusPacket(buffer, len);
-  {
-    CriticalSection(pegasusSocket->m_rxMutex);
-    pegasusSocket->m_packetRxQueue.push_back(packet);
+  PegasusPacket packet(buffer, len);
+  if(!pegasusSocket->m_packetRxQueue.push(packet))
+    NS_FATAL_ERROR("RXQUEUE full.");
+}
+
+void PegasusSocketRunner::Read() {
+  NS_LOG_FUNCTION(this);
+  auto pegasusSockets = &m_pegasusVars->m_pegasusSockets;
+
+  // Get max fd + 1
+  auto maxFd = (*std::max_element(pegasusSockets->begin(), pegasusSockets->end(),
+      [] (PegasusSocket* a, PegasusSocket* b) {
+        return a->Get_m_sd() < b->Get_m_sd();
+  }))->Get_m_sd() + 1;
+
+  while(m_running) {
+      handleRead(maxFd);
+  }
+}
+
+void PegasusSocketRunner::Write() {
+  NS_LOG_FUNCTION(this);
+  struct timespec req = { 0, 10 };
+  while(m_running) {
+    handleWrite(0);
+    nanosleep(&req, NULL);
   }
 }
 
@@ -97,31 +111,16 @@ void PegasusSocketRunner::Set_m_pegasusVars(PegasusVariables * value)
 
 void PegasusSocketRunner::ExecutionLoop() {
   NS_LOG_FUNCTION(this);
-  auto pegasusSockets = &m_pegasusVars->m_pegasusSockets;
-
-  // Get max fd + 1
-  auto maxFd = (*std::max_element(pegasusSockets->begin(), pegasusSockets->end(),
-      [] (PegasusSocket* a, PegasusSocket* b) {
-        return a->Get_m_sd() < b->Get_m_sd();
-  }))->Get_m_sd() + 1;
-  
-  while(m_running) {
-    int itr = 16;
-    while(itr-- > 0)
-      handleWrite(maxFd);
-    
-    itr = 1;
-    while(itr-- > 0)
-      handleRead(maxFd);
-  }
-
 }
 
 void PegasusSocketRunner::Start() {
   NS_LOG_FUNCTION(this);
   m_running = true;
-  m_st = Create<SystemThread> (MakeCallback (&PegasusSocketRunner::ExecutionLoop, this));
-  m_st->Start();
+  m_stRead = Create<SystemThread> (MakeCallback (&PegasusSocketRunner::Read, this));
+  m_stRead->Start();
+
+  m_stWrite = Create<SystemThread> (MakeCallback (&PegasusSocketRunner::Write, this));
+  m_stWrite->Start();
 }
 
 void PegasusSocketRunner::Stop() {

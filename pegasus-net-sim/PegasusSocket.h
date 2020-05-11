@@ -6,7 +6,10 @@
 #include "ns3/node.h"
 #include "netinet/in.h"
 #include "ns3/system-mutex.h"
+#include <boost/lockfree/spsc_queue.hpp>
+
 #include "PegasusConfig.h"
+#include "PegasusPacket.h"
 
 using namespace ns3;
 
@@ -42,9 +45,9 @@ class PegasusSocket {
 
     SystemMutex m_txMutex;
 
-    std::deque<PegasusPacket *> m_packetTxQueue;
+    boost::lockfree::spsc_queue<PegasusPacket, boost::lockfree::capacity<128>> m_packetTxQueue;
 
-    std::deque<PegasusPacket *> m_packetRxQueue;
+    boost::lockfree::spsc_queue<PegasusPacket, boost::lockfree::capacity<128>> m_packetRxQueue;
 
     virtual ~PegasusSocket();
 
@@ -63,6 +66,10 @@ class PegasusSocket {
     virtual void Send(const char* buffer, const unsigned int & len) = 0;
 
     void SetAttributes(PegasusPortConfig * portConfig, const Ptr<Node> & node);
+
+    PegasusPacket* ReadBuffer();
+
+    void WriteBuffer(PegasusPacket * packet);
 
 };
 inline const PegasusSocket::PegasusSocketType PegasusSocket::Get_m_type() const {

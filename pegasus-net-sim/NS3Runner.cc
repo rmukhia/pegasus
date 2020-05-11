@@ -111,7 +111,7 @@ void NS3Runner::InstallApplications() {
     }
   }
 
-  apps.Start(Seconds(1));
+  apps.Start(Seconds(5));
   apps.Stop(Seconds(1000));
 }
 

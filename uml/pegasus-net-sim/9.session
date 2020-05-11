@@ -8,6 +8,7 @@ show_stereotypes
 marked
   operation_ref 140041 // Run
 end
+selected artifact_ref 155017 // PegasusConfig
 open
   artifact_ref 161545 // PegasusPacket
   deploymentdiagram_ref 134665 // deployement

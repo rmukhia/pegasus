@@ -1,6 +1,6 @@
 format 222
 "pegasus-net-sim"
-  revision 38
+  revision 40
   modified_by 9 "rmukhia"
   cpp_root_dir "/home/rmukhia/thesis/pegasus-sim/pegasus-net-sim/"
 
@@ -84,7 +84,9 @@ ${namespace_end}"
 ${comment}
 ${includes}
 
-#define CONTROL_STATION_STR \"control_station\"
+#define CONTROL_STATION_STR \"control_station\"  //name of the control station  
+#define NS3_SEND_EVENT_INTERVAL 2000           // time interval between send events in ns3, the lower the lesser latecy but higher cpu usage.
+
 ${declarations}
 ${namespace_start}
 ${definition}
@@ -240,7 +242,10 @@ ${includes}
 #include \"ns3/node.h\"
 #include \"netinet/in.h\"
 #include \"ns3/system-mutex.h\"
+#include <boost/lockfree/spsc_queue.hpp>
+
 #include \"PegasusConfig.h\"
+#include \"PegasusPacket.h\"
 
 using namespace ns3;
 
@@ -1504,7 +1509,21 @@ ${inlines}
 	set_oper operation_ref 224393 // set_m_pegasusVars
       end
 
-      attribute 128393 "m_st"
+      attribute 128393 "m_stWrite"
+	private explicit_type "SystemThread"
+	stereotype "Ptr"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "systemThread"
+      end
+
+      attribute 207497 "m_stRead"
 	private explicit_type "SystemThread"
 	stereotype "Ptr"
 	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
@@ -1569,6 +1588,34 @@ ${inlines}
 	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}, const ${t1} ${p1}${v1}, const ${t2} & ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
 "
 	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}const ${t0} ${p0}, const ${t1} ${p1}, const ${t2} & ${p2}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 265481 "Read"
+	private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 265609 "Write"
+	private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
   ${body}}
 "
 	
@@ -1859,9 +1906,9 @@ ${items}};
 
       classrelation 199689 // m_packetTxQueue (<directional aggregation>)
 	relation 197513 o-->
-	  stereotype "deque"
+	  stereotype "boost::lockfree::spsc_queue"
 	  a role_name "m_packetTxQueue" multiplicity "*" public
-	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type} *> ${name}${value};
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}, boost::lockfree::capacity<128>> ${name}${value};
 "
 	    classrelation_ref 199689 // m_packetTxQueue (<directional aggregation>)
 	  b parent class_ref 162057 // PegasusPacket
@@ -1869,9 +1916,9 @@ ${items}};
 
       classrelation 199817 // m_packetRxQueue (<directional aggregation>)
 	relation 197641 o-->
-	  stereotype "deque"
+	  stereotype "boost::lockfree::spsc_queue"
 	  a role_name "m_packetRxQueue" multiplicity "*" public
-	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type} *> ${name}${value};
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}, boost::lockfree::capacity<128>> ${name}${value};
 "
 	    classrelation_ref 199817 // m_packetRxQueue (<directional aggregation>)
 	  b parent class_ref 162057 // PegasusPacket
@@ -2020,6 +2067,35 @@ ${items}};
 	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
 "
 	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 265737 "ReadBuffer"
+	public explicit_return_type "PegasusPacket*"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 265865 "WriteBuffer"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "packet" type class_ref 162057 // PegasusPacket
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
   ${body}}
 "
 	

@@ -17,7 +17,10 @@ class PegasusSocketRunner {
     static PegasusVariables * m_pegasusVars;
 
     //systemThread
-    Ptr<SystemThread> m_st;
+    Ptr<SystemThread> m_stWrite;
+
+    //systemThread
+    Ptr<SystemThread> m_stRead;
 
     bool m_running;
 
@@ -26,6 +29,10 @@ class PegasusSocketRunner {
     void handleWrite(int maxFd);
 
     void SendSimulation(PegasusSocket* pegasusSocket, const char* buffer, const size_t & len);
+
+    void Read();
+
+    void Write();
 
 
   public:

@@ -10,7 +10,7 @@
 #include "ns3/vector.h"
 #include "ns3/node-container.h"
 
-#define MAX_PACKET_SIZE 2048
+#define MAX_PACKET_SIZE 4096
 
 using namespace ns3;
 

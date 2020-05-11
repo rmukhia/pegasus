@@ -101,6 +101,7 @@ void Pegasus::Run(int argc, char** argv) {
 
   bool verbose = true;
   bool tracing = false;
+  Time::SetResolution (Time::NS);
 
   CommandLine cmd;
   // cmd.AddValue ("nDrones", "Number of drones (max 18)", nDrones);

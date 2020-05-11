@@ -20,3 +20,10 @@ void PegasusSocket::SetAttributes(PegasusPortConfig * portConfig, const Ptr<Node
   m_portConfig = portConfig;
   m_node = node;
 }
+
+PegasusPacket* PegasusSocket::ReadBuffer() {
+  return NULL;
+}
+
+void PegasusSocket::WriteBuffer(PegasusPacket * packet) {
+}
