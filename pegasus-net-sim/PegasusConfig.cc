@@ -9,23 +9,25 @@ PegasusPortConfig::PegasusPortConfig(int port, int peerPort, int virtualPeerPort
 
 std::map<std::string, std::vector<PegasusPortConfig>> PegasusConfig::m_config {
   {
-    "iris", {
-      {14540, 14580, 14581},
-      {14550, 18570, 18751},
+    "iris_0", {
+      {14540, 14580, 14680},
     }
   },
-    /*
+  {
+    "iris_1", {
+      {14541, 14581, 14681},
+    }
+  },
   {
     "iris_2", {
-      {5560, 4450, 5550},
-      {5561, 4451, 5570},
+      {14542, 14582, 14682},
     }
   },
-  */
   {
     CONTROL_STATION_STR , {
-      {14581, 14541, 14540},
-      {18751, 14551, 14550},
+      {14680, 14640, 14540},
+      {14681, 14641, 14541},
+      {14682, 14642, 14542},
     }
   },
 };

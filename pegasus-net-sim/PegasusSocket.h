@@ -41,10 +41,6 @@ class PegasusSocket {
 
 
   public:
-    SystemMutex m_rxMutex;
-
-    SystemMutex m_txMutex;
-
     boost::lockfree::spsc_queue<PegasusPacket, boost::lockfree::capacity<128>> m_packetTxQueue;
 
     boost::lockfree::spsc_queue<PegasusPacket, boost::lockfree::capacity<128>> m_packetRxQueue;

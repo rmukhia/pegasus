@@ -140,7 +140,7 @@ void NS3PegasusDroneApp::ScheduleSend(int port, int peerPort, const char * buffe
   auto p = Create<Packet>((uint8_t*)buffer, len);
 
   Simulator::ScheduleWithContext(m_pegasusVars->m_simulatorContext,
-      Seconds(0), &NS3PegasusDroneApp::Send, this, socket, p, 0, s_addr);
+     NanoSeconds(0), &NS3PegasusDroneApp::Send, this, socket, p, 0, s_addr);
   //int ret = socket->SendTo(p, 0, s_addr);
   //NS_LOG_DEBUG(ret);
 }

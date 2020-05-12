@@ -35,18 +35,14 @@ class NS3PegasusDroneApp : public Application{
 
     Address GetAddressFromVirtualPort(int port);
 
-
-  protected:
-    virtual void DoInitialize();
-
-
-  private:
     PegasusSocket* FindPegasusSocket(int port);
 
     void IntoTheMatrix();
 
 
   protected:
+    virtual void DoInitialize();
+
     virtual void DoDispose(void );
 
 

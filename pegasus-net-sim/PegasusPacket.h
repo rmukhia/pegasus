@@ -14,11 +14,11 @@ class PegasusPacket {
   public:
     PegasusPacket(const char* buffer, int len);
 
+    PegasusPacket();
+
     inline char const (* Get_m_buffer() const);
 
     inline const int Get_m_len() const;
-
-    PegasusPacket();
 
 };
 inline char const (* PegasusPacket::Get_m_buffer() const) {

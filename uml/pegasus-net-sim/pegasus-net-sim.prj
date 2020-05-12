@@ -1,6 +1,6 @@
 format 222
 "pegasus-net-sim"
-  revision 40
+  revision 41
   modified_by 9 "rmukhia"
   cpp_root_dir "/home/rmukhia/thesis/pegasus-sim/pegasus-net-sim/"
 
@@ -490,16 +490,6 @@ A node simulation has udp socket bound to 'port' and ' virtualPeerPort' is the s
 	mysql_decl ""
 	MysqlColumn
 	get_oper operation_ref 258953 // get_m_virtualPeerPort
-      end
-
-      extra_member 128009 ""
-	
-	cpp "" ""
-	java ""
-	php ""
-	python ""
-	idl ""
-	mysql ""
       end
 
       operation 231817 "PegasusPortConfig"
@@ -1880,30 +1870,6 @@ ${items}};
 	
       end
 
-      attribute 194313 "m_rxMutex"
-	public explicit_type "SystemMutex"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-      end
-
-      attribute 194441 "m_txMutex"
-	public explicit_type "SystemMutex"
-	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
-"
-	java_decl ""
-	php_decl ""
-	python_decl ""
-	idl_decl ""
-	mysql_decl ""
-	MysqlColumn
-      end
-
       classrelation 199689 // m_packetTxQueue (<directional aggregation>)
 	relation 197513 o-->
 	  stereotype "boost::lockfree::spsc_queue"
@@ -2312,20 +2278,6 @@ ${inlines}
 	
       end
 
-      operation 182921 "DoInitialize"
-	cpp_virtual protected explicit_return_type "void"
-	nparams 0
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
-  ${body}}
-"
-	
-	
-	
-	
-      end
-
       operation 182537 "FindPegasusSocket"
 	private explicit_return_type "PegasusSocket*"
 	multiplicity "1"
@@ -2344,6 +2296,20 @@ ${inlines}
 
       operation 251913 "IntoTheMatrix"
 	private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 182921 "DoInitialize"
+	cpp_virtual protected explicit_return_type "void"
 	nparams 0
 	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
 "
@@ -2597,6 +2563,20 @@ ${inlines}
 	
       end
 
+      operation 245385 "PegasusPacket"
+	public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${typeprefix}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
       operation 245129 "get_m_buffer"
 	force_body_gen const cpp_inline public explicit_return_type "char"
 	multiplicity "MAX_PACKET_SIZE"
@@ -2647,20 +2627,6 @@ ${inlines}
 	    cpp default "#include in header"
 	    classrelation_ref 206601 // <dependency>
 	  b parent class_ref 135561 // PegasusVariables
-      end
-
-      operation 245385 "PegasusPacket"
-	public explicit_return_type ""
-	nparams 0
-	cpp_decl "    ${comment}${inline}${typeprefix}${name}${(}${)}${volatile}${throw};
-"
-	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}${)}${volatile}${throw} {
-  ${body}}
-"
-	
-	
-	
-	
       end
     end
   end

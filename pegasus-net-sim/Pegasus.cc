@@ -101,6 +101,9 @@ void Pegasus::Run(int argc, char** argv) {
 
   bool verbose = true;
   bool tracing = false;
+
+  GlobalValue::Bind ("SimulatorImplementationType",
+      StringValue ("ns3::RealtimeSimulatorImpl"));
   Time::SetResolution (Time::NS);
 
   CommandLine cmd;
