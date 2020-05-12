@@ -66,10 +66,16 @@ void PegasusSocketRunner::handleWrite(int maxFd) {
 void PegasusSocketRunner::SendSimulation(PegasusSocket* pegasusSocket, const char* buffer, const size_t & len)
 {
   NS_LOG_FUNCTION(this);
+  static uint32_t errorPackets = 0;
 
   PegasusPacket packet(buffer, len);
-  if(!pegasusSocket->m_packetRxQueue.push(packet))
-    NS_FATAL_ERROR("RXQUEUE full.");
+  if(!pegasusSocket->m_packetRxQueue.push(packet)) {
+    // Rate limited error
+    if (++errorPackets > 1024) {
+      NS_LOG_INFO("RXQUEUE full.");
+      errorPackets = 0;
+    }
+  }
 }
 
 void PegasusSocketRunner::Read() {
