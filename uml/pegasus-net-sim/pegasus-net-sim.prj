@@ -1,6 +1,6 @@
 format 222
 "pegasus-net-sim"
-  revision 41
+  revision 42
   modified_by 9 "rmukhia"
   cpp_root_dir "/home/rmukhia/thesis/pegasus-sim/pegasus-net-sim/"
 
@@ -822,7 +822,7 @@ ${body}}
 	
       end
 
-      operation 148745 "ChangeDronesPosition"
+      operation 148745 "ChangePosition"
 	class_operation public explicit_return_type "void"
 	nparams 0
 	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};

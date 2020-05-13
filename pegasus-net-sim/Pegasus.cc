@@ -59,8 +59,7 @@ Pegasus::~Pegasus(){
   }
 }
 
-Pegasus* Pegasus::GetInstance()
-{
+Pegasus* Pegasus::GetInstance() {
   if (!sm_instance) {
     sm_instance = new Pegasus();
     sm_instance->m_gazeboNode.Set_m_pegasusVars(&sm_instance->m_pegasusVars);
@@ -72,28 +71,36 @@ Pegasus* Pegasus::GetInstance()
   return sm_instance;
 }
 
-void Pegasus::ChangeDronesPosition() {
+void Pegasus::ChangePosition() {
   {
     CriticalSection(m_pegasusVars.m_poseMapMutex);
 
     for(auto const &element: m_pegasusVars.m_poseMap) {
-        auto drone = Names::Find<Node>("/Pegasus/drones", element.first);
-        if (!drone) continue;
-        auto droneMobilityModel = drone->GetObject<ConstantPositionMobilityModel>();
 
-        Simulator::ScheduleWithContext(
-            m_pegasusVars.m_simulatorContext,
-            Seconds(0),
-            &ConstantPositionMobilityModel::SetPosition,
-            droneMobilityModel, element.second
-            );
+      Ptr<Node> node;
+
+      if (element.first.compare(CONTROL_STATION_STR) == 0)
+        node = Names::Find<Node>("/Pegasus", CONTROL_STATION_STR);
+      else
+        node = Names::Find<Node>("/Pegasus/drones", element.first);
+      
+      if (!node) continue;
+
+      auto mobilityModel = node->GetObject<ConstantPositionMobilityModel>();
+
+      Simulator::ScheduleWithContext(
+          m_pegasusVars.m_simulatorContext,
+          Seconds(0),
+          &ConstantPositionMobilityModel::SetPosition,
+          mobilityModel, element.second
+          );
     }
   }
 
   Simulator::ScheduleWithContext(
       m_pegasusVars.m_simulatorContext,
       MilliSeconds(250),
-      &Pegasus::ChangeDronesPosition);
+      &Pegasus::ChangePosition);
 }
 
 void Pegasus::Run(int argc, char** argv) {
@@ -142,7 +149,7 @@ void Pegasus::Run(int argc, char** argv) {
 
   Simulator::Stop (Seconds (1000));
 
-  Simulator::Schedule(Seconds(1), &Pegasus::ChangeDronesPosition);
+  Simulator::Schedule(Seconds(1), &Pegasus::ChangePosition);
   Simulator::Run ();
   Simulator::Destroy ();
 

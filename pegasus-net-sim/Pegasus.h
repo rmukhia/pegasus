@@ -36,7 +36,7 @@ class Pegasus {
 
     static Pegasus* GetInstance();
 
-    static void ChangeDronesPosition();
+    static void ChangePosition();
 
     void Run(int argc, char** argv);
 

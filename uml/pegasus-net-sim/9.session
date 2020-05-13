@@ -2,22 +2,18 @@ window_sizes 1916 1032 356 1554 936 44
 cleanlooks_style
 diagrams
   active  classdiagram_ref 128137 // Pegaus
-    1554 936 60 D 564 0
+    1554 936 60 D 96 0
 end
 show_stereotypes
 marked
   operation_ref 140041 // Run
 end
-selected artifact_ref 155017 // PegasusConfig
+selected operation_ref 148745 // ChangePosition
 open
   artifact_ref 161545 // PegasusPacket
   deploymentdiagram_ref 134665 // deployement
   classdiagram_ref 128137 // Pegaus
-  class_ref 155529 // PegasusPortConfig
-  class_ref 128521 // PegasusSocketRunner
-  attribute_ref 172553 // m_peerAddr
-  operation_ref 147081 // ~PegasusSocket
-  operation_ref 130569 // Send
+  class_ref 128777 // Pegasus
 end
 end
 verbose

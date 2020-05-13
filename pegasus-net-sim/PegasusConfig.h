@@ -8,7 +8,7 @@
 
 
 #define CONTROL_STATION_STR "control_station"  //name of the control station  
-#define NS3_SEND_EVENT_INTERVAL 3000           // time interval between send events in ns3, the lower the lesser latecy but higher cpu usage.
+#define NS3_SEND_EVENT_INTERVAL 2000           // time interval between send events in ns3, the lower the lesser latecy but higher cpu usage.
 
 //A node have a 'port' which a udp socket is bound to. A node expects udp packet to arrive at 'port' from 'peerPort'. A node transmits to 'peerPort'.
 //A node simulation has udp socket bound to 'port' and ' virtualPeerPort' is the simulation 'port' the simulated udp socket transmits data to.

@@ -2,51 +2,51 @@ format 222
 
 classcanvas 128009 class_ref 128137 // PegasusSocket
   classdiagramsettings member_max_width 0 end
-  xyz 241.51 1725.86 2000
+  xyz 833.811 913.522 2000
 end
 classcanvas 128137 class_ref 128265 // PegasusUDPSocket
   classdiagramsettings member_max_width 0 end
-  xyz 448.17 2252.5 2000
+  xyz 823.811 1340.63 2000
 end
 classcanvas 128777 class_ref 128521 // PegasusSocketRunner
   classdiagramsettings member_max_width 0 end
-  xyz 99.97 77.66 2000
+  xyz 40.8222 847.922 2000
 end
 classcanvas 130185 class_ref 128777 // Pegasus
   classdiagramsettings member_max_width 0 end
-  xyz 1615.68 1469.22 2000
+  xyz 754.911 1554.19 2000
 end
 classcanvas 130313 class_ref 128905 // NS3Runner
   classdiagramsettings member_max_width 0 end
-  xyzwh 526.33 855.51 2000 545 582
+  xyzwh 1258.67 728.244 2000 545 582
 end
 classcanvas 130441 class_ref 129033 // GazeboNode
   classdiagramsettings member_max_width 0 end
-  xyzwh 1116.28 1596.39 2000 345 268
+  xyzwh 441.133 1248.76 2000 345 268
 end
 classcanvas 134537 class_ref 135561 // PegasusVariables
   classdiagramsettings member_max_width 0 end
-  xyz 303.15 1408.61 2000
+  xyz 1038.22 824.589 2000
 end
 classcanvas 138121 class_ref 142089 // NS3PegasusDroneApp
   classdiagramsettings member_max_width 0 end
-  xyz 233.83 367.13 2000
+  xyz 896.6 121.267 2000
 end
 classcanvas 139913 class_ref 142345 // Application
   classdiagramsettings member_max_width 0 end
-  xyz 118.46 552.33 2000
+  xyz 948.6 40.1 2000
 end
 classcanvas 154505 class_ref 155401 // PegasusConfig
   classdiagramsettings member_max_width 0 end
-  xyz 1059.03 1476.27 2005
+  xyz 265.122 1531.37 2005
 end
 classcanvas 159241 class_ref 162057 // PegasusPacket
   classdiagramsettings member_max_width 0 end
-  xyz 147.6 1475.76 2000
+  xyz 807.156 697.067 2000
 end
 classcanvas 165001 class_ref 155529 // PegasusPortConfig
   classdiagramsettings member_max_width 0 end
-  xyz 1006.92 1903.28 2011
+  xyz 241.311 934.844 2011
 end
 relationcanvas 128393 relation_ref 128265 // <generalisation>
   from ref 128137 z 2001 to ref 128009
@@ -54,51 +54,51 @@ relationcanvas 128393 relation_ref 128265 // <generalisation>
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 130569 relation_ref 128905 // <directional composition>
-  decenter_begin 318
-  decenter_end 969
-  from ref 130185 z 2001 to point 1537.53 1519.67
-  line 167433 z 2001 to point 1537.53 1421.21
-  line 167561 z 2001 to ref 130313
-  role_a_pos 1080 1395 3000 no_role_b
-  multiplicity_a_pos 1080 1428 3000 multiplicity_b_pos 1597 1527 3000
+  geometry HV unfixed
+  decenter_begin 573
+  from ref 130185 z 2001 to point 1528 1641
+  line 167433 z 2001 to ref 130313
+  role_a_pos 1547 1325 3000 no_role_b
+  multiplicity_a_pos 1505 1325 3000 multiplicity_b_pos 885 1655 3000
 end
 relationcanvas 130697 relation_ref 129033 // <directional composition>
-  decenter_begin 898
-  decenter_end 55
+  decenter_begin 101
+  decenter_end 956
   from ref 130185 z 2001 to ref 130441
-  role_a_pos 1469 1585 3000 no_role_b
-  multiplicity_a_pos 1469 1618 3000 multiplicity_b_pos 1597 1618 3000
+  role_a_pos 783 1527 3000 no_role_b
+  multiplicity_a_pos 742 1527 3000 multiplicity_b_pos 730 1540 3000
 end
 relationcanvas 130825 relation_ref 129161 // <directional composition>
-  from ref 130185 z 2001 to point 1690.84 40.34
-  line 159753 z 2001 to point 181.41 40.34
+  from ref 130185 z 2001 to point 833.84 1788.34
+  line 159753 z 2001 to point 121.21 1788.34
   line 164233 z 2001 to ref 128777
-  role_a_pos 199 39 3000 no_role_b
-  multiplicity_a_pos 157 39 3000 no_multiplicity_b
+  role_a_pos 131 1166 3000 no_role_b
+  multiplicity_a_pos 104 1166 3000 no_multiplicity_b
 end
 relationcanvas 134665 relation_ref 149513 // <directional composition>
-  decenter_end 882
-  from ref 130185 z 2001 to point 1690.84 2051.31
-  line 165257 z 2001 to point 431.91 2051.31
-  line 165385 z 2001 to ref 134537
-  role_a_pos 440 1573 3000 no_role_b
-  multiplicity_a_pos 413 1573 3000 multiplicity_b_pos 1675 1634 3000
+  geometry HV unfixed
+  decenter_begin 89
+  from ref 130185 z 2001 to point 1108 1565
+  line 165257 z 2001 to ref 134537
+  role_a_pos 1127 995 3000 no_role_b
+  multiplicity_a_pos 1085 995 3000 multiplicity_b_pos 885 1574 3000
 end
 relationcanvas 135945 relation_ref 149641 // <directional aggregation>
-  decenter_begin 55
-  decenter_end 898
-  from ref 130441 z 2001 to point 487.03 1611.51
-  line 166921 z 2001 to point 487.03 1549.77
+  decenter_begin 197
+  decenter_end 910
+  from ref 130441 z 2001 to point 999.63 1301.31
+  line 166921 z 2001 to point 999.63 967.17
   line 167049 z 2001 to ref 134537
-  role_a_pos 457 1524 3000 no_role_b
-  multiplicity_a_pos 457 1557 3000 no_multiplicity_b
+  role_a_pos 941 942 3000 no_role_b
+  multiplicity_a_pos 1020 975 3000 no_multiplicity_b
 end
 relationcanvas 136073 relation_ref 149769 // <directional aggregation>
-  decenter_begin 969
-  decenter_end 76
-  from ref 130313 z 2001 to ref 134537
-  role_a_pos 457 1395 3000 no_role_b
-  multiplicity_a_pos 457 1428 3000 multiplicity_b_pos 508 1428 3000
+  geometry HV unfixed
+  decenter_end 896
+  from ref 130313 z 2001 to point 1165 990
+  line 168841 z 2001 to ref 134537
+  role_a_pos 1177 989 3000 no_role_b
+  multiplicity_a_pos 1150 989 3000 multiplicity_b_pos 1240 1027 3000
 end
 relationcanvas 140041 relation_ref 156681 // <generalisation>
   from ref 138121 z 2001 to ref 139913
@@ -106,102 +106,101 @@ relationcanvas 140041 relation_ref 156681 // <generalisation>
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 140937 relation_ref 163337 // <dependency>
-  geometry VHV unfixed
-  decenter_begin 23
-  decenter_end 906
-  from ref 130313 z 2001 to point 536 818.4
-  line 166153 z 2001 to point 394 818.4
-  line 166281 z 2001 stereotype "<<import>>" xyz 365 799 3000 to ref 138121
+  geometry VH unfixed
+  from ref 130313 z 2001 to point 1528 324.6
+  line 166153 z 2001 stereotype "<<import>>" xyz 1272.5 325.5 3000 to ref 138121
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 141961 relation_ref 163721 // <directional composition>
   geometry VHV unfixed
-  decenter_begin 620
-  decenter_end 690
-  from ref 134537 z 2001 to point 390 856.66
-  line 164361 z 2001 stereotype "<<vector>>" xyz 342.5 857 3000 to point 355 856.66
+  decenter_begin 103
+  from ref 134537 z 2001 to point 1050 647.06
+  line 164361 z 2001 stereotype "<<vector>>" xyz 986.5 648 3000 to point 984 647.06
   line 164489 z 2001 to ref 138121
-  role_a_pos 374 805 3000 no_role_b
-  multiplicity_a_pos 335 805 3000 multiplicity_b_pos 375 1383 3000
+  role_a_pos 996 540 3000 no_role_b
+  multiplicity_a_pos 971 540 3000 multiplicity_b_pos 1035 799 3000
 end
 relationcanvas 144905 relation_ref 170633 // <dependency>
-  decenter_begin 76
-  decenter_end 958
-  from ref 130185 z 2001 to point 1575.79 1481.41
-  line 166665 z 2001 to point 1575.79 763.55
-  line 166793 z 2001 stereotype "<<import>>" xyz 963.5 762 3000 to ref 138121
+  decenter_begin 331
+  decenter_end 917
+  from ref 130185 z 2001 to point 1220.99 1606.21
+  line 166665 z 2001 to point 1220.99 570.75
+  line 166793 z 2001 to point 1062.4 570.2
+  line 168457 z 2001 stereotype "<<import>>" xyz 1032.5 551 3000 to ref 138121
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 146569 relation_ref 170377 // <directional aggregation>
   geometry VHV unfixed
-  decenter_begin 480
-  decenter_end 351
-  from ref 138121 z 2001 to point 317 896.46
-  line 163721 z 2001 to point 351 896.46
+  decenter_begin 707
+  decenter_end 365
+  from ref 138121 z 2001 to point 1021 609.06
+  line 163721 z 2001 to point 1088 609.06
   line 163849 z 2001 to ref 134537
-  role_a_pos 363 1383 3000 no_role_b
-  multiplicity_a_pos 336 1383 3000 multiplicity_b_pos 296 805 3000
+  role_a_pos 1100 799 3000 no_role_b
+  multiplicity_a_pos 1073 799 3000 multiplicity_b_pos 1008 540 3000
 end
 relationcanvas 147849 relation_ref 177161 // <directional aggregation>
-  decenter_begin 82
-  from ref 134537 z 2001 stereotype "<<vector>>" xyz 278 1649.5 3000 to ref 128009
-  role_a_pos 326 1684 3000 no_role_b
-  multiplicity_a_pos 288 1684 3000 multiplicity_b_pos 290 1579 3000
+  decenter_begin 668
+  decenter_end 45
+  from ref 134537 z 2001 stereotype "<<vector>>" xyz 965.5 933 3000 to ref 128009
+  role_a_pos 971 904 3000 no_role_b
+  multiplicity_a_pos 971 937 3000 multiplicity_b_pos 1020 937 3000
 end
 relationcanvas 149385 relation_ref 177289 // <dependency>
-  from ref 130185 z 2001 to point 1813.05 1545.69
-  line 164617 z 2001 to point 1813.05 2289.57
-  line 167689 z 2001 stereotype "<<import>>" xyz 1173 2302 3000 to ref 128137
+  decenter_begin 891
+  from ref 130185 z 2001 stereotype "<<import>>" xyz 837 1515 3000 to ref 128137
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 151817 relation_ref 183945 // <directional aggregation>
-  decenter_begin 104
-  decenter_end 82
-  from ref 128777 z 2001 to point 117.13 512.78
-  line 156681 z 2001 to point 79.87 513.05
-  line 158729 z 2001 to point 79.87 1369.17
-  line 167177 z 2001 to point 315.59 1369.17
-  line 167305 z 2001 to ref 134537
-  role_a_pos 324 1383 3000 no_role_b
-  multiplicity_a_pos 297 1383 3000 multiplicity_b_pos 90 410 3000
+  decenter_end 89
+  from ref 128777 z 2001 to point 120.33 684.38
+  line 156681 z 2001 to point 999.47 684.65
+  line 158729 z 2001 to point 999.47 838.17
+  line 167177 z 2001 to ref 134537
+  role_a_pos 941 813 3000 no_role_b
+  multiplicity_a_pos 1020 846 3000 multiplicity_b_pos 104 822 3000
 end
 relationcanvas 152841 relation_ref 184073 // <dependency>
-  decenter_begin 895
-  decenter_end 71
-  from ref 128777 z 2001 stereotype "<<import>>" xyz 210 304 3000 to ref 138121
+  geometry VH unfixed
+  decenter_begin 263
+  from ref 128777 z 2001 to point 80 322
+  line 168073 z 2001 stereotype "<<import>>" xyz 458.5 325.5 3000 to ref 138121
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 154633 relation_ref 190601 // <dependency>
-  geometry VH unfixed
-  from ref 130313 z 2006 to point 796.46 1495.19
-  line 166537 z 2006 stereotype "<<import>>" xyz 896 1495 3000 to ref 154505
+  decenter_end 525
+  from ref 130313 z 2006 to point 1841.8 1019.6
+  line 166537 z 2006 to point 1841.8 1750.2
+  line 167817 z 2006 stereotype "<<import>>" xyz 1051 1752 3000 to point 317.4 1750.2
+  line 167945 z 2006 to ref 154505
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 154889 relation_ref 190857 // <dependency>
-  decenter_begin 566
-  decenter_end 604
-  from ref 130185 z 2006 to point 1498 1558.2
-  line 165513 z 2006 to point 1498 1502.08
-  line 166409 z 2006 stereotype "<<import>>" xyz 1298 1502 3000 to ref 154505
+  decenter_begin 89
+  decenter_end 790
+  from ref 130185 z 2006 stereotype "<<import>>" xyz 528 1565 3000 to ref 154505
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 156553 relation_ref 190985 // <dependency>
-  decenter_begin 86
-  decenter_end 868
-  from ref 130441 z 2006 stereotype "<<import>>" xyz 1111 1553 3000 to ref 154505
+  decenter_begin 947
+  decenter_end 209
+  from ref 130441 z 2006 stereotype "<<import>>" xyz 392 1502 3000 to point 403 1502.4
+  line 168201 z 2006 to point 403 1540.2
+  line 168329 z 2006 to ref 154505
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 157193 relation_ref 190729 // <dependency>
   geometry HV unfixed
-  decenter_end 525
-  from ref 128777 z 2006 stereotype "<<import>>" xyz 655 227 3000 to point 1108 229
+  decenter_begin 954
+  decenter_end 141
+  from ref 128777 z 2006 stereotype "<<import>>" xyz 209.5 1139 3000 to point 276 1141
   line 165897 z 2006 to ref 154505
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
@@ -209,64 +208,61 @@ end
 relationcanvas 157321 relation_ref 142985 // <unidirectional association>
   decenter_begin 86
   decenter_end 273
-  from ref 130185 z 2001 to point 1573.25 1485.49
-  line 157449 z 2001 to point 1573.25 1513.05
+  from ref 130185 z 2001 to point 711.971 1571.17
+  line 157449 z 2001 to point 711.971 1598.53
   line 157577 z 2001 to ref 130185
-  role_a_pos 1537 1486 3000 no_role_b
+  role_a_pos 668 1567 3000 no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 159369 relation_ref 197513 // <directional aggregation>
-  geometry HV unfixed
-  decenter_begin 124
-  decenter_end 153
-  from ref 128009 z 2001 stereotype "<<:lockfree::spsc_queue>>" xyz 130 1757 3000 to point 162 1766
-  line 163977 z 2001 to ref 159241
-  role_a_pos 179 1640 3000 no_role_b
-  multiplicity_a_pos 141 1640 3000 no_multiplicity_b
+  decenter_begin 108
+  decenter_end 333
+  from ref 128009 z 2001 stereotype "<<:lockfree::spsc_queue>>" xyz 670.5 862.5 3000 to ref 159241
+  role_a_pos 741 890 3000 no_role_b
+  multiplicity_a_pos 823 862 3000 no_multiplicity_b
 end
 relationcanvas 159497 relation_ref 197641 // <directional aggregation>
-  geometry HV unfixed
-  decenter_begin 37
-  decenter_end 444
-  from ref 128009 z 2001 stereotype "<<:lockfree::spsc_queue>>" xyz 146 1724 3000 to point 196 1735
-  line 163593 z 2001 to ref 159241
-  role_a_pos 216 1640 3000 no_role_b
-  multiplicity_a_pos 176 1640 3000 no_multiplicity_b
+  decenter_begin 596
+  decenter_end 871
+  from ref 128009 z 2001 stereotype "<<:lockfree::spsc_queue>>" xyz 835.5 865.5 3000 to ref 159241
+  role_a_pos 926 862 3000 no_role_b
+  multiplicity_a_pos 886 862 3000 no_multiplicity_b
 end
 relationcanvas 161545 relation_ref 204169 // <dependency>
-  from ref 128777 z 2001 to point 40.34 202.08
-  line 164745 z 2001 stereotype "<<import>>" xyz 12 877 3000 to point 40.34 1548.5
-  line 164873 z 2001 to ref 159241
+  decenter_begin 48
+  decenter_end 913
+  from ref 128777 z 2001 stereotype "<<import>>" xyz 472.5 847 3000 to ref 159241
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 161801 relation_ref 204425 // <dependency>
-  decenter_end 898
-  from ref 159241 z 2001 stereotype "<<import>>" xyz 252 1537 3000 to ref 134537
+  decenter_begin 913
+  decenter_end 331
+  from ref 159241 z 2001 to point 962.4 862.4
+  line 168585 z 2001 to point 962.4 876.8
+  line 168713 z 2001 stereotype "<<import>>" xyz 970 876.5 3000 to ref 134537
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 163337 relation_ref 211081 // <dependency>
-  decenter_begin 71
-  decenter_end 846
+  decenter_begin 77
+  decenter_end 871
   from ref 138121 z 2001 to ref 159241
   no_role_a no_role_b
   no_multiplicity_a no_multiplicity_b
 end
 relationcanvas 165129 relation_ref 217609 // <directional composition>
-  decenter_begin 171
-  from ref 154505 z 2012 stereotype "<<map>>" xyz 1053 1709 3000 to ref 165001
-  role_a_pos 1098 1869 3000 no_role_b
-  multiplicity_a_pos 1058 1869 3000 no_multiplicity_b
+  decenter_begin 525
+  from ref 154505 z 2012 stereotype "<<map>>" xyz 291.5 1316 3000 to ref 165001
+  role_a_pos 326 1113 3000 no_role_b
+  multiplicity_a_pos 301 1113 3000 no_multiplicity_b
 end
 relationcanvas 166025 relation_ref 217737 // <directional aggregation>
-  decenter_begin 505
+  decenter_begin 301
   from ref 128009 z 2012 to ref 165001
-  role_a_pos 918 1952 3000 no_role_b
-  multiplicity_a_pos 980 1989 3000 no_multiplicity_b
+  role_a_pos 403 994 3000 no_role_b
+  multiplicity_a_pos 403 1027 3000 no_multiplicity_b
 end
-line 165641 -_-_
-  from ref 135945 z 2002 to ref 134537
 line 165769 -_-_
   from ref 136073 z 2002 to ref 134537
 preferred_whz 1573 887 0.677249
