@@ -91,7 +91,6 @@ void Pegasus::RunStatusThread() {
       oss << "/" << Names::FindName(trace.Get_m_node())
         << "/" << trace.Get_m_avgSignalDbm()
         << "/" << trace.Get_m_avgNoiseDbm();
-      std::cout << oss.str() << std::endl;
       m_statusPegasusSocket.Send(oss.str().c_str(), oss.str().length());
     }
     nanosleep(&sleep, NULL);
