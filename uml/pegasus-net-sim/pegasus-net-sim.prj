@@ -1,6 +1,6 @@
 format 222
 "pegasus-net-sim"
-  revision 42
+  revision 44
   modified_by 9 "rmukhia"
   cpp_root_dir "/home/rmukhia/thesis/pegasus-sim/pegasus-net-sim/"
 
@@ -376,6 +376,37 @@ ${namespace_end}"
       end
     end
 
+    artifact 168073 "PegasusTrace"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+#include \"ns3/node.h\"
+#include \"ns3/wifi-tx-vector.h\"
+#include \"ns3/wifi-phy.h\"
+
+using namespace ns3;
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+#include \"ns3/wifi-module.h\"
+#include \"ns3/simulator.h\"
+
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_elems
+	class_ref 168585 // PegasusTrace
+      end
+    end
+
     artifact 135433 "pegasus-net-sim"
       stereotype "source"
       cpp_src "/* Raunak Mukhia 2020 */
@@ -730,6 +761,30 @@ ${inlines}
 	  b multiplicity "1" parent class_ref 135561 // PegasusVariables
       end
 
+      attribute 221321 "m_running"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 221193 "m_stStatus"
+	private explicit_type "SystemThread"
+	stereotype "Ptr"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
       classrelation 144521 // sm_instance (<unidirectional association>)
 	relation 142985 --->
 	  a role_name "sm_instance" init_value "= NULL" class_relation private
@@ -737,6 +792,28 @@ ${inlines}
 "
 	    classrelation_ref 144521 // sm_instance (<unidirectional association>)
 	  b parent class_ref 128777 // Pegasus
+      end
+
+      classrelation 226441 // m_pegasusTraces (<directional composition>)
+	relation 224265 *-->
+	  stereotype "vector"
+	  a role_name "m_pegasusTraces" multiplicity "*" private
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	    classrelation_ref 226441 // m_pegasusTraces (<directional composition>)
+	  b parent class_ref 168585 // PegasusTrace
+      end
+
+      attribute 221065 "m_statusPegasusSocket"
+	private type class_ref 128265 // PegasusUDPSocket
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
       end
 
       operation 130313 "Pegasus"
@@ -754,6 +831,34 @@ ${body}}
       end
 
       operation 216841 "SetupProxy"
+	private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 272649 "SetupTrace"
+	private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 279305 "RunStatusThread"
 	private explicit_return_type "void"
 	nparams 0
 	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
@@ -2627,6 +2732,181 @@ ${inlines}
 	    cpp default "#include in header"
 	    classrelation_ref 206601 // <dependency>
 	  b parent class_ref 135561 // PegasusVariables
+      end
+    end
+
+    class 168585 "PegasusTrace"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      attribute 214025 "m_node"
+	private explicit_type "Ptr<Node>"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	get_oper operation_ref 272777 // get_m_node
+      end
+
+      attribute 220809 "m_timestamp"
+	private explicit_type "Time"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 220681 "m_avgNoiseDbm"
+	private explicit_type "double"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	get_oper operation_ref 279433 // get_m_avgNoiseDbm
+      end
+
+      attribute 220553 "m_avgSignalDbm"
+	private explicit_type "double"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	get_oper operation_ref 279561 // get_m_avgSignalDbm
+      end
+
+      attribute 220937 "m_samples"
+	private explicit_type "uint32_t"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      operation 272393 "PegasusTrace"
+	public explicit_return_type ""
+	nparams 1
+	  param in name "node" explicit_type "Ptr<Node>"
+	cpp_decl "    ${comment}${inline}${typeprefix}${name}${(}const ${t0} & ${p0}${v0}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}${class}::${name}${(}const ${t0} & ${p0}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 272521 "HandleWifiTrace"
+	public explicit_return_type "void"
+	nparams 6
+	  param in name "context" explicit_type "std::string"
+	  param in name "packet" explicit_type "Ptr<const Packet>"
+	  param in name "channelFreqMhz" explicit_type "uint16_t"
+	  param in name "txVector" explicit_type "WifiTxVector"
+	  param in name "aMpdu" explicit_type "MpduInfo"
+	  param in name "signalNoise" explicit_type "SignalNoiseDbm"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}${type} ${name}${(}${t0} ${p0}${v0}, ${t1} ${p1}${v1}, ${t2} ${p2}${v2}, ${t3} ${p3}${v3}, ${t4} ${p4}${v4}, ${t5} ${p5}${v5}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${typeprefix}${type} ${class}::${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}, ${t4} ${p4}, ${t5} ${p5}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 272777 "get_m_node"
+	force_body_gen const cpp_inline public explicit_return_type "Ptr<Node>"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_node;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 214025 // m_node
+      end
+
+      operation 279433 "get_m_avgNoiseDbm"
+	force_body_gen const cpp_inline public explicit_return_type "double"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_avgNoiseDbm;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 220681 // m_avgNoiseDbm
+      end
+
+      operation 279561 "get_m_avgSignalDbm"
+	force_body_gen const cpp_inline public explicit_return_type "double"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${typeprefix}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${typeprefix}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_avgSignalDbm;
+}
+"
+	cpp_name_spec "Get_${name}"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 220553 // m_avgSignalDbm
       end
     end
   end

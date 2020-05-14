@@ -3,6 +3,8 @@
 
 
 #include "PegasusVariables.h"
+#include <vector>
+#include "PegasusUDPSocket.h"
 #include "NS3Runner.h"
 #include "GazeboNode.h"
 #include "PegasusSocketRunner.h"
@@ -11,18 +13,29 @@
 
 using namespace ns3;
 
+class PegasusTrace;
 class NS3PegasusDroneApp;
-class PegasusUDPSocket;
 
 class Pegasus {
   private:
     static PegasusVariables m_pegasusVars;
 
+    bool m_running;
+
+    Ptr<SystemThread> m_stStatus;
     static Pegasus * sm_instance;
+
+    std::vector<PegasusTrace> m_pegasusTraces;
+
+    PegasusUDPSocket m_statusPegasusSocket;
 
     Pegasus();
 
     void SetupProxy();
+
+    void SetupTrace();
+
+    void RunStatusThread();
 
 
   public:

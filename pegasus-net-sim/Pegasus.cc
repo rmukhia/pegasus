@@ -1,5 +1,6 @@
 
 #include "Pegasus.h"
+#include "PegasusTrace.h"
 #include "NS3PegasusDroneApp.h"
 #include "PegasusUDPSocket.h"
 
@@ -13,6 +14,7 @@ Pegasus * Pegasus::sm_instance= NULL;
 
 Pegasus::Pegasus(){
   NS_LOG_FUNCTION(this);
+  m_running = true;
 }
 
 void Pegasus::SetupProxy() {
@@ -49,6 +51,54 @@ void Pegasus::SetupProxy() {
   };
 }
 
+void Pegasus::SetupTrace() {
+  auto nodes = &m_pegasusVars.m_nodes;
+  for (auto nodeItr = nodes->Begin(); nodeItr != nodes->End(); nodeItr++) {
+    PegasusTrace pegasusTrace(*nodeItr);
+    m_pegasusTraces.push_back(pegasusTrace);
+  }
+
+  for(auto i = 0u; i < m_pegasusTraces.size(); i++) {
+    std::ostringstream oss;
+    auto trace = &m_pegasusTraces[i];
+
+    oss << "/NodeList/"
+    << trace->Get_m_node()->GetId ()
+    << "/DeviceList/*"
+    << "/$ns3::WifiNetDevice/Phy/MonitorSnifferRx";
+
+    std::cout << oss.str() << std::endl;
+
+    Config::Connect (oss.str(), MakeCallback (&PegasusTrace::HandleWifiTrace, trace));
+  }
+
+  m_stStatus = Create<SystemThread> (MakeCallback (&Pegasus::RunStatusThread, this));
+  m_stStatus->Start();
+
+}
+
+void Pegasus::RunStatusThread() {
+  struct timespec sleep = { 0 , 100000000 };
+  PegasusPortConfig config(1999, 2999, 0);
+  NS_LOG_INFO("Status UDP bind port 1999, remote port 2999.");
+  m_statusPegasusSocket.SetAttributes(&config, NULL);
+  m_statusPegasusSocket.Create();
+  m_statusPegasusSocket.Bind();
+
+  while(m_running) {
+    for(auto const trace: m_pegasusTraces) {
+      std::ostringstream oss;
+      oss << "/" << Names::FindName(trace.Get_m_node())
+        << "/" << trace.Get_m_avgSignalDbm()
+        << "/" << trace.Get_m_avgNoiseDbm();
+      std::cout << oss.str() << std::endl;
+      m_statusPegasusSocket.Send(oss.str().c_str(), oss.str().length());
+    }
+    nanosleep(&sleep, NULL);
+  }
+
+}
+
 Pegasus::~Pegasus(){
   NS_LOG_FUNCTION(this);
 
@@ -57,6 +107,8 @@ Pegasus::~Pegasus(){
   for(auto const &psock: *pegasusSockets) {
     delete psock;
   }
+
+  m_running = false;
 }
 
 Pegasus* Pegasus::GetInstance() {
@@ -99,7 +151,7 @@ void Pegasus::ChangePosition() {
 
   Simulator::ScheduleWithContext(
       m_pegasusVars.m_simulatorContext,
-      MilliSeconds(250),
+      MilliSeconds(100),
       &Pegasus::ChangePosition);
 }
 
@@ -136,6 +188,8 @@ void Pegasus::Run(int argc, char** argv) {
   m_ns3Runner.Create();
 
   SetupProxy();
+
+  SetupTrace();
 
   m_pegasusVars.m_simulatorContext = Simulator::GetContext();
 
