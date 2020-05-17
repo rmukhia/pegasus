@@ -1,0 +1,9 @@
+<launch>
+<param name="use_sim_time" value="true" />
+  <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true" output="screen">
+    <param name="magnetic_declination_radians" value="0"/>
+    <param name="broadcast_utm_transform" value="true"/>
+    <remap from="imu/data" to="mavros/imu/data" />
+    <remap from="gps/fix" to="mavros/global_position/raw/fix" />
+  </node>
+</launch>
