@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(pegasus_ros)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -10,8 +10,17 @@ project(pegasus_ros)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  geodesy
   swri_transform_util
 )
+
+if(MSVC)  
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")  
+else()  
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")  
+endif()
+
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)

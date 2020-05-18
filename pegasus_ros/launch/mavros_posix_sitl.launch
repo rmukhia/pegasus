@@ -45,8 +45,8 @@
         <arg name="respawn_gazebo" value="$(arg respawn_gazebo)"/>
     </include>
     <!-- MAVROS -->
-    <include file="$(find mavros)/launch/px4.launch">
-        <arg name="config_yaml" value="$(find pegasus_controller)/launch/px4_config_0.yaml" />
+    <include file="$(find pegasus_ros)/launch/px4.launch">
+        <arg name="config_yaml" value="$(find pegasus_ros)/launch/px4_config_0.yaml" />
         <!-- GCS link is provided by SITL -->
         <arg name="gcs_url" value=""/>
         <arg name="fcu_url" value="$(arg fcu_url)"/>

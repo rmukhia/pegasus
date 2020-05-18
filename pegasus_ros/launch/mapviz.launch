@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <node pkg="mapviz" type="mapviz" name="mapviz"></node>
   <node pkg="swri_transform_util" type="initialize_origin.py" name="initialize_origin" >
@@ -5,10 +6,10 @@
     <param name="local_xy_origin" value="control_station"/>
     <rosparam param="local_xy_origins">
       [{ name: control_station,
-         latitude: 14.081088,
-         longitude: 100.612747,
-         altitude: 7,
-         heading: 0.0}]
+      latitude: 14.081104,
+      longitude: 100.612743,
+      altitude: 7,
+      heading: 0.0}]
     </rosparam>
   </node>
   <node pkg="tf" type="static_transform_publisher" name="swri_transform" args="0 0 0 0 0 0 /map /origin 100"  />
