@@ -7,13 +7,13 @@
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="rmukhia@todo.todo">rmukhia</maintainer>
+  <maintainer email="raunak.mukhia@gmail.com">Raunak Mukhia</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>GPLv3</license>
 
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
@@ -51,10 +51,23 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>swri_transform_util</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_export_depend>swri_transform_util</build_export_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>geographic_msgs</build_depend>
+  <build_depend>geodesy</build_depend>
+  <build_depend>tf2</build_depend>
+  <build_depend>tf2_ros</build_depend>
   <build_export_depend>std_msgs</build_export_depend>
-  <exec_depend>swri_transform_util</exec_depend>
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_export_depend>geographic_msgs</build_export_depend>
+  <build_export_depend>geodesy</build_export_depend>
+  <build_export_depend>tf2</build_export_depend>
+  <build_export_depend>tf2_ros</build_export_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometric_msgs</exec_depend>
+  <exec_depend>geographic_msgs</exec_depend>
+  <exec_depend>geodesy</exec_depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

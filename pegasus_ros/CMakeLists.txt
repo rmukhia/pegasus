@@ -10,6 +10,10 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  geometry_msgs
+  geographic_msgs
+  tf2
+  tf2_ros
   geodesy
   swri_transform_util
 )
@@ -142,7 +146,8 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_map_util src/map_util/pegasus_map_util.cpp)
+add_executable(${PROJECT_NAME}_map_util src/utils/pegasus_map_util_node.cpp)
+add_executable(${PROJECT_NAME}_network_status_util src/utils/pegasus_network_status_util_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -159,6 +164,9 @@ target_link_libraries(${PROJECT_NAME}_map_util
   ${catkin_LIBRARIES}
 )
 
+target_link_libraries(${PROJECT_NAME}_network_status_util
+  ${catkin_LIBRARIES}
+)
 #############
 ## Install ##
 #############
