@@ -2,7 +2,7 @@ window_sizes 1436 852 356 1074 756 44
 cleanlooks_style
 diagrams
   active  classdiagram_ref 128137 // Pegaus
-    1573 887 67 D 420 0
+    1573 887 60 D 0 0
 end
 show_stereotypes
 marked

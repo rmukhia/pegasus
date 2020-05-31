@@ -94,7 +94,6 @@ class PegasusMapUtil {
             m_globalPoseUTM.orientation.w
         ));
 
-        
         mLocal.getRPY(roll,pitch, lyaw);
         mGlobal.getRPY(roll, pitch, gyaw);
 
@@ -103,7 +102,7 @@ class PegasusMapUtil {
         tf2::Quaternion originQ;
         /* Set roll pitch yaw */
         originQ.setRPY(0.0f, 0.0f, originYaw);
-        
+
         tf2::convert(originQ, m_globalOriginPoseUTM.orientation);
         ROS_INFO_STREAM("[Local Map Origin]" << m_globalOriginPoseUTM);
       }
@@ -114,7 +113,7 @@ class PegasusMapUtil {
 
         tf2::convert(mapOriginUTM, mapT);
         tf2::convert(m_globalOriginPoseUTM, childMapT);
-        
+
         tf2::Transform transform = mapT.inverseTimes(childMapT);
 
         geometry_msgs::TransformStamped transformStamped;
@@ -313,8 +312,7 @@ int main (int argc, char **argv) {
   while (ros::ok()) {
     ros::spinOnce();
 
-    
-    if (ite == 50) { 
+    if (ite == 50) {
       pegasusMapUtil.Compute();
     }
     else if (ite > 50) {
