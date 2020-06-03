@@ -30,7 +30,7 @@ def _getGridCells(iMax, jMax, xMin, yMin, cellSize):
 def _getGridCellIndex(iMax, jMax, k):
   j = math.floor(k/iMax)
   i = k - j * iMax
-  return (i, j)
+  return (int(i), int(j))
 
 def _getLineSegments(polygon):
   n = np.shape(polygon)[0]
@@ -133,6 +133,8 @@ def getGridCells(polygon, c):
 
   minMax = _getMinMaxVertices(polygon)
   gridCells.minMax = _getGridRange(minMax[0], minMax[1], minMax[2], minMax[3], c)
+
+  gridCells.boundingBox = _getBoundingBoxVertices(polygon)
 
   gridCells.cells = _getGridCells(gridCells.minMax[0], gridCells.minMax[1],
       minMax[0], minMax[1],  c)
