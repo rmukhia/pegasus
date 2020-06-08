@@ -145,14 +145,14 @@ class PathFinder(object):
       if (current.h == 0):
         return ('found', current)
 
-      confgs = [x for x in range(numConf)]
-
-      while len(confgs) > 0:
+      #confgs = [x for x in range(numConf)]
+      for cnf in range(numConf):
+      #while len(confgs) > 0:
         successor = None
         successorCost = current.g + 1
         # print (successorCost)
         try:
-          cnf = confgs.pop(random.randrange(len(confgs)))
+          #cnf = confgs.pop(random.randrange(len(confgs)))
           successor = self.getNeighbour(current, cnf)
         except Exception as e:
           # print (e, current.h)
@@ -184,7 +184,8 @@ class PathFinder(object):
       rospy.loginfo (ret)
       goals.append(goal)
       h = goal.h
-      rospy.loginfo ('h= %s' %(h,)) 
+      rospy.loginfo ('h= %s, g= %s, f=%s' %(h, goal.g, goal.f())) 
+      rospy.loginfo (goal.visitedCells.T)
       if (prev_h <= h):
         # Does not converge
         sigma += 1
@@ -208,7 +209,7 @@ class PathFinder(object):
 
     agentpose = []
     for i in range(numAgents):
-      agentpose.append({ 'x': [], 'y': [], 'steps': [] })
+      agentpose.append({ 'points': [], 'steps': [] })
 
     cur = finalGoal
     while cur is not None:
@@ -216,12 +217,11 @@ class PathFinder(object):
         # truncate all steps which are redundant
         if (len(agentpose[i]['steps']) > 0 and cur.movementCounter[agentId] >= agentpose[i]['steps'][-1]):
             continue
-        agentpose[i]['x'].append(cur.agentCells[agentId].position[0])
-        agentpose[i]['y'].append(cur.agentCells[agentId].position[1])
+        agentpose[i]['points'].append((cur.agentCells[agentId].position[0], 
+            cur.agentCells[agentId].position[1]))
         agentpose[i]['steps'].append(cur.movementCounter[agentId])
       cur = cur.parent
     for i in range(numAgents):
-      agentpose[i]['x'].reverse()
-      agentpose[i]['y'].reverse()
+      agentpose[i]['points'].reverse()
 
     return agentpose

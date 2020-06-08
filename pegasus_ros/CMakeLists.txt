@@ -13,6 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   geographic_msgs
+  nav_msgs
+  visualization_msgs
   tf2
   tf2_ros
   geodesy
@@ -178,7 +180,8 @@ target_link_libraries(${PROJECT_NAME}_network_status_util
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/pegasus_grid.py
+  scripts/pegasus_planner.py
+  scripts/pegasus_controller.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
