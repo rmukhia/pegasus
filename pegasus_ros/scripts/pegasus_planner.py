@@ -2,7 +2,7 @@
 
 import rospy
 import numpy as np
-from geometry_msgs.msg import PolygonStamped, Point, PoseStamped
+from geometry_msgs.msg import PolygonStamped, Point, PoseStamped, PointStamped
 from visualization_msgs.msg import Marker
 from nav_msgs.msg import Path
 from tf.transformations import quaternion_from_euler
@@ -14,16 +14,39 @@ from pegasus_planner.pegasus_path_finder import PathFinder
 from pegasus_planner.pegasus_state import State
 
 class PegasusPlanner(object):
-  def __init__(self, agents):
+  def __init__(self, mavrosNamespaces, params):
     self.gridCells = None
     self.cellContainer = None
-    self.agents = agents
     self.agentPathPublisher = {}
     self.polygonSub = None
     self.markerPub = None
     self.unvisitedPoints = []
     self.visitedPoints = []
-    pass
+    self.params = params
+    self.agents = {}
+    self.mavrosNamespaces = mavrosNamespaces
+    for agent in mavrosNamespaces:
+      self.agents[agent] = {
+          'mapPoint': None,
+          'mapPointSubscriber': None,
+          'pathPublisher': None,
+        }
+
+    self.subscribeAgentPoints()
+    self.subscribeAndPublish()
+
+  def subscribeAgentPoints(self):
+    for agent in self.agents:
+      self.agents[agent]['mapPointSubscriber'] = rospy.Subscriber('/pegasus/%s/position/gpsToMap' % (agent, ),
+          PointStamped, self.recvAgentMapPoint, (agent,))
+
+
+  def subscribeAndPublish(self):
+    self.polygonSub = rospy.Subscriber('/mapviz/region_selected', PolygonStamped, self.recvPolygon)
+    self.markerPub = rospy.Publisher('/pegasus/grid_markers', Marker, latch=True, queue_size=1000)
+    for agent in self.agents:
+      self.agents[agent]['pathPublisher'] = rospy.Publisher('/pegasus/%s/path' % ( agent ,), Path,
+          latch= True, queue_size=1000)
 
   def createGridMarkers(self):
     for k in range(self.gridCells.minMax[0] * self.gridCells.minMax[1]):
@@ -56,6 +79,7 @@ class PegasusPlanner(object):
 
     self.markerPub.publish(marker)
 
+    '''
     marker = Marker()
     marker.header.frame_id = '/map'
     marker.ns = 'visited'
@@ -68,32 +92,10 @@ class PegasusPlanner(object):
     marker.color.r = 1
     marker.color.b = 1
     self.markerPub.publish(marker)
-
-    marker = Marker()
-    marker.header.frame_id = '/map'
-    marker.ns = 'test'
-    marker.id = 1
-    marker.type = marker.ARROW
-    marker.action = marker.ADD
-    q = quaternion_from_euler(0, 0, 1.57)
-    marker.pose.orientation.x = q[0]
-    marker.pose.orientation.y = q[1]
-    marker.pose.orientation.z = q[2]
-    marker.pose.orientation.w = q[3]
-    marker.pose.position.x = 0
-    marker.pose.position.y = 0
-    marker.pose.position.z = 10
-    marker.scale.x = 5
-    marker.scale.y = 5
-    marker.scale.z = 5
-    marker.color.g = 1
-    marker.color.r = 1
-    marker.color.b = 0
-    marker.color.a = 1
-    self.markerPub.publish(marker)
+    '''
 
   def createAgentMarkers(self, agentspose):
-    numAgents = len(self.agents)
+    numAgents = len(self.mavrosNamespaces)
 
     while True:
       isEmpty = True
@@ -108,7 +110,7 @@ class PegasusPlanner(object):
         if (len(agentspose[i]['points']) == 0):
           continue
         marker = Marker()
-        marker.header.frame_id = '/map'
+        marker.header.frame_id = 'map'
         marker.ns = 'agents'
         marker.id = i
         marker.type = marker.CUBE
@@ -131,24 +133,30 @@ class PegasusPlanner(object):
         self.markerPub.publish(marker)
 
 
-        for k in range(len(self.unvisitedPoints)):
-          p = self.unvisitedPoints[k]
-          if p.x == x and p.y == y:
-            del self.unvisitedPoints[k]
-            break
-        self.visitedPoints.append(Point(x, y, 0))
+        #for k in range(len(self.unvisitedPoints)):
+        #  p = self.unvisitedPoints[k]
+        #  if p.x == x and p.y == y:
+        #    del self.unvisitedPoints[k]
+        #    break
+        #self.visitedPoints.append(Point(x, y, 0))
 
       self.publishGrid()
         
       rospy.sleep(0.5)
 
   def createCellContainer(self):
-    self.cellContainer = CellContainer(self.gridCells.boundingBox, self.gridCells, 10, numDirections = 8)
+    self.cellContainer = CellContainer(self.gridCells.boundingBox, self.gridCells, self.params['gridSize'], numDirections = 8, agentsHoverHeight = self.params['agentsHoverHeight'])
 
   def calculatePath(self):
     state = State(0, np.zeros((self.cellContainer.iMax, self.cellContainer.jMax), dtype = float),
         self.cellContainer)
-    self.pathFinder = PathFinder(self.agents, self.cellContainer)
+    agentObjects = []
+    for agent in self.mavrosNamespaces:
+      mapPoint = self.agents[agent]['mapPoint']
+      obj =  Agent(agent, (mapPoint.point.x, mapPoint.point.y))
+      agentObjects.append(obj)
+
+    self.pathFinder = PathFinder(agentObjects, self.cellContainer)
     goal = self.pathFinder.find(8, 4)
     return goal
 
@@ -156,7 +164,7 @@ class PegasusPlanner(object):
     # to get the angle between two vectors, tan -1 (y1 -y2/ x1 -x2)
     # basically transpose x2,y2 to the origin and get the direction of
     # the transposed vector.
-    numAgents = len(self.agents)
+    numAgents = len(self.mavrosNamespaces)
     for i in range(numAgents):
       numPoints = len(agentspose[i]['points'])  
       vectors1 = np.array(agentspose[i]['points'])
@@ -170,7 +178,7 @@ class PegasusPlanner(object):
       poses = []
 
       for k in range(numPoints):
-        '''
+        """
         q = None
         yaw = 0
         if (v1sv2[k, 0] == 0 or v1sv2[k, 1] == 0):
@@ -192,7 +200,7 @@ class PegasusPlanner(object):
               # going down
               yaw = 1.5 * np.pi
         else:
-        '''
+        """
         yaw = direction[k]
 
         # Don't know why np.pi has to be put. Maybe coordinate difference
@@ -212,7 +220,7 @@ class PegasusPlanner(object):
       path = Path()
       path.header.frame_id = '/map'
       path.poses = poses
-      self.agentPathPublisher[self.agents[i].id].publish(path)
+      self.agents[self.mavrosNamespaces[i]]['pathPublisher'].publish(path)
 
   def recvPolygon(self, data):
     rospy.loginfo('Received polygon...')
@@ -221,34 +229,40 @@ class PegasusPlanner(object):
     for i in range(numPoints):
       polygon[i] = (data.polygon.points[i].x , data.polygon.points[i].y)
 
-    self.gridCells = getGridCells(polygon, 10)
+    self.gridCells = getGridCells(polygon, self.params['gridSize'])
     rospy.loginfo('Calculated cells...')
     self.createGridMarkers()
     self.visitedPoints = []
     self.publishGrid()
     self.createCellContainer()
-    goal = self.calculatePath()
-    agentspose = self.pathFinder.getMovementPlanFromGoal(goal)
-    self.createPath(agentspose)
-    self.createAgentMarkers(agentspose)
 
-  def subscribeAndPublish(self):
-    self.polygonSub = rospy.Subscriber('/mapviz/region_selected', PolygonStamped, self.recvPolygon)
-    self.markerPub = rospy.Publisher('/pegasus/grid_markers', Marker, latch=True, queue_size=1000)
+    isPoseAvailable = True
     for agent in self.agents:
-      pub = rospy.Publisher('/pegasus/path/%s' % ( agent.id,), Path, latch= True, queue_size=1000)
-      self.agentPathPublisher[agent.id] = pub
+      if self.agents[agent]['mapPoint'] is None:
+        isPoseAvailable = False
+        break
 
+    if isPoseAvailable:
+      goal = self.calculatePath()
+      agentspose = self.pathFinder.getMovementPlanFromGoal(goal)
+      self.createPath(agentspose)
+      #self.createAgentMarkers(agentspose)
+
+  def recvAgentMapPoint(self, data, args):
+    agent = args[0]
+    self.agents[agent]['mapPoint'] = data
 
 if __name__ == '__main__':
   rospy.init_node('pegasus_planner')
   rospy.loginfo('Starting pegasus planner...')
-  agents = [
-      Agent('uav0', (-21.9,19.0)),
-      Agent('uav1', (-22.5,-2.4)),
-      Agent('uav2', (-17.5,5.0)),
-      ]
-  pegasusPlanner = PegasusPlanner(agents)
-  pegasusPlanner.subscribeAndPublish()
+  mavrosNamespaces = rospy.get_param('pegasus_mavros_namespaces')
+  zHeight = rospy.get_param('agents_hover_height')
+  gridSize = rospy.get_param('grid_size')
+
+  pegasusPlanner = PegasusPlanner(mavrosNamespaces, {
+    'agentsHoverHeight': float(zHeight),
+    'gridSize': float(gridSize)
+    }
+  )
 
   rospy.spin()

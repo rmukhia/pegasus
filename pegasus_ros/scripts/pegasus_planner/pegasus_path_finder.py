@@ -17,10 +17,21 @@ class PathFinder(object):
   def getInitialState(self):
     visitedCells = np.zeros((self.cellContainer.iMax, self.cellContainer.jMax), dtype=float)
     state = State(0, visitedCells, self.cellContainer)
+    # TODO change this algorithm
+    for i, agent in enumerate(self.agents):
+      #cell = self.cellContainer.cells[i][i]
 
-    for agent in self.agents:
-      cell = self.cellContainer.positionToCell(agent.initialPosition)
-      state.addAgentAction(agent.id, 99, cell)
+      direction = self.cellContainer.MOVE['STAY']
+      while direction >= 0:
+        try:
+          cell = self.cellContainer.positionToCell(agent.initialPosition)
+          cell = self.cellContainer.moveAndGetCell(direction, currentCell = cell)
+          direction -=1
+          state.addAgentAction(agent.id, 99, cell)
+          break
+        except:
+          pass
+
       state.checkConstraints(self.cellContainer.NUM_DIRECTIONS)
       state.updateVisitedCells()
     state.calculateG(self.cellContainer.NUM_DIRECTIONS)
@@ -45,11 +56,11 @@ class PathFinder(object):
 
   def printParents(self, state):
     current = state
-    print ('--------child start------------')
+    rospy.loginfo ('--------child start------------')
     while current is not None:
-      print (current)
+      rospy.loginfo (current)
       current = current.parent
-    print ('--------parent end------------')
+    rospy.loginfo ('--------parent end------------')
 
   def getDepth(self, state):
     i = 0;
@@ -99,7 +110,7 @@ class PathFinder(object):
       try:
         initialState = self.getInitialState()
       except Exception as e:
-        # print (e)
+        rospy.logerr (e)
         return ('not-found', None)
 
     openl.append(initialState)

@@ -16,7 +16,6 @@
   </rosparam>
   <param name="agents_hover_height" value="10"/>
   <param name="grid_size" value="10"/>
-  <param name="map_origin_topic" value="/local_xy_origin"/>
-  <node pkg="pegasus_ros" type="pegasus_controller.py" name="pegasus_controller" respawn="false" output="screen">
+  <node pkg="pegasus_ros" type="pegasus_planner.py" name="pegasus_planner" respawn="false" output="screen">
   </node>
 </launch>

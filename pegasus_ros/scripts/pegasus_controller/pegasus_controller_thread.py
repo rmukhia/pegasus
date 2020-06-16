@@ -1,9 +1,12 @@
 import threading
 import rospy
 import numpy as np
+import cv2
 
+from geodesy import utm
 import tf2_ros
 import tf2_geometry_msgs
+from tf.transformations import quaternion_from_matrix, translation_from_matrix
 from geometry_msgs.msg import PoseStamped
 from mavros_msgs.msg import State
 from mavros_msgs.srv import SetMode, CommandBool
@@ -18,7 +21,7 @@ class PegasusControllerThread(threading.Thread):
     self.state = PegasusControllerState.IDLE
     self.prepIterator = 100
     self.setModeLastTime = None
-
+    self.calibCaptureTime = None
 
   def is_at_position(self, localPose, x, y, z, offset):
     desired = np.array((x, y, z))
@@ -55,7 +58,6 @@ class PegasusControllerThread(threading.Thread):
       self.prepIterator = 100
 
   def _offboardState(self):
-
     now = rospy.get_rostime()
     # Run every 5 sec
     if self.setModeLastTime is not None and now - self.setModeLastTime < rospy.Duration(5.):
@@ -117,7 +119,73 @@ class PegasusControllerThread(threading.Thread):
         reached = False
 
     if reached:
-      self.state = PegasusControllerState.RUN
+      self.state = PegasusControllerState.CALIBERATE
+    
+  def _caliberateState(self):
+    rospy.loginfo('_calibrateState')
+    pathCompleted = True
+    for agent in self.pegasusController.agents.values():
+      if len(agent['calibrationPath'].poses) <= agent['currentPoseInCalibrationPath']:
+        continue
+      pathCompleted = False
+      currentPose = agent['calibrationPath'].poses[agent['currentPoseInCalibrationPath']]
+      agent['setPointPublisher'].publish(currentPose)
+      if not agent['reached'] and self.is_at_position(agent['localPose'],
+          currentPose.pose.position.x, 
+          currentPose.pose.position.y,
+          currentPose.pose.position.z, 0.5):
+        agent['reached'] = True
+
+    if all([agent['reached'] for agent in self.pegasusController.agents.values()]):
+      # all agents have reached the pose
+      for agent in self.pegasusController.agents.values():
+        agent['captureLocalPose'] = True
+        agent['captureGlobalGps'] = True
+        agent['currentPoseInCalibrationPath'] += 1
+        agent['reached'] = False
+
+    if pathCompleted:
+      # all agents have completed their path
+      self.state = PegasusControllerState.GENERATE_TRANSFORMS
+
+    now = rospy.get_rostime()
+    # capture pose every 2 seconds
+    if self.calibCaptureTime is not None and now - self.calibCaptureTime < rospy.Duration(1.):
+      for agent in self.pegasusController.agents.values():
+        print('Capture signal')
+        agent['captureLocalPose'] = True
+        agent['captureGlobalGps'] = True
+      self.calibCaptureTime = now
+
+  def _generateTransformsState(self):
+    rospy.loginfo('_generateTransformsState')
+
+    for agent in self.pegasusController.agents.values():
+      localPoints = np.array([
+        (
+          p.pose.position.x,
+          p.pose.position.y,
+          p.pose.position.z
+          ) for p in agent['calibLocalPoses']])
+
+      globalPoints =  agent['calibGlobalGpses']
+
+      #globalPoseUTM = np.array([(p.x, p.y, p.z) for p in globalGpsUTM])
+      # Is this correct?
+      mapPoints = np.subtract(globalPoints, self.pegasusController.mapOrigin)
+
+      h, mask = cv2.findHomography(localPoints[:,0:2], mapPoints[:, 0:2], method=cv2.RANSAC)
+      agent['homography'] = np.eye(4)
+      agent['homography'][0:2,0:2] = h[0:2, 0:2]
+      agent['homography'][0:2,3] = h[0:2, 2]
+      agent['homography'][3,0:2] = h[2, 0:2]
+      agent['homography'][3,3] = h[2, 2]
+
+      agent['transform']['q'] = quaternion_from_matrix(agent['homography'])
+      agent['transform']['t'] = translation_from_matrix(agent['homography'])
+
+    self.state = PegasusControllerState.RUN
+
 
   def _transformMapToLocal(self, pose, agent):
     localMap = agent['localTransformMap']
@@ -129,8 +197,6 @@ class PegasusControllerThread(threading.Thread):
 
     return tf2_geometry_msgs.do_transform_pose(pose, trans)
 
-
-
   def _runState(self):
     rospy.loginfo('_runState')
     pathCompleted = True
@@ -141,28 +207,27 @@ class PegasusControllerThread(threading.Thread):
       pathCompleted = False
       currentPose = agent['path'].poses[agent['currentPoseInPath']]
       transformedPose = self._transformMapToLocal(currentPose, agent)
-      # TODO: make height a ros parameter
-      transformedPose.pose.position.z = 10
+      transformedPose.pose.position.z = self.pegasusController.params['agentsHoverHeight']
       if transformedPose is None:
         rospy.loginfo('Invalid transform')
         continue
-      transformedPose.header.frame_id = '/' + agent['localTransformMap']
+      transformedPose.header.frame_id = agent['localTransformMap']
       agent['setPointPublisher'].publish(transformedPose)
-      if not self.is_at_position(agent['localPose'],
+      if not agent['reached'] and self.is_at_position(agent['localPose'],
           transformedPose.pose.position.x, 
           transformedPose.pose.position.y,
           transformedPose.pose.position.z, 0.5):
-        reached = False
+        agent['reached'] = True
 
-    if reached:
+    if all([agent['reached'] for agent in self.pegasusController.agents.values()]):
       # all agents have reached the pose
       for agent in self.pegasusController.agents.values():
         agent['currentPoseInPath'] += 1
+        agent['reached'] = False
 
     if pathCompleted:
       # all agents have completed their path
       self.state = PegasusControllerState.COMPLETE
-
 
   def run(self):
     rate = rospy.Rate(20)
@@ -177,10 +242,17 @@ class PegasusControllerThread(threading.Thread):
         self._armingState()
       elif self.state == PegasusControllerState.TAKE_OFF:
         self._takeOffState()
+      elif self.state == PegasusControllerState.CALIBERATE:
+        self._caliberateState()
+      elif self.state == PegasusControllerState.GENERATE_TRANSFORMS:
+        self._generateTransformsState()
       elif self.state == PegasusControllerState.RUN:
         self._runState()
       elif self.state == PegasusControllerState.COMPLETE:
-        pass
+        rospy.loginfo("Completed. Restart to run again")
+      # Publish State
+      self.pegasusController.statePublisher.publish(self.state)
+      self.pegasusController.broadcastTransforms()
       try:
         rate.sleep()
       except rospy.ROSInterruptException:

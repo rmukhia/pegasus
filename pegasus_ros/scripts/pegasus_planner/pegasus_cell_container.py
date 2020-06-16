@@ -14,12 +14,13 @@ class CellContainer(object):
       'STAY'      : 8,
   }
 
-  def __init__(self, boundingBox, gridCells, cellSize, numDirections = 4):
+  def __init__(self, boundingBox, gridCells, cellSize, numDirections = 4, agentsHoverHeight = 10):
     self.iMax, self.jMax = gridCells.minMax
     self.boundingBox = boundingBox
     self.gridCells = gridCells
     self.cellSize = cellSize
     self.validCells = None
+    self.agentsHoverHeight = agentsHoverHeight
     self.fillCells()
     self.NUM_DIRECTIONS = numDirections
     
