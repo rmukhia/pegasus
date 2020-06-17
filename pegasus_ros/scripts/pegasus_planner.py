@@ -60,7 +60,7 @@ class PegasusPlanner(object):
 
   def publishGrid(self):
     marker = Marker()
-    marker.header.frame_id = '/map'
+    marker.header.frame_id = 'map'
     marker.ns = 'unvisited'
     marker.id = 0
     marker.type = marker.POINTS
@@ -178,36 +178,10 @@ class PegasusPlanner(object):
       poses = []
 
       for k in range(numPoints):
-        """
-        q = None
-        yaw = 0
-        if (v1sv2[k, 0] == 0 or v1sv2[k, 1] == 0):
-          # parallel to x axis or y axis
-          if v1sv2[k, 1] == 0:
-            # y axis is parallel
-            if (vectors1[k, 0] > vectors2[k, 0]):
-              # going left
-              yaw = 0
-            else:
-              # going right
-              yaw = np.pi
-          elif v1sv2[k, 0] ==0:
-            # x axis is parallel
-            if (vectors1[k, 1] > vectors2[k, 1]):
-              # going up
-              yaw = 0.5 * np.pi
-            else:
-              # going down
-              yaw = 1.5 * np.pi
-        else:
-        """
         yaw = direction[k]
-
-        # Don't know why np.pi has to be put. Maybe coordinate difference
-        q = quaternion_from_euler(0, 0, yaw + np.pi)
-
+        q = quaternion_from_euler(0, 0, yaw)
         pose = PoseStamped()
-        pose.header.frame_id = '/map'
+        pose.header.frame_id = 'map'
         x, y = agentspose[i]['points'][k]
         pose.pose.position.x = x
         pose.pose.position.y = y
@@ -218,7 +192,7 @@ class PegasusPlanner(object):
         pose.pose.orientation.w = q[3]
         poses.append(pose)
       path = Path()
-      path.header.frame_id = '/map'
+      path.header.frame_id = 'map'
       path.poses = poses
       self.agents[self.mavrosNamespaces[i]]['pathPublisher'].publish(path)
 

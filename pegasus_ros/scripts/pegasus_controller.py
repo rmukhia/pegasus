@@ -15,6 +15,7 @@ import tf2_geometry_msgs
 from std_msgs.msg import UInt8
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped, TransformStamped, PointStamped
+from tf.transformations import quaternion_from_euler
 from sensor_msgs.msg import NavSatFix
 from mavros_msgs.msg import State
 from mavros_msgs.srv import SetMode, CommandBool
@@ -49,6 +50,7 @@ class PegasusController(object):
           'mapLPosePublisher': None,
           'mapGPointPublisher': None,
           'calibrationPath' : None,
+          'calibrationPathPublisher': None,
           'currentPoseInCalibrationPath': 0,
           'captureLocalPose': False,
           'captureGlobalGps': False,
@@ -65,6 +67,7 @@ class PegasusController(object):
     self.createTransformBroadcaster()
     self.createTransformListener()
     self.createMavrosServiceClients()
+    self.createCalibrationPathPublisher()
     self.publishControllerState()
     self.publishAgentsMapPosition()
     self.subscribeAndPublishMavrosAgents()
@@ -134,21 +137,40 @@ class PegasusController(object):
     self.tfBuffer = tf2_ros.Buffer()
     self.transformListener = tf2_ros.TransformListener(self.tfBuffer)
 
+  def createCalibrationPathPublisher(self):
+    for agent in self.agents:
+      calibrationPathTopic = '/pegasus/%s/calibration/path' % ( agent, )
+      rospy.loginfo('Publisher to calibration path: %s' % (calibrationPathTopic,))
+      self.agents[agent]['calibrationPathPublisher'] = rospy.Publisher(calibrationPathTopic, Path, latch=True, queue_size=1000)
+
   def createCalibrationPath(self):
-    sideLength = self.params['gridSize'] * 2
+    sideLength = self.params['gridSize']
     agentsHoverHeight = self.params['agentsHoverHeight']
-    boxPoints = ((0, 0), (sideLength, 0), (sideLength, sideLength), (0, sideLength))
+    boxPoints = ((0., 0.), (sideLength, 0.), (sideLength, sideLength), (0., sideLength))
     #boxPoints = ((0, 0), (sideLength, 0))
+    numPoints = len(boxPoints)
+    vectors1 = np.array(boxPoints)
+    vectors2 = np.zeros((numPoints, 2))
+    vectors2[1:] = vectors1[0:-1]
+    v1sv2 = vectors1 - vectors2
+    direction = np.arctan2(v1sv2[:,1], v1sv2[:,0])
     for i, agent in enumerate(self.agents.values()):
       agent['calibrationPath'] = Path()
-      for point in boxPoints:
+      for k in range(numPoints):
+        yaw = direction[k]
+        q = quaternion_from_euler(0, 0, yaw)
         pose = PoseStamped()
-        pose.pose.position.x = point[0]
-        pose.pose.position.y = point[1]
-        pose.pose.position.z = agentsHoverHeight + (i * 5)
-        pose.pose.orientation.w = 1
         pose.header.frame_id = agent['localTransformMap']
+        pose.pose.position.x = boxPoints[k][0]
+        pose.pose.position.y = boxPoints[k][1]
+        pose.pose.position.z = agentsHoverHeight + (i * 2)
+        pose.pose.orientation.x = q[0]
+        pose.pose.orientation.y = q[1]
+        pose.pose.orientation.z = q[2]
+        pose.pose.orientation.w = q[3]
+        agent['calibrationPath'].header.frame_id = agent['localTransformMap']
         agent['calibrationPath'].poses.append(pose)
+        agent['calibrationPathPublisher'].publish(agent['calibrationPath'])
 
   def recvPegasusPath(self, data, args):
     agent = args[0]
