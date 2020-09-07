@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="pegasus_ros" type="pegasus_commander.py" name="pegasus_commander" respawn="false" output="screen">
+    <param name="mavros_namespace" value="/mavros"/>
+    <param name="udp_port" value="4444"/>
+    <param name="map_transform" value="map"/>
+    <param name="baselink_transform" value="base_link"/>
+  </node>
+</launch>

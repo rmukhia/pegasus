@@ -149,7 +149,6 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_map_util src/utils/pegasus_map_util_node.cpp)
 add_executable(${PROJECT_NAME}_network_status_util src/utils/pegasus_network_status_util_node.cpp)
 
 ## Rename C++ executable without prefix
@@ -163,10 +162,6 @@ add_executable(${PROJECT_NAME}_network_status_util src/utils/pegasus_network_sta
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_map_util
-  ${catkin_LIBRARIES}
-)
-
 target_link_libraries(${PROJECT_NAME}_network_status_util
   ${catkin_LIBRARIES}
 )
@@ -182,6 +177,8 @@ target_link_libraries(${PROJECT_NAME}_network_status_util
 catkin_install_python(PROGRAMS
   scripts/pegasus_planner.py
   scripts/pegasus_controller.py
+  scripts/pegasus_controller2.py
+  scripts/pegasus_commander.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

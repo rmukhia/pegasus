@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+enum Command {
+  NONE_COMMAND = 0;
+  SET_OFFBOARD = 1;
+  SET_RETURN_TO_HOME = 2;
+  SET_ARM = 3;
+  TAKE_OFF = 4;
+  SET_PATH = 5;
+  GOTO_POSE_INDEX = 6;
+  HEART_BEAT = 7;
+}
+
+enum Status {
+  NONE_STATUS = 0;
+  SUCCESS = 1;
+  FAILURE = 2;
+  POSE_INDEX_REACHED = 3;
+  HEART_BEAT_STATUS = 4;
+}
+
+enum CommanderState {
+  IDLE = 0;
+  PREP_STATE = 1;
+  OFFBOARD_MODE = 2;
+  ARMING = 3;
+  HOVER = 4;
+  RUN = 5;
+  RETURN_TO_HOME = 6;
+}
+
+/* Pegasus Controller */
+message Request {
+  uint64 timestamp = 1;
+  Command command = 2;
+  oneof data {
+    bool placeHolder = 3; // Placeholder
+    float altitude = 4; // TAKE_OFF
+    uint32 poseIndex = 6; // GOTO_POSE_INDEX
+    bytes reqData = 10; // ROS data
+  }
+}
+
+/* Pegasus Commander */
+message HeartBeatData {
+  CommanderState commanderState = 1; // HEART_BEAT
+  bytes mavrosState = 2;
+  bytes baseLinkTransform = 3;
+  bytes localPose = 5;
+  bytes gpsNavSat = 6;
+}
+
+message Reply {
+  uint64 timestamp = 1;
+  Status status = 2;
+  oneof data {
+    Command command = 3; // SUCCESS, FAILURE
+    uint32 poseIndex = 4; // POSE_INDEX_REACHED
+    HeartBeatData heartbeatData = 5; // Heart Beat
+    bytes repData = 6; // ROS data
+  }
+}
+
