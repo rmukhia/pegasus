@@ -5,9 +5,7 @@
     <!-- vehicle model and world -->
     <arg name="est" default="ekf2"/>
     <arg name="vehicle" default="iris"/>
-
     <arg name="world" default="$(find pegasus_ros)/worlds/AIT_world.world"/>
-        <!--<arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/rubble.world"/>-->
     <!-- gazebo configs -->
     <arg name="gui" default="false"/>
     <arg name="debug" default="false"/>
@@ -24,6 +22,7 @@
         <arg name="verbose" value="$(arg verbose)"/>
         <arg name="paused" value="$(arg paused)"/>
     </include>
+    <!-- UAV1 -->
     <!-- UAV0 -->
     <group ns="uav0">
         <!-- MAVROS and vehicle configs -->
@@ -31,8 +30,8 @@
         <arg name="fcu_url" default="udp://:14540@localhost:14580"/>
         <!-- PX4 SITL and vehicle spawn -->
         <include file="$(find px4)/launch/single_vehicle_spawn.launch">
-            <arg name="x" value="2"/>
-            <arg name="y" value="2"/>
+            <arg name="x" value="1"/>
+            <arg name="y" value="1"/>
             <arg name="z" value="0"/>
             <arg name="R" value="0"/>
             <arg name="P" value="0"/>
@@ -44,7 +43,7 @@
         </include>
         <!-- MAVROS -->
         <include file="$(find pegasus_ros)/launch/px4.launch">
-          <arg name="config_yaml" value="$(find pegasus_ros)/launch/configs/px4_config_0.yaml" />
+            <arg name="config_yaml" value="$(find pegasus_ros)/launch/configs/px4_config_0.yaml" />
             <arg name="fcu_url" value="$(arg fcu_url)"/>
             <arg name="gcs_url" value=""/>
             <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
@@ -58,8 +57,8 @@
         <arg name="fcu_url" default="udp://:14541@localhost:14581"/>
         <!-- PX4 SITL and vehicle spawn -->
         <include file="$(find px4)/launch/single_vehicle_spawn.launch">
-            <arg name="x" value="3"/>
-            <arg name="y" value="3"/>
+            <arg name="x" value="2"/>
+            <arg name="y" value="2"/>
             <arg name="z" value="0"/>
             <arg name="R" value="0"/>
             <arg name="P" value="0"/>
@@ -71,7 +70,7 @@
         </include>
         <!-- MAVROS -->
         <include file="$(find pegasus_ros)/launch/px4.launch">
-          <arg name="config_yaml" value="$(find pegasus_ros)/launch/configs/px4_config_1.yaml" />
+            <arg name="config_yaml" value="$(find pegasus_ros)/launch/configs/px4_config_1.yaml" />
             <arg name="fcu_url" value="$(arg fcu_url)"/>
             <arg name="gcs_url" value=""/>
             <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
@@ -85,8 +84,8 @@
         <arg name="fcu_url" default="udp://:14542@localhost:14582"/>
         <!-- PX4 SITL and vehicle spawn -->
         <include file="$(find px4)/launch/single_vehicle_spawn.launch">
-            <arg name="x" value="4"/>
-            <arg name="y" value="4"/>
+            <arg name="x" value="3"/>
+            <arg name="y" value="3"/>
             <arg name="z" value="0"/>
             <arg name="R" value="0"/>
             <arg name="P" value="0"/>
@@ -98,7 +97,7 @@
         </include>
         <!-- MAVROS -->
         <include file="$(find pegasus_ros)/launch/px4.launch">
-          <arg name="config_yaml" value="$(find pegasus_ros)/launch/configs/px4_config_2.yaml" />
+            <arg name="config_yaml" value="$(find pegasus_ros)/launch/configs/px4_config_2.yaml" />
             <arg name="fcu_url" value="$(arg fcu_url)"/>
             <arg name="gcs_url" value=""/>
             <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
@@ -106,8 +105,3 @@
         </include>
     </group>
 </launch>
-<!-- to add more UAVs (up to 10):
-Increase the id
-Change the name space
-Set the FCU to default="udp://:14540+id@localhost:14550+id"
-Set the malink_udp_port to 14560+id) -->

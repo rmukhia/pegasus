@@ -39,7 +39,6 @@ class State(object):
 
     def set_mavros_gw(self, mavros_gw):
         self.mavrosGw = mavros_gw
-        pass
 
     def set_callback(self, callback):
         self.callback = callback
@@ -211,7 +210,6 @@ class HoverState(State):
 
     def step(self):
         pose = self.data
-        rospy.loginfo(pose)
         self.mavrosGw.set_mavros_local_pose(pose)
 
     def next(self, next_state):
@@ -239,7 +237,6 @@ class RunState(State):
             self.complete = True
             self.runCallback()
             return
-        rospy.loginfo(expected_pose)
         self.mavrosGw.set_mavros_local_pose(expected_pose)
 
     def next(self, next_state):
@@ -265,16 +262,17 @@ class ReturnToHomeState(State):
         now = rospy.get_rostime()
         if self.prev_time is not None and now - self.prev_time < rospy.Duration(5):
             return
-        if self.mavrosGw.get_mavros_state().armed:
+        if self.mavrosGw.get_mavros_state().mode != 'AUTO.RTL':
             try:
-                res = self.mavrosGw.mavrosService['arming'](False)
-                if not res.success:
-                    rospy.logerr("failed to send disarm command")
+                res = self.mavrosGw.mavrosService['setMode'](
+                    base_mode=0, custom_mode='AUTO.RTL')
+                if not res.mode_sent:
+                    rospy.logerr("failed to send mode command")
                     self.prev_time = now
                     return
             except rospy.ServiceException as e:
-                self.prev_time = now
                 rospy.logerr(e)
+                self.prev_time = now
                 return
         self.complete = True
         self.runCallback()

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="pegasus_ros" type="pegasus_controller2.py" name="pegasus_controller" respawn="false" output="screen">
+    <param name="agents_hover_height" value="10"/>
+    <param name="grid_size" value="10"/>
+    <param name="map_origin_topic" value="10"/>
+    <rosparam param="agents">
+      [
+      ["uav0", "localhost", 4444]
+      ]
+    </rosparam>
+    <param name="map_origin_topic" value="/local_xy_origin"/>
+  </node>
+</launch>

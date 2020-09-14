@@ -33,31 +33,34 @@ enum CommanderState {
 message Request {
   uint64 timestamp = 1;
   Command command = 2;
+  uint64 command_id = 3;
   oneof data {
-    bool placeHolder = 3; // Placeholder
-    float altitude = 4; // TAKE_OFF
-    uint32 poseIndex = 6; // GOTO_POSE_INDEX
-    bytes reqData = 10; // ROS data
+    bool place_holder = 10; // Placeholder
+    float altitude = 11; // TAKE_OFF
+    uint32 pose_index = 12; // GOTO_POSE_INDEX
+    bytes req_data = 13; // ROS data
   }
 }
 
 /* Pegasus Commander */
 message HeartBeatData {
-  CommanderState commanderState = 1; // HEART_BEAT
-  bytes mavrosState = 2;
-  bytes baseLinkTransform = 3;
-  bytes localPose = 5;
-  bytes gpsNavSat = 6;
+  CommanderState commander_state = 1; // HEART_BEAT
+  uint64 command_id = 2;
+  bool command_complete = 3;
+  bytes mavros_state = 4;
+  bytes baselink_transform = 5;
+  bytes local_pose = 6;
+  bytes gps_nav_sat = 7;
 }
 
 message Reply {
   uint64 timestamp = 1;
   Status status = 2;
   oneof data {
-    Command command = 3; // SUCCESS, FAILURE
-    uint32 poseIndex = 4; // POSE_INDEX_REACHED
-    HeartBeatData heartbeatData = 5; // Heart Beat
-    bytes repData = 6; // ROS data
+    Command command = 10; // SUCCESS, FAILURE
+    uint32 pose_index = 11; // POSE_INDEX_REACHED
+    HeartBeatData heartbeat_data = 12; // Heart Beat
+    bytes rep_data = 13; // ROS data
   }
 }
 

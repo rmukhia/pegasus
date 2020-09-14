@@ -1,0 +1,16 @@
+window_sizes 1920 1054 279 1635 938 64
+cleanlooks_style
+diagrams
+  statediagram_ref 134537 // pegasus_controller
+    1635 938 79 A4 0 0
+  active  statediagram_ref 141065 // pegasus_commander
+    1155 758 100 A4 12 0
+end
+show_stereotypes
+selected statediagram_ref 141065 // pegasus_commander
+open
+  state_ref 134537 // pegasus_controller
+  state_ref 141961 // pegasus_commander
+end
+end
+verbose

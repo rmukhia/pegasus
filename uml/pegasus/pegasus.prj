@@ -1,0 +1,339 @@
+format 222
+"pegasus"
+  revision 6
+  modified_by 9 "rmukhia"
+
+
+  
+  // class settings
+  default_attribute_visibility private default_relation_visibility private default_operation_visibility public
+  
+  classdiagramsettings draw_all_relations yes hide_attributes no hide_operations no hide_getset_operations no hide_ports no show_members_full_definition no show_members_visibility no show_members_stereotype no show_members_context no show_members_multiplicity no show_members_initialization no show_attribute_modifiers no member_max_width 127 show_parameter_dir yes show_parameter_name yes package_name_in_tab no class_drawing_mode natural drawing_language uml show_context_mode no auto_label_position yes show_relation_modifiers no show_relation_visibility no show_infonote no shadow yes gradient none show_stereotype_properties no end
+  
+  classcompositediagramsettings auto_label_position yes draw_all_relations yes shadow yes gradient none end
+  
+  usecasediagramsettings package_name_in_tab no show_context_mode no auto_label_position yes draw_all_relations yes class_drawing_mode actor shadow yes gradient none show_stereotype_properties no end
+  
+  sequencediagramsettings show_full_operations_definition no show_class_of_operation no write_horizontally yes instances_drawing_mode natural drawing_language uml draw_all_relations yes shadow yes gradient none show_stereotype_properties no show_class_context_mode no show_msg_context_mode no end
+  
+  collaborationdiagramsettings show_full_operations_definition no show_class_of_operation no show_hierarchical_rank no write_horizontally yes instances_drawing_mode natural drawing_language uml package_name_in_tab no show_class_pack_context_mode no show_msg_context_mode no draw_all_relations yes shadow yes gradient none show_stereotype_properties no end
+  
+  objectdiagramsettings write_horizontally yes package_name_in_tab no show_class_pack_context_mode no auto_label_position yes draw_all_relations yes shadow yes gradient none show_stereotype_properties no end
+  
+  objectcompositediagramsettings auto_label_position yes draw_all_relations yes shadow yes gradient none end
+  
+  componentdiagramsettings package_name_in_tab no show_context_mode no auto_label_position yes draw_all_relations yes shadow yes gradient none
+   draw_component_as_icon no show_component_req_prov no show_component_rea no show_stereotype_properties no end
+  
+  deploymentdiagramsettings package_name_in_tab no show_context_mode no write_horizontally yes auto_label_position yes draw_all_relations yes shadow yes gradient none
+   draw_component_as_icon no show_component_req_prov no show_component_rea no show_stereotype_properties no end
+  
+  statediagramsettings package_name_in_tab no show_context_mode no auto_label_position yes write_label_horizontally yes show_trans_definition no draw_all_relations yes shadow yes gradient none
+   show_activities yes region_horizontally yes drawing_language uml show_stereotype_properties no end
+  
+  activitydiagramsettings package_name_in_tab no show_context_mode no show_opaque_action_definition no auto_label_position yes write_label_horizontally no draw_all_relations yes shadow yes gradient none
+   show_infonote yes drawing_language uml show_stereotype_properties no end
+  
+  class_color yellow duration_color transparent continuation_color gray note_color blue fragment_color transparent subject_color transparent usecase_color yellow package_color transparent component_color green artifact_color green deploymentnode_color gray state_color yellow stateaction_color transparent activity_color transparent activityregion_color transparent activitypartition_color transparent activityaction_color transparent parameterpin_color white generalization_color black 
+  dpi 96
+  font_size 9
+  diagram_format A4
+
+  image_root_dir ""
+
+
+  mark_for_import
+  
+  classview 134537 "pegasus_controller"
+    
+    classdiagramsettings member_max_width 0 end
+    
+    classcompositediagramsettings end
+    
+    collaborationdiagramsettings end
+    
+    objectdiagramsettings end
+    
+    objectcompositediagramsettings end
+    
+    sequencediagramsettings end
+    
+    statediagramsettings
+     end
+    
+    
+    activitydiagramsettings
+     end
+    state 134537 "pegasus_controller"
+      stereotype "machine"
+      statediagram 134537 "pegasus_controller"
+	statediagramsettings show_trans_definition yes draw_all_relations no
+	 end
+	size A4
+      end
+
+      pseudostate 134537 entry_point "IDLE"
+	transition 134537 "<transition>"
+	  on state_ref 134665 // OFFBOARD_MODE
+	    uml_trigger "mission start"
+	  external 
+	end
+
+	transition 144777 "<transition>"
+	  on stateaction_ref 142089
+	  external 
+	end
+      end
+
+      pseudostate 134665 final 
+      end
+
+      state 134665 "OFFBOARD_MODE"
+	  uml_do_activity "set offboard for all drones"
+	transition 134665 "<transition>"
+	  on state_ref 134793 // ARMING
+	    uml_trigger "IsAllDronesOffboard()"
+	    uml_guard "true"
+	  external 
+	end
+      end
+
+      state 134793 "ARMING"
+	  uml_do_activity "set arming for all drones"
+	transition 134793 "<transition>"
+	  on state_ref 134921 // TAKE_OFF
+	    uml_trigger "IsAllDronesArmed()"
+	    uml_guard "true"
+	  external 
+	end
+      end
+
+      state 134921 "TAKE_OFF"
+	  uml_do_activity "takeoff all drones to predefined altitude"
+	transition 134921 "<transition>"
+	  on state_ref 135049 // CALIBERATE
+	    uml_trigger "IsAllDronesTakeOffAltitude()"
+	    uml_guard "true"
+	  external 
+	end
+      end
+
+      state 135049 "CALIBERATE"
+	  uml_do_activity "run calibration roution on all drones"
+	transition 135049 "<transition>"
+	  on state_ref 135177 // GENERATE_TRANSFORMS
+	    uml_trigger "IsAllDronesCalibrationCompplete()	"
+	    uml_guard "true"
+	  external 
+	end
+      end
+
+      state 135177 "GENERATE_TRANSFORMS"
+	  uml_do_activity "generate local to global map transforms for all drones"
+	transition 135177 "<transition>"
+	  on state_ref 135305 // RUN
+	    uml_trigger "IsAllDronesTranformationCalculated()	"
+	    uml_guard "true"
+	  external 
+	end
+      end
+
+      state 135305 "RUN"
+	  uml_do_activity "run mission on all drones"
+	transition 135305 "<transition>"
+	  on pseudostate_ref 134665 // final
+	    uml_trigger "all drones have finished mission"
+	  external 
+	end
+
+	transition 135433 "<transition>"
+	  on state_ref 135433 // COMPLETE
+	    uml_trigger "IsAllDronesMissionComplete()"
+	    uml_guard "true"
+	  external 
+	end
+      end
+
+      state 135433 "COMPLETE"
+	  uml_do_activity "all drones return to home"
+	transition 135561 "<transition>"
+	  on pseudostate_ref 134665 // final
+	  external 
+	end
+      end
+
+      stateaction 134537
+	stereotype "receive-signal"
+      end
+
+      stateaction 142089
+	stereotype "receive-signal"
+	uml "START MISSION"
+	transition 144649 "<transition>"
+	  on state_ref 134665 // OFFBOARD_MODE
+	  external 
+	end
+      end
+    end
+
+    state 141961 "pegasus_commander"
+      stereotype "machine"
+      statediagram 141065 "pegasus_commander"
+	statediagramsettings draw_all_relations no
+	 end
+	size A4
+      end
+
+      pseudostate 141193 entry_point "IDLE"
+	transition 142089 "<transition>"
+	  on state_ref 142089 // PREP_STATE
+	  external 
+	end
+
+	transition 144393 "<transition>"
+	  on stateaction_ref 141193
+	  external 
+	end
+      end
+
+      state 142089 "PREP_STATE"
+	transition 142217 "<transition>"
+	  on state_ref 142217 // OFFBOARD_MODE
+	  external 
+	end
+
+	transition 151305 "<transition>"
+	  on state_ref 142217 // OFFBOARD_MODE
+	  external 
+	end
+
+	transition 151433 "<transition>"
+	  on stateaction_ref 141321
+	  external 
+	end
+      end
+
+      state 142217 "OFFBOARD_MODE"
+	transition 142729 "<transition>"
+	  on stateaction_ref 141449
+	  external 
+	end
+      end
+
+      state 142345 "ARMING"
+	transition 142985 "<transition>"
+	  on stateaction_ref 141833
+	  external 
+	end
+
+	transition 143113 "<transition>"
+	  on stateaction_ref 141705
+	  external 
+	end
+
+	transition 143753 "<transition>"
+	  on stateaction_ref 141961
+	  external 
+	end
+      end
+
+      state 142473 "RUN"
+	transition 143497 "<transition>"
+	  on stateaction_ref 141833
+	  external 
+	end
+
+	transition 144265 "<transition>"
+	  on stateaction_ref 141961
+	  external 
+	end
+      end
+
+      state 142601 "RETURN_TO_HOME"
+	transition 144009 "<transition>"
+	  on stateaction_ref 141449
+	  external 
+	end
+
+	transition 144521 "<transition>"
+	  on stateaction_ref 141193
+	  external 
+	end
+      end
+
+      state 142729 "HOVER"
+	transition 143625 "<transition>"
+	  on stateaction_ref 141705
+	  external 
+	end
+
+	transition 144137 "<transition>"
+	  on stateaction_ref 141961
+	  external 
+	end
+      end
+
+      stateaction 141065
+	stereotype "receive-signal"
+      end
+
+      stateaction 141193
+	stereotype "receive-signal"
+	uml "Prep"
+	transition 142345 "<transition>"
+	  on state_ref 142089 // PREP_STATE
+	  external 
+	end
+      end
+
+      stateaction 141321
+	stereotype "receive-signal"
+	uml "Offboard_mode"
+	transition 151561 "<transition>"
+	  on state_ref 142217 // OFFBOARD_MODE
+	  external 
+	end
+      end
+
+      stateaction 141449
+	stereotype "receive-signal"
+	uml "Arm"
+	transition 142857 "<transition>"
+	  on state_ref 142345 // ARMING
+	  external 
+	end
+      end
+
+      stateaction 141577
+	stereotype "send-signal"
+      end
+
+      stateaction 141705
+	stereotype "receive-signal"
+	uml "Run"
+	transition 143369 "<transition>"
+	  on state_ref 142473 // RUN
+	  external 
+	end
+      end
+
+      stateaction 141833
+	stereotype "receive-signal"
+	uml "Hover"
+	transition 143241 "<transition>"
+	  on state_ref 142729 // HOVER
+	  external 
+	end
+      end
+
+      stateaction 141961
+	stereotype "receive-signal"
+	uml "RTH"
+	transition 143881 "<transition>"
+	  on state_ref 142601 // RETURN_TO_HOME
+	  external 
+	end
+      end
+    end
+  end
+end

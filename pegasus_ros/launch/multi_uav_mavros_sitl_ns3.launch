@@ -5,12 +5,17 @@
     <!-- vehicle model and world -->
     <arg name="est" default="ekf2"/>
     <arg name="vehicle" default="iris"/>
-    <arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/AIT_world.world"/>
+
+    <arg name="world" default="$(find pegasus_ros)/worlds/AIT_world.world"/>
+        <!--<arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/rubble.world"/>-->
     <!-- gazebo configs -->
-    <arg name="gui" default="true"/>
+    <arg name="gui" default="false"/>
     <arg name="debug" default="false"/>
     <arg name="verbose" default="false"/>
     <arg name="paused" default="false"/>
+    <env name="PX4_HOME_LAT" value="14.081104" />
+    <env name="PX4_HOME_LON" value="100.612743" />
+    <env name="PX4_HOME_ALT" value="7" />
     <!-- Gazebo sim -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="gui" value="$(arg gui)"/>
@@ -20,15 +25,15 @@
         <arg name="paused" value="$(arg paused)"/>
     </include>
     <!-- UAV0 -->
-    <group ns="iris_0">
+    <group ns="uav0">
         <!-- MAVROS and vehicle configs -->
         <arg name="ID" value="0"/>
         <arg name="fcu_url" default="udp://:14640@localhost:14680"/>
         <arg name="gcs_url" default="udp://:14650@localhost:14690"/>
         <!-- PX4 SITL and vehicle spawn -->
         <include file="$(find px4)/launch/single_vehicle_spawn.launch">
-            <arg name="x" value="0"/>
-            <arg name="y" value="0"/>
+            <arg name="x" value="1"/>
+            <arg name="y" value="1"/>
             <arg name="z" value="0"/>
             <arg name="R" value="0"/>
             <arg name="P" value="0"/>
@@ -39,8 +44,8 @@
             <arg name="ID" value="$(arg ID)"/>
         </include>
         <!-- MAVROS -->
-        <include file="$(find mavros)/launch/px4.launch">
-            <arg name="config_yaml" value="$(find pegasus_controller)/launch/px4_config_0.yaml" />
+        <include file="$(find pegasus_ros)/launch/px4.launch">
+          <arg name="config_yaml" value="$(find pegasus_ros)/launch/configs/px4_config_0.yaml" />
             <arg name="fcu_url" value="$(arg fcu_url)"/>
             <arg name="gcs_url" value="$(arg gcs_url)"/>
             <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
@@ -48,15 +53,15 @@
         </include>
     </group>
     <!-- UAV1 -->
-    <group ns="iris_1">
+    <group ns="uav1">
         <!-- MAVROS and vehicle configs -->
         <arg name="ID" value="1"/>
         <arg name="fcu_url" default="udp://:14641@localhost:14681"/>
         <arg name="gcs_url" default="udp://:14651@localhost:14691"/>
         <!-- PX4 SITL and vehicle spawn -->
         <include file="$(find px4)/launch/single_vehicle_spawn.launch">
-            <arg name="x" value="20"/>
-            <arg name="y" value="0"/>
+            <arg name="x" value="2"/>
+            <arg name="y" value="2"/>
             <arg name="z" value="0"/>
             <arg name="R" value="0"/>
             <arg name="P" value="0"/>
@@ -67,8 +72,8 @@
             <arg name="ID" value="$(arg ID)"/>
         </include>
         <!-- MAVROS -->
-        <include file="$(find mavros)/launch/px4.launch">
-            <arg name="config_yaml" value="$(find pegasus_controller)/launch/px4_config_1.yaml" />
+        <include file="$(find pegasus_ros)/launch/px4.launch">
+          <arg name="config_yaml" value="$(find pegasus_ros)/launch/configs/px4_config_1.yaml" />
             <arg name="fcu_url" value="$(arg fcu_url)"/>
             <arg name="gcs_url" value="$(arg gcs_url)"/>
             <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>
@@ -76,15 +81,15 @@
         </include>
     </group>
     <!-- UAV2 -->
-    <group ns="iris_2">
+    <group ns="uav2">
         <!-- MAVROS and vehicle configs -->
         <arg name="ID" value="2"/>
         <arg name="fcu_url" default="udp://:14642@localhost:14682"/>
         <arg name="gcs_url" default="udp://:14652@localhost:14692"/>
         <!-- PX4 SITL and vehicle spawn -->
         <include file="$(find px4)/launch/single_vehicle_spawn.launch">
-            <arg name="x" value="0"/>
-            <arg name="y" value="20"/>
+            <arg name="x" value="3"/>
+            <arg name="y" value="3"/>
             <arg name="z" value="0"/>
             <arg name="R" value="0"/>
             <arg name="P" value="0"/>
@@ -95,8 +100,8 @@
             <arg name="ID" value="$(arg ID)"/>
         </include>
         <!-- MAVROS -->
-        <include file="$(find mavros)/launch/px4.launch">
-            <arg name="config_yaml" value="$(find pegasus_controller)/launch/px4_config_2.yaml" />
+        <include file="$(find pegasus_ros)/launch/px4.launch">
+          <arg name="config_yaml" value="$(find pegasus_ros)/launch/configs/px4_config_2.yaml" />
             <arg name="fcu_url" value="$(arg fcu_url)"/>
             <arg name="gcs_url" value="$(arg gcs_url)"/>
             <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/>

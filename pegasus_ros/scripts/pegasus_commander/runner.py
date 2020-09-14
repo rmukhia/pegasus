@@ -29,7 +29,7 @@ class Runner(threading.Thread):
         return self
 
     def _prep_fcu(self):
-        mavros_gw = self.commander.mavrosGw
+        mavros_gw = self.commander.mavros_gw
         next_state = states.StateEnum.PREP_STATE
         self.commander.state = self.commander.state.set_state(next_state,
                                                               mavros_gw,
@@ -39,7 +39,7 @@ class Runner(threading.Thread):
             raise Exception('Cannot set PREP_STATE state')
 
     def _set_offboard_fcu(self):
-        mavros_gw = self.commander.mavrosGw
+        mavros_gw = self.commander.mavros_gw
         next_state = states.StateEnum.OFFBOARD_MODE
         self.commander.state = self.commander.state.set_state(next_state, mavros_gw)
         if self.commander.state.STATE != next_state:
@@ -47,7 +47,7 @@ class Runner(threading.Thread):
 
     def _hover_fcu(self, pose):
         rospy.loginfo('Hover.')
-        mavros_gw = self.commander.mavrosGw
+        mavros_gw = self.commander.mavros_gw
         next_state = states.StateEnum.HOVER
         self.commander.state = self.commander.state.set_state(next_state, mavros_gw, data=pose)
         if self.commander.state.STATE != next_state:
@@ -55,7 +55,7 @@ class Runner(threading.Thread):
 
     def _set_arm(self):
         rospy.loginfo('Set arm.')
-        mavros_gw = self.commander.mavrosGw
+        mavros_gw = self.commander.mavros_gw
         next_state = states.StateEnum.ARMING
         pose = mavros_gw.get_mavros_local_pose()
         self.commander.state = self.commander.state.set_state(next_state,
@@ -65,7 +65,7 @@ class Runner(threading.Thread):
             raise Exception('Cannot set ARMING state')
 
     def _run_fcu(self, pose):
-        mavros_gw = self.commander.mavrosGw
+        mavros_gw = self.commander.mavros_gw
         next_state = states.StateEnum.RUN
         self.commander.state = self.commander.state.set_state(next_state,
                                                               mavros_gw,
@@ -78,10 +78,28 @@ class Runner(threading.Thread):
     def _set_path(self, path):
         self.commander.set_path(path)
 
+    def _set_idle(self):
+        mavros_gw = self.commander.mavros_gw
+        next_state = states.StateEnum.IDLE
+        self.commander.state = self.commander.state.set_state(next_state, mavros_gw)
+        if self.commander.state.STATE != next_state:
+            raise Exception('Cannot set IDLE state')
+
+    def _return_to_home(self):
+        mavros_gw = self.commander.mavros_gw
+        next_state = states.StateEnum.RETURN_TO_HOME
+        self.commander.state = self.commander.state.set_state(next_state,
+                                                              mavros_gw,
+                                                              callback=(self._set_idle, [])
+                                                              )
+        if self.commander.state.STATE != next_state:
+            raise Exception('Cannot set RETURN TO HOME state')
+
     def reply_to(self, reply):
         data = reply.SerializeToString()
         rospy.loginfo('Size %s', len(data))
-        self.socket.sendto(data, self.clientAddress)
+        if self.socket is not None:
+            self.socket.sendto(data, self.clientAddress)
 
     def reply_to_command(self, command, success):
         reply = messages_pb2.Reply()
@@ -127,19 +145,23 @@ class Runner(threading.Thread):
         self._run_fcu(pose)
 
     def process_set_return_to_home(self, request):
-        pass
+        self._return_to_home()
 
     def process_heart_beat(self, request):
-        self.commander.heartBeatTime = rospy.get_rostime()
+        self.commander.set_heartbeat_time(rospy.get_rostime())
 
         reply = messages_pb2.Reply()
         reply.status = messages_pb2.Status.HEART_BEAT_STATUS
-        reply.heartbeatData.commanderState = self.commander.state.STATE
+        # last command received
+        reply.command_id = self.controller.command_ids[-1]
+        reply.heartbeat_data.commander_state = self.commander.state.STATE
+        reply.heartbeat_data.command_complete = self.commander.state.is_complete()
+        reply.heartbeat_data.command_id = self.commander.state.
 
-        m_state = self.commander.mavrosGw.get_mavros_state()
-        m_local_pose = self.commander.mavrosGw.get_mavros_local_pose()
-        m_gps = self.commander.mavrosGw.get_mavros_global_gps()
-        m_bl_trans = self.commander.mavrosGw.get_mavros_baselink_transform()
+        m_state = self.commander.mavros_gw.get_mavros_state()
+        m_local_pose = self.commander.mavros_gw.get_mavros_local_pose()
+        m_gps = self.commander.mavros_gw.get_mavros_global_gps()
+        m_bl_trans = self.commander.mavros_gw.get_mavros_baselink_transform()
 
         b_state = BytesIO()
         b_local_pose = BytesIO()
@@ -151,12 +173,12 @@ class Runner(threading.Thread):
         m_gps.serialize(b_gps)
         if m_bl_trans is not None:
             m_bl_trans.serialize(b_bl_trans)
-            reply.heartbeatData.baseLinkTransform = b_bl_trans.getvalue()
+            reply.heartbeat_data.baselink_transform = b_bl_trans.getvalue()
 
-        reply.heartbeatData.mavrosState = b_state.getvalue()
+        reply.heartbeat_data.mavros_state = b_state.getvalue()
 
-        reply.heartbeatData.localPose = b_local_pose.getvalue()
-        reply.heartbeatData.gpsNavSat = b_gps.getvalue()
+        reply.heartbeat_data.local_pose = b_local_pose.getvalue()
+        reply.heartbeat_data.gps_nav_sat = b_gps.getvalue()
         self.reply_to(reply)
 
     def run(self):
@@ -167,7 +189,11 @@ class Runner(threading.Thread):
             rospy.logerr(str(e) + ' data: ' + self.data)
             return
 
-        print (request)
+        print(request)
+
+        # already processed the command
+        if request.command_id in self.commander.commands_ids:
+            return
 
         try:
             if request.command == messages_pb2.Command.SET_OFFBOARD:
@@ -182,6 +208,7 @@ class Runner(threading.Thread):
                 self.process_set_path(request)
             elif request.command == messages_pb2.Command.GOTO_POSE_INDEX:
                 self.process_goto_pose_index(request)
+            self.command_id.append(request.command_id)
         except Exception:
             self.reply_to_command(request.command, False)
             rospy.logerr(traceback.format_exc())

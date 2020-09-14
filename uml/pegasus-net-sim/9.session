@@ -1,23 +1,16 @@
-window_sizes 1436 852 356 1074 756 44
+window_sizes 1920 1054 356 1558 938 64
 cleanlooks_style
 diagrams
   active  classdiagram_ref 128137 // Pegaus
-    1573 887 60 D 0 0
+    1573 887 100 D 0 0
 end
 show_stereotypes
 marked
   operation_ref 140041 // Run
 end
-selected operation_ref 217865 // Send
+selected 
+package_ref 129 // pegasus-net-sim
 open
-  artifact_ref 161545 // PegasusPacket
-  deploymentdiagram_ref 134665 // deployement
-  class_ref 128265 // PegasusUDPSocket
-  class_ref 142089 // NS3PegasusDroneApp
-  attribute_ref 220809 // m_timestamp
-  attribute_ref 220681 // m_avgNoiseDbm
-  attribute_ref 220937 // m_samples
-  operation_ref 272777 // get_m_node
 end
 end
 verbose

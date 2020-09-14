@@ -16,9 +16,9 @@ def heartbeat(hsock):
     reply = messages_pb2.Reply()
     reply.ParseFromString(received)
     a = BytesIO()
-    a.write(reply.heartbeatData.mavrosState)
+    a.write(reply.heartbeat_data.mavros_state)
     mavros_state = State()
-    mavros_state.deserialize(reply.heartbeatData.mavrosState)
+    mavros_state.deserialize(reply.heartbeat_data.mavros_state)
     print (reply)
     print (mavros_state)
 

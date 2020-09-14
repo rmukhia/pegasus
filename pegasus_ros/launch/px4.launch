@@ -12,7 +12,7 @@
 	<arg name="config_yaml" default="$(find pegasus_ros)/launch/configs/px4_config.yaml" />
 
 	<include file="$(find mavros)/launch/node.launch">
-		<arg name="pluginlists_yaml" value="$(find mavros)/launch/px4_pluginlists.yaml" />
+		<arg name="pluginlists_yaml" value="$(find pegasus_ros)/launch/configs/px4_pluginlists.yaml" />
 		<arg name="config_yaml" value="$(arg config_yaml)" />
 
 		<arg name="fcu_url" value="$(arg fcu_url)" />

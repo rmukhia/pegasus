@@ -1,0 +1,136 @@
+format 222
+
+pseudostatecanvas 128009 pseudostate_ref 141193 // entry_point
+   xyz 466 44 3005 label_xy 462 63
+end
+statecanvas 128137 state_ref 142089 // PREP_STATE
+  
+  xyzwh 57 158 2000 97 41
+end
+statecanvas 128265 state_ref 142217 // OFFBOARD_MODE
+  
+  xyzwh 43 284 2000 131 41
+end
+statecanvas 128393 state_ref 142345 // ARMING
+  
+  xyzwh 218 338 2000 69 41
+end
+statecanvas 128521 state_ref 142473 // RUN
+  
+  xyzwh 377 524 2000 47 41
+end
+statecanvas 128649 state_ref 142601 // RETURN_TO_HOME
+  
+  xyzwh 189 665 2000 137 41
+end
+statecanvas 128777 state_ref 142729 // HOVER
+  
+  xyzwh 75 523 2000 63 41
+end
+stateactioncanvas 129417 stateaction_ref 141193
+  xyzwh 434 163 2000 98 36
+end
+stateactioncanvas 129929 stateaction_ref 141449
+  xyzwh 363 284 2000 72 36
+end
+stateactioncanvas 130569 stateaction_ref 141705
+  xyzwh 376 435 2000 50 36
+end
+stateactioncanvas 130697 stateaction_ref 141833
+  xyzwh 77 428 2000 61 36
+end
+stateactioncanvas 131593 stateaction_ref 141961
+  xyzwh 224 562 2000 61 53
+end
+stateactioncanvas 133513 stateaction_ref 141321
+  xyzwh 50 226 2000 112 36
+end
+transitioncanvas 129673 transition_ref 142345 // <transition>
+  
+  from ref 129417 z 2001 to ref 128137
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130313 transition_ref 142729 // <transition>
+  
+  from ref 128265 z 2001 to ref 129929
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130441 transition_ref 142857 // <transition>
+  
+  from ref 129929 z 2001 to ref 128393
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130825 transition_ref 142985 // <transition>
+  
+  from ref 128393 z 2001 to ref 130697
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130953 transition_ref 143113 // <transition>
+  
+  from ref 128393 z 2001 to ref 130569
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 131081 transition_ref 143241 // <transition>
+  
+  from ref 130697 z 2001 to ref 128777
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 131209 transition_ref 143369 // <transition>
+  
+  from ref 130569 z 2001 to ref 128521
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 131337 transition_ref 143497 // <transition>
+  
+  from ref 128521 z 2001 to ref 130697
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 131465 transition_ref 143625 // <transition>
+  
+  from ref 128777 z 2001 to ref 130569
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 131721 transition_ref 143753 // <transition>
+  
+  from ref 128393 z 2001 to ref 131593
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 131849 transition_ref 143881 // <transition>
+  
+  from ref 131593 z 2001 to ref 128649
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 132617 transition_ref 144137 // <transition>
+  
+  from ref 128777 z 2001 to ref 131593
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 132745 transition_ref 144265 // <transition>
+  
+  from ref 128521 z 2001 to ref 131593
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 132873 transition_ref 144393 // <transition>
+  decenter_begin 526
+  
+  from ref 128009 z 3006 to ref 129417
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 133129 transition_ref 144521 // <transition>
+  decenter_end 642
+  
+  from ref 128649 z 2001 to point 497 683
+  line 133257 z 2001 to ref 129417
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 133641 transition_ref 151433 // <transition>
+  
+  from ref 128137 z 2001 to ref 133513
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 133769 transition_ref 151561 // <transition>
+  
+  from ref 133513 z 2001 to ref 128265
+  write_horizontally default show_definition default drawing_language default
+end
+end

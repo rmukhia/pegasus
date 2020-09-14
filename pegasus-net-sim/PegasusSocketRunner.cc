@@ -95,7 +95,7 @@ void PegasusSocketRunner::Read() {
 
 void PegasusSocketRunner::Write() {
   NS_LOG_FUNCTION(this);
-  struct timespec req = { 0, 10 };
+  struct timespec req = { 0, 5 };
   while(m_running) {
     handleWrite(0);
     nanosleep(&req, NULL);

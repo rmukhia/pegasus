@@ -1,0 +1,14 @@
+plugin_blacklist:
+# common
+- safety_area
+# extras
+- image_pub
+- vibration
+- distance_sensor
+- rangefinder
+- wheel_odometry
+- 3dr_radio
+- ftp
+
+plugin_whitelist: []
+#- 'sys_*'

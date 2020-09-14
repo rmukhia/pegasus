@@ -108,10 +108,10 @@
       <pose frame=''>15.6563 -10.0433 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>1063 837000000</sim_time>
-      <real_time>785 464941983</real_time>
-      <wall_time>1592071674 16221690</wall_time>
-      <iterations>779556</iterations>
+      <sim_time>1096 227000000</sim_time>
+      <real_time>32 509271764</real_time>
+      <wall_time>1592417724 851008170</wall_time>
+      <iterations>32390</iterations>
       <model name='House 1'>
         <pose frame=''>-20.9091 -21.4904 9.84541 0 -0 0</pose>
         <scale>1 1 1</scale>
@@ -678,7 +678,7 @@
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose frame=''>-132.288 -107.512 202.583 -0 0.667456 0.711387</pose>
+        <pose frame=''>-84.201 11.794 51.4562 -0 0.551456 -0.448613</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>

@@ -1,0 +1,92 @@
+format 222
+
+pseudostatecanvas 128009 pseudostate_ref 134537 // entry_point
+   xyz 344.245 1.1609 3005 label_xy 368 5
+end
+pseudostatecanvas 128137 pseudostate_ref 134665 // final
+   xyz 379.86 850.539 2000
+end
+statecanvas 128393 state_ref 134665 // OFFBOARD_MODE
+  
+  xyzwh 16.9353 135.297 2000 209 77
+end
+statecanvas 128521 state_ref 134793 // ARMING
+  
+  xyzwh 525.04 211.353 2000 201 77
+end
+statecanvas 128649 state_ref 134921 // TAKE_OFF
+  
+  xyzwh 9.52039 315.521 2000 285 77
+end
+statecanvas 128777 state_ref 135049 // CALIBERATE
+  
+  xyzwh 476.847 452.942 2000 268 77
+end
+statecanvas 128905 state_ref 135177 // GENERATE_TRANSFORMS
+  
+  xyzwh 15.2398 540.222 2000 369 77
+end
+statecanvas 129033 state_ref 135305 // RUN
+  
+  xyzwh 506.556 696.992 2000 207 77
+end
+statecanvas 130185 state_ref 135433 // COMPLETE
+  
+  xyzwh 34.7855 756.119 2000 207 79
+end
+stateactioncanvas 130569 stateaction_ref 142089
+  xyzwh 289.575 44.3832 2000 129 53
+end
+transitioncanvas 129417 transition_ref 134665 // <transition>
+  
+  from ref 128393 z 2001 label "IsAllDronesOffboard() [true]" xyz 321 170 2001 to ref 128521
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129545 transition_ref 134793 // <transition>
+  decenter_begin 643
+  
+  from ref 128521 z 2001 label "IsAllDronesArmed() [true]" xyz 329 248 2001 to ref 128649
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129673 transition_ref 134921 // <transition>
+  
+  from ref 128649 z 2001 label "IsAllDronesTakeOffAltitude() [true]" xyz 333 386 2001 to ref 128777
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129801 transition_ref 135049 // <transition>
+  decenter_begin 449
+  decenter_end 975
+  
+  from ref 128777 z 2001 label "IsAllDronesCalibrationCompplete()	 [true]" xyz 225 486 2001 to ref 128905
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129929 transition_ref 135177 // <transition>
+  decenter_begin 344
+  
+  from ref 128905 z 2001 label "IsAllDronesTranformationCalculated()	 [true]" xyz 291 625 2001 to ref 129033
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130313 transition_ref 135433 // <transition>
+  
+  from ref 129033 z 2001 label "IsAllDronesMissionComplete() [true]" xyz 289 724 2001 to ref 130185
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130441 transition_ref 135561 // <transition>
+  
+  from ref 130185 z 2001 to ref 128137
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130697 transition_ref 144649 // <transition>
+  decenter_begin 485
+  decenter_end 420
+  
+  from ref 130569 z 2001 to ref 128393
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130825 transition_ref 144777 // <transition>
+  
+  from ref 128009 z 3006 to ref 130569
+  write_horizontally default show_definition default drawing_language default
+end
+preferred_whz 862 606 1
+end
