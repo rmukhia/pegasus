@@ -4,6 +4,6 @@
     <param name="mavros_namespace" value="/mavros"/>
     <param name="udp_port" value="4444"/>
     <param name="map_transform" value="map"/>
-    <param name="baselink_transform" value="base_link"/>
+    <param name="base_link_transform" value="base_link"/>
   </node>
 </launch>

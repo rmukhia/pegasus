@@ -1,22 +1,34 @@
 <?xml version="1.0"?>
 <launch>
-  <rosparam param="pegasus_mavros_namespaces">
-    [
-      "uav0",
-      "uav1",
-      "uav2"
-    ]
-  </rosparam>
-  <rosparam param="pegasus_local_transforms">
-    [
-      [ "map_0", "base_link_0"],
-      [ "map_1", "base_link_1"],
-      [ "map_2", "base_link_2"]
-    ]
-  </rosparam>
-  <param name="agents_hover_height" value="10"/>
-  <param name="grid_size" value="10"/>
-  <param name="map_origin_topic" value="/local_xy_origin"/>
-  <node pkg="pegasus_ros" type="pegasus_controller.py" name="pegasus_controller" respawn="false" output="screen">
-  </node>
+    <!--
+    <rosparam param="pegasus_mavros_namespaces">
+      [
+        "uav0",
+        "uav1",
+        "uav2"
+      ]
+    </rosparam>
+    <rosparam param="pegasus_local_transforms">
+      [
+        [ "map_0", "base_link_0"],
+        [ "map_1", "base_link_1"],
+        [ "map_2", "base_link_2"]
+      ]
+    </rosparam>
+    -->
+    <node pkg="pegasus_ros" type="pegasus_controller.py" name="pegasus_controller" respawn="false" output="screen">
+        <rosparam param="agents">
+            [
+                ["uav0", ["localhost", 4444]],
+            ]
+        </rosparam>
+        <rosparam param="local_transforms">
+            [
+            [ "map", "base_link"],
+            ]
+        </rosparam>
+        <param name="agents_hover_height" value="10"/>
+        <param name="grid_size" value="10"/>
+        <param name="map_origin_topic" value="/local_xy_origin"/>
+    </node>
 </launch>
