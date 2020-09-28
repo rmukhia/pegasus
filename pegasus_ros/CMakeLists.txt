@@ -177,7 +177,6 @@ target_link_libraries(${PROJECT_NAME}_network_status_util
 catkin_install_python(PROGRAMS
   scripts/pegasus_planner.py
   scripts/pegasus_controller.py
-  scripts/pegasus_controller2.py
   scripts/pegasus_commander.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

@@ -13,64 +13,44 @@ from messages.pegasus_messages_pb2 import Command
 from pegasus_controller_state import PegasusControllerState
 
 
-def is_at_position(self, localPose, x, y, z, offset):
-    desired = np.array((x, y, z))
-    pos = np.array((localPose.pose.position.x,
-                    localPose.pose.position.y,
-                    localPose.pose.position.z))
-    return np.linalg.norm(desired - pos) < offset
-
-
 class PegasusControllerThread(threading.Thread):
     def __init__(self, controller, thread_id):
         threading.Thread.__init__(self)
         self.thread_id = thread_id
         self.controller = controller
-        self.state = PegasusControllerState.IDLE
 
     def _wait_for_agents(self):
         for agent in self.controller.agents:
             agent.wait_for_command()
 
+    # noinspection PyMethodMayBeStatic
     def _idle_state(self):
-        rospy.loginfo('_idleState')
-        """
-        for agent in self.controller.agents:
-            if agent['state'] is None:
-                return
-            if not agent['state'].connected:
-                return
-            if agent['path'] is None:
-                return
-            if agent['localPose'] is None:
-                return
-        """
-        self.state = PegasusControllerState.OFFBOARD_MODE
+        rospy.loginfo_throttle(0.5, '_idleState')
 
     def _offboard_state(self):
         rospy.loginfo('_offboardState')
         for agent in self.controller.agents:
             agent.run_command(Command.SET_OFFBOARD)
         self._wait_for_agents()
-        self.state = PegasusControllerState.ARMING
+        self.controller.state = PegasusControllerState.ARMING
 
     def _arming_state(self):
         rospy.loginfo('_armingState')
         for agent in self.controller.agents:
             agent.run_command(Command.SET_ARM)
         self._wait_for_agents()
-        self.state = PegasusControllerState.TAKE_OFF
+        self.controller.state = PegasusControllerState.TAKE_OFF
 
     def _takeoff_state(self):
         rospy.loginfo('_takeOffState')
         pose = PoseStamped()
-        pose.pose.position.x = 0;
-        pose.pose.position.y = 0;
-        pose.pose.position.z = 10;
+        pose.pose.position.x = 0
+        pose.pose.position.y = 0
+        pose.pose.position.z = self.controller.params['z_height']
         for agent in self.controller.agents:
             agent.run_command(Command.GOTO, (pose,))
         self._wait_for_agents()
-        self.state = PegasusControllerState.CALIBRATE
+        self.controller.state = PegasusControllerState.CALIBRATE
 
     def _calibrate_state(self):
         rospy.loginfo('_calibrate_state')
@@ -81,18 +61,39 @@ class PegasusControllerThread(threading.Thread):
             self._wait_for_agents()
             for agent in self.controller.agents:
                 agent.capture_calibration_pose()
-        self.state = PegasusControllerState.GENERATE_TRANSFORMS
+        self.controller.state = PegasusControllerState.GENERATE_TRANSFORMS
 
     def _generate_transforms_state(self):
-        rospy.loginfo('_generateTransformsState')
+        rospy.loginfo('_generate_transforms_state')
         for agent in self.controller.agents:
             agent.generate_transforms()
 
-        self.state = PegasusControllerState.RUN
+        for agent in self.controller.agents:
+            global_pose = PoseStamped()
+            global_pose.header.frame_id = self.controller.global_map_name
+            global_pose.pose.position.x = 0
+            global_pose.pose.position.y = 0
+            z_height = self.controller.params['z_height']
+            global_pose.pose.position.z = z_height + (agent.a_id * 2)  # 2 meters distance
+            pose = agent.global_pose_to_local_pose(global_pose)
+            pose.header.frame_id = 'map'
+            agent.run_command(Command.GOTO, (pose,))
+        self._wait_for_agents()
+        self.controller.state = PegasusControllerState.RUN
 
     def _run_state(self):
-        # rospy.loginfo('_run_state')
-        pass
+        rospy.loginfo('_run_state')
+        rospy.sleep(10)
+        self.controller.state = PegasusControllerState.COMPLETE
+
+    def _complete_state(self):
+        rospy.loginfo('_complete_state')
+        for agent in self.controller.agents:
+            agent.run_command(Command.SET_RETURN_TO_HOME)
+        self._wait_for_agents()
+        self.controller.state = PegasusControllerState.IDLE
+
+
 
     '''
         rospy.loginfo('_calibrateState')
@@ -204,24 +205,24 @@ class PegasusControllerThread(threading.Thread):
     def run(self):
         rate = rospy.Rate(20)
         while not rospy.is_shutdown():
-            if self.state == PegasusControllerState.IDLE:
+            if self.controller.state == PegasusControllerState.IDLE:
                 self._idle_state()
-            elif self.state == PegasusControllerState.OFFBOARD_MODE:
+            elif self.controller.state == PegasusControllerState.OFFBOARD_MODE:
                 self._offboard_state()
-            elif self.state == PegasusControllerState.ARMING:
+            elif self.controller.state == PegasusControllerState.ARMING:
                 self._arming_state()
-            elif self.state == PegasusControllerState.TAKE_OFF:
+            elif self.controller.state == PegasusControllerState.TAKE_OFF:
                 self._takeoff_state()
-            elif self.state == PegasusControllerState.CALIBRATE:
+            elif self.controller.state == PegasusControllerState.CALIBRATE:
                 self._calibrate_state()
-            elif self.state == PegasusControllerState.GENERATE_TRANSFORMS:
+            elif self.controller.state == PegasusControllerState.GENERATE_TRANSFORMS:
                 self._generate_transforms_state()
-            elif self.state == PegasusControllerState.RUN:
+            elif self.controller.state == PegasusControllerState.RUN:
                 self._run_state()
-            elif self.state == PegasusControllerState.COMPLETE:
-                rospy.loginfo("Completed. Restart to run again")
+            elif self.controller.state == PegasusControllerState.COMPLETE:
+                self._complete_state()
             # Publish State
-            # self.controller.statePublisher.publish(self.state)
+            # self.controller.statePublisher.publish(self.controller.state)
             # self.controller.broadcastTransforms()
             try:
                 rate.sleep()

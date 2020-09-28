@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <launch>
-  <node pkg="mapviz" type="mapviz" name="mapviz"></node>
   <node pkg="swri_transform_util" type="initialize_origin.py" name="initialize_origin" >
     <param name="local_xy_frame" value="/pegasus_map"/>
     <param name="local_xy_origin" value="control_station"/>
-    <!--
     <rosparam param="local_xy_origins">
       [{ name: control_station,
       latitude: 14.081104,
@@ -12,7 +10,7 @@
       altitude: 7,
       heading: 0.0}]
     </rosparam>
-    -->
+    <!--
     <rosparam param="local_xy_origins">
       [{ name: control_station,
       latitude: 47.397832,
@@ -20,6 +18,9 @@
       altitude: 545.336958528,
       heading: 0.0}]
     </rosparam>
+    -->
   </node>
-  <node pkg="tf" type="static_transform_publisher" name="swri_transform" args="0 0 0 0 0 0 /pegasus_map /origin 100"  />
+  <!--<node pkg="mapviz" type="mapviz" name="mapviz"></node>-->
+  <!--<node pkg="tf" type="static_transform_publisher" name="swri_transform" args="0 0 0 0 0 0 /pegasus_map /origin 100"  />-->
+   <node name = "pegasus_dashboard" pkg = "rqt_gui" type = "rqt_gui" respawn = "false" output = "screen" args = "--perspective-file $(find pegasus_ros)/pegasus_ros.perspective"/>
 </launch>

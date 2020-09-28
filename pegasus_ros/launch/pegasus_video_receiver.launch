@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="agent_name" default="uav0" />
+    <arg name="agent_ip" default="localhost" />
+    <arg name="agent_remote_port" default="7200" />
+    <arg name="udp_port" default="8200" />
+    <arg name="interval" default="2" />
+    <arg name="save_directory" default="/home/rmukhia/sfm/" />
+    <node pkg="pegasus_ros" type="pegasus_video_receiver.py" name="pegasus_video_receiver" respawn="false" output="screen">
+        <param name="agent_name" value="$(arg agent_name)" />
+        <param name="agent_ip" value="$(arg agent_ip)" />
+        <param name="agent_remote_port" value="$(arg agent_remote_port)" />
+        <param name="udp_port" value="$(arg udp_port)" />
+        <param name="interval" value="$(arg interval)" />
+        <param name="save_directory" value="$(arg save_directory)" />
+    </node>
+</launch>

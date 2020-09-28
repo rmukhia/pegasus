@@ -88,8 +88,10 @@ void PegasusSocketRunner::Read() {
         return a->Get_m_sd() < b->Get_m_sd();
   }))->Get_m_sd() + 1;
 
+  struct timespec req = { 0, 10 };
   while(m_running) {
       handleRead(maxFd);
+      nanosleep(&req, NULL);
   }
 }
 

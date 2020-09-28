@@ -14,6 +14,7 @@ from pegasus_commander.message_server import get_message_server_thread
 
 class PegasusCommander(object):
     def __init__(self, queue, params):
+        self.namespace = params['mavros_namespace']
         self.cmd_server_thread = threading.Thread(target=self.run_command_server)
         self.cmd_server_lock = threading.Lock()
         self.current_pose = PoseStamped()
@@ -60,10 +61,10 @@ class PegasusCommander(object):
                 self.mavros_gw.set_mavros_local_pose(self.current_pose)
             rate.sleep()
 
-
+"""
 import pydevd_pycharm
 pydevd_pycharm.settrace('localhost', port=7777, stdoutToServer=True, stderrToServer=True)
-
+"""
 
 if __name__ == '__main__':
     rospy.init_node('pegasus_commander')

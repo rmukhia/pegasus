@@ -42,14 +42,14 @@ class Runner(threading.Thread):
 
     def request_offboard(self, request):
         now = rospy.get_rostime()
-        for i in range(100):
-            self.commander.mavros_gw.set_mavros_local_pose(self.commander.current_pose)
-            self.rate.sleep()
-
         while self.commander.mavros_gw.get_mavros_state().mode != 'OFFBOARD':
             if self.request_offboard_time is not None and now - self.request_offboard_time < rospy.Duration(5):
                 self.rate.sleep()
                 continue
+            rospy.loginfo('%s %s' % (self.commander.namespace, self.commander.mavros_gw.get_mavros_state().mode))
+            for i in range(100):
+                self.commander.mavros_gw.set_mavros_local_pose(self.commander.current_pose)
+                self.rate.sleep()
             try:
                 res = self.commander.mavros_gw.mavros_service['set_mode'](
                     base_mode=0, custom_mode='OFFBOARD')
@@ -134,7 +134,7 @@ class Runner(threading.Thread):
         reply.heartbeat_data.gps_nav_sat = b_gps.getvalue()
 
         data = reply.SerializeToString()
-        rospy.loginfo('Reply size %s', len(data))
+        rospy.loginfo('%s: Reply size %s', self.commander.namespace, len(data))
         self.socket.sendto(data, self.clientAddress)
 
     def run(self):

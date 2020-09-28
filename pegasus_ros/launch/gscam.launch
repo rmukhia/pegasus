@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="cam_name" default="gazebo_cam"/>
+    <arg name="video_udp_port" default="5600" />
+    <env name="GSCAM_CONFIG" value="udpsrc port=$(arg video_udp_port) ! application/x-rtp, encoding-name=H264 ! rtph264depay ! avdec_h264 ! videoconvert"/>
+    <node pkg="gscam" type="gscam" name="gscam">
+        <param name="camera_name" value="$(arg cam_name)"/>
+        <remap from="camera/image_raw" to="$(arg cam_name)/image_raw"/>
+    </node>
+    <!--
+    <node pkg="image_view" type="image_view" name="gscam_view">
+        <remap from="image" to="/$(arg cam_name)/image_raw" />
+    </node>
+    -->
+</launch>

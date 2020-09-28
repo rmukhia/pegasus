@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<launch>
+    <env name="NS3_PATH" value="/home/rmukhia/thesis/ns-allinone-3.30.1/ns-3.30.1" />
+    <node pkg="pegasus_ros" type="pegasus-net-sim-start.sh" name="pegasus_net_sim" respawn="false" output="screen">
+    </node>
+    <node pkg="pegasus_ros" type="pegasus_ros_network_status_util" name="pegasus_ros_network_status_util" respawn="true" output="screen">
+    </node>
+    <include file="$(find pegasus_ros)/launch/mapviz.launch"/>
+    <node pkg="pegasus_ros" type="pegasus_controller.py" name="pegasus_controller" respawn="false" output="screen">
+        <rosparam param="agents">
+            [
+                ["uav0", ["localhost", 3444], 6444],
+                ["uav1", ["localhost", 3445], 6445],
+                ["uav2", ["localhost", 3446], 6446],
+            ]
+        </rosparam>
+        <param name="agents_hover_height" value="10"/>
+        <param name="grid_size" value="10"/>
+        <param name="map_origin_topic" value="/local_xy_origin"/>
+    </node>
+    <group ns="uav0">
+        <include file="$(find pegasus_ros)/launch/pegasus_video_receiver.launch">
+            <arg name="agent_name" value="uav0" />
+            <arg name="agent_ip" value="localhost" />
+            <arg name="agent_remote_port" value="7200" />
+            <arg name="udp_port" value="8200" />
+        </include>
+    </group>
+    <group ns="uav1">
+        <include file="$(find pegasus_ros)/launch/pegasus_video_receiver.launch">
+            <arg name="agent_name" value="uav1" />
+            <arg name="agent_ip" value="localhost" />
+            <arg name="agent_remote_port" value="7201" />
+            <arg name="udp_port" value="8201" />
+        </include>
+    </group>
+    <group ns="uav2">
+        <include file="$(find pegasus_ros)/launch/pegasus_video_receiver.launch">
+            <arg name="agent_name" value="uav2" />
+            <arg name="agent_ip" value="localhost" />
+            <arg name="agent_remote_port" value="7202" />
+            <arg name="udp_port" value="8202" />
+        </include>
+    </group>
+</launch>

@@ -48,7 +48,7 @@ int CreateStatusSocket(const int& port) {
 ros::Publisher GetPublisher(const std::string& device, ros::NodeHandle& n, PublisherMap& pubs) {
   if (pubs.find(device) == pubs.end()) {
     std::ostringstream oss;
-    oss << "/pegasus_status/snr/" << device;
+    oss << "/pegasus/network/snr/" << device;
     pubs[device] = n.advertise<std_msgs::Float64>(oss.str(), 1000, false);
   }
 

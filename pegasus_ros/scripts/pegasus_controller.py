@@ -19,9 +19,11 @@ from mavros_msgs.srv import SetMode, CommandBool
 from nav_msgs.msg import Path
 from sensor_msgs.msg import NavSatFix
 from std_msgs.msg import UInt8
+from std_srvs.srv import Trigger, TriggerResponse
 from tf.transformations import quaternion_from_euler
 
 from pegasus_controller.agent import Agent
+from pegasus_controller.pegasus_controller_state import PegasusControllerState
 from pegasus_controller.pegasus_controller_thread import PegasusControllerThread
 
 
@@ -30,20 +32,47 @@ class PegasusController(object):
         self.params = params
         self.agents = []
         for a_id, agent in enumerate(params['agents']):
-            self.agents.append(Agent(self, a_id, agent[0], agent[1]))
+            self.agents.append(Agent(self, a_id, agent[0], agent[1], agent[2]))
         self.tf_broadcaster = tf2_ros.TransformBroadcaster()
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
         self.global_map_name = 'pegasus_map'
         self.subscribers = {}
         self._subscribe_map_origin()
+        self.services = {}
+        self._create_services()
+        self.state = PegasusControllerState.IDLE
 
     def spin(self):
+        rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             for agent in self.agents:
                 agent.spin()
+            rate.sleep()
 
     def _subscribe_map_origin(self):
         topic = self.params['map_origin_topic']
         self.subscribers['map_origin'] = rospy.Subscriber(topic, PoseStamped, self._recv_map_origin)
+
+    def _create_services(self):
+        self.services['start_mission'] = rospy.Service('start_mission', Trigger, self._start_mission)
+        self.services['abort_mission'] = rospy.Service('abort_mission', Trigger, self._abort_mission)
+
+    def _start_mission(self, request):
+        rospy.loginfo('Starting mission')
+        if self.state == PegasusControllerState.IDLE:
+            self.state = PegasusControllerState.OFFBOARD_MODE
+            return TriggerResponse(True, 'Mission started.')
+        else:
+            return TriggerResponse(False, 'Mission in progress.')
+
+    def _abort_mission(self, request):
+        rospy.loginfo('Aborting mission')
+        if self.state not in (PegasusControllerState.COMPLETE, PegasusControllerState.IDLE):
+            self.state = PegasusControllerState.COMPLETE
+            return TriggerResponse(True, 'Mission aborted.')
+        else:
+            return TriggerResponse(False, 'Mission not running.')
 
     def _recv_map_origin(self, data):
         map_origin_utm = utm.fromLatLong(
@@ -286,13 +315,13 @@ class PegasusController(object):
                 self.tf2Br.sendTransform(t)
 '''
 
+"""
 import pydevd_pycharm
 pydevd_pycharm.settrace('localhost', port=7778, stdoutToServer=True, stderrToServer=True)
-
+"""
 if __name__ == '__main__':
     rospy.init_node('pegasus_controller')
     rospy.loginfo('Starting pegasus_controller...')
-    local_transforms = rospy.get_param('~local_transforms')
     agents = rospy.get_param('~agents')
     z_height = rospy.get_param('~agents_hover_height')
     grid_size = rospy.get_param('~grid_size')

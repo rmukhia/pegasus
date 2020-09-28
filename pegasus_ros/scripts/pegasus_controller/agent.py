@@ -11,6 +11,8 @@ from nav_msgs.msg import Path
 from sensor_msgs.msg import NavSatFix
 from tf.transformations import quaternion_from_euler, quaternion_from_matrix, translation_from_matrix
 from geodesy import utm
+from tf2_geometry_msgs import tf2_geometry_msgs
+
 import messages.pegasus_messages_pb2 as messages_pb2
 
 
@@ -26,6 +28,12 @@ def _set_arm():
     return request
 
 
+def _set_return_to_home():
+    request = messages_pb2.Request()
+    request.command = messages_pb2.Command.SET_RETURN_TO_HOME
+    return request
+
+
 def _goto(param):
     request = messages_pb2.Request()
     request.command = messages_pb2.Command.GOTO
@@ -37,17 +45,20 @@ def _goto(param):
 
 
 class Agent(object):
-    def __init__(self, controller, a_id, namespace, address):
+    def __init__(self, controller, a_id, namespace, address, rx_port):
         self.calibration_path = Path()
         self.controller = controller
         self.a_id = a_id
         self.namespace = namespace
-        self.local_map_name = '%s_map' % (namespace, )
+        self.local_map_name = '%s_map' % (namespace,)
+        self.local_map_transform = TransformStamped()
+        self.local_map_transform_calculated = False
         self.heartbeat_time = None
         self.command_id = 1
         self.mavros_state = MavrosState()
         self.local_pose = PoseStamped()
         self.global_position = NavSatFix()
+        self.rx_port = rx_port
         self._create_socket(address)
         self.recv_q = Queue.Queue()
         self.recv_thread = threading.Thread(target=self._recv_thread)
@@ -58,6 +69,7 @@ class Agent(object):
         self.calibration_poses = []
         self.command_thread = None
         self.last_command = (1, True)  # last_command_id, last_command_completed
+        rospy.loginfo("%s: Initialized", self.namespace)
 
     def _get_command_id(self):
         return self.command_id
@@ -68,7 +80,12 @@ class Agent(object):
 
     def _create_socket(self, address):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.bind(("0.0.0.0", self.rx_port))
         self.socket.connect(tuple(address))
+
+    def _broadcast_transforms(self):
+        if self.local_map_transform_calculated:
+            self.controller.tf_broadcaster.sendTransform(self.local_map_transform)
 
     def _recv_thread(self):
         while not rospy.is_shutdown():
@@ -93,6 +110,9 @@ class Agent(object):
         self.publishers['mavros_state'].publish(self.mavros_state)
         self.publishers['local_pose'].publish(self.local_pose)
         self.publishers['global_position'].publish(self.global_position)
+        if self.local_map_transform_calculated:
+            transformed_pose = self.local_pose_to_global_pose(self.local_pose)
+            self.publishers['global_pose'].publish(transformed_pose)
 
     def _send_heartbeat(self):
         now = rospy.get_rostime()
@@ -124,6 +144,11 @@ class Agent(object):
         self.publishers['global_position'] = rospy.Publisher(global_position_topic, NavSatFix,
                                                              queue_size=1000)
 
+        global_pose_topic = '/pegasus/%s/global_position/pose' % (self.namespace,)
+        rospy.loginfo('Publisher to global_pose_topic: %s' % (global_pose_topic,))
+        self.publishers['global_pose'] = rospy.Publisher(global_pose_topic, PoseStamped,
+                                                         queue_size=1000)
+
         calibration_path_topic = '/pegasus/%s/path/calibration' % (self.namespace,)
         rospy.loginfo('Publisher to calibration path: %s' % (calibration_path_topic,))
         self.publishers['calibration_path'] = rospy.Publisher(calibration_path_topic, Path, latch=True,
@@ -132,7 +157,7 @@ class Agent(object):
     def _create_calibration_path(self):
         side_length = self.controller.params['grid_size']
         z_height = self.controller.params['z_height']
-        box_points = ((0., 0.), (side_length, 0.), (side_length, side_length), (0., side_length))
+        box_points = ((0., 0.), (side_length, 0.), (side_length, side_length), (0., side_length), (0., 0.))
         # box_points = ((0, 0), (sideLength, 0))
         num_points = len(box_points)
         v1 = np.array(box_points)
@@ -162,6 +187,8 @@ class Agent(object):
             request = _set_offboard()
         elif command == messages_pb2.Command.SET_ARM:
             request = _set_arm()
+        elif command == messages_pb2.Command.SET_RETURN_TO_HOME:
+            request = _set_return_to_home()
         elif command == messages_pb2.Command.GOTO:
             request = _goto(param)
         else:
@@ -203,8 +230,8 @@ class Agent(object):
 
     def generate_transforms(self):
         size = len(self.calibration_poses)
-        local_points = np.empty((size,2))
-        global_points = np.empty((size,2))
+        local_points = np.empty((size, 2))
+        global_points = np.empty((size, 2))
         for i, correspondence_pts in enumerate(self.calibration_poses):
             local_points[i] = correspondence_pts[0]
             global_points[i] = correspondence_pts[1]
@@ -219,28 +246,45 @@ class Agent(object):
         homography[3, 3] = h[2, 2]
         transform_q = quaternion_from_matrix(homography)
         transform_t = translation_from_matrix(homography)
-        t = TransformStamped()
-        t.header.stamp = rospy.Time.now()
-        t.header.frame_id = self.controller.global_map_name
-        t.child_frame_id = self.local_map_name
-        t.transform.rotation.x = transform_q[0]
-        t.transform.rotation.y = transform_q[1]
-        t.transform.rotation.z = transform_q[2]
-        t.transform.rotation.w = transform_q[3]
-        t.transform.translation.x = transform_t[0]
-        t.transform.translation.y = transform_t[1]
-        t.transform.translation.z = 0
-        self.controller.tf_broadcaster.sendTransform(t)
+        self.local_map_transform.header.stamp = rospy.Time.now()
+        self.local_map_transform.header.frame_id = self.controller.global_map_name
+        self.local_map_transform.child_frame_id = self.local_map_name
+        self.local_map_transform.transform.rotation.x = transform_q[0]
+        self.local_map_transform.transform.rotation.y = transform_q[1]
+        self.local_map_transform.transform.rotation.z = transform_q[2]
+        self.local_map_transform.transform.rotation.w = transform_q[3]
+        self.local_map_transform.transform.translation.x = transform_t[0]
+        self.local_map_transform.transform.translation.y = transform_t[1]
+        self.local_map_transform.transform.translation.z = 0
         rospy.loginfo(transform_q)
         rospy.loginfo(transform_t)
+        self.local_map_transform_calculated = True
+
+    def global_pose_to_local_pose(self, global_pose):
+        trans = self.controller.tf_buffer.lookup_transform(
+            self.local_map_name,  # target
+            self.controller.global_map_name,  # source
+            rospy.Time(),
+            rospy.Duration(10.0))
+        transformed_pose = tf2_geometry_msgs.do_transform_pose(global_pose, trans)
+        transformed_pose.header.frame_id = self.local_map_name
+        return transformed_pose
+
+    def local_pose_to_global_pose(self, local_pose):
+        trans = self.controller.tf_buffer.lookup_transform(
+            self.controller.global_map_name,  # target
+            self.local_map_name,  # source
+            rospy.Time(),
+            rospy.Duration(10.0))
+        transformed_pose = tf2_geometry_msgs.do_transform_pose(local_pose, trans)
+        transformed_pose.header.frame_id = self.controller.global_map_name
+        return transformed_pose
 
     def spin(self):
-        rate = rospy.Rate(20)
-        while not rospy.is_shutdown():
-            self._send_heartbeat()
-            try:
-                reply = self.recv_q.get_nowait()
-                self._process_reply(reply)
-            except Queue.Empty:
-                pass
-            rate.sleep()
+        self._send_heartbeat()
+        self._broadcast_transforms()
+        try:
+            reply = self.recv_q.get_nowait()
+            self._process_reply(reply)
+        except Queue.Empty:
+            pass
