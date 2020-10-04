@@ -3,7 +3,9 @@
     <node pkg="pegasus_ros" type="pegasus_controller.py" name="pegasus_controller" respawn="false" output="screen">
         <rosparam param="agents">
             [
-                ["uav0", ["localhost", 4444]],
+            ["uav0", ["localhost", 8444], 5444],
+            ["uav1", ["localhost", 8445], 5445],
+            ["uav2", ["localhost", 8446], 5446],
             ]
         </rosparam>
         <param name="agents_hover_height" value="10"/>

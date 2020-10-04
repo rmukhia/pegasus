@@ -64,7 +64,9 @@ class Agent(object):
         self.recv_thread = threading.Thread(target=self._recv_thread)
         self.recv_thread.start()
         self.publishers = {}
+        self.subscribers = {}
         self._register_publisher()
+        self._register_subscribers()
         self._create_calibration_path()
         self.calibration_poses = []
         self.command_thread = None
@@ -81,6 +83,7 @@ class Agent(object):
     def _create_socket(self, address):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind(("0.0.0.0", self.rx_port))
+        rospy.loginfo('connecting to %s, bound to %s' % (address, self.rx_port))
         self.socket.connect(tuple(address))
 
     def _broadcast_transforms(self):
@@ -153,6 +156,14 @@ class Agent(object):
         rospy.loginfo('Publisher to calibration path: %s' % (calibration_path_topic,))
         self.publishers['calibration_path'] = rospy.Publisher(calibration_path_topic, Path, latch=True,
                                                               queue_size=1000)
+
+    def _register_subscribers(self):
+        path_topic = '/pegasus/%s/path' % (self.namespace,)
+        rospy.loginfo('Subscriber to path topic: %s' % (path_topic,))
+        self.subscribers['path'] = rospy.Subscriber(path_topic, Path, self._recv_path)
+
+    def _recv_path(self, path):
+        self.path = path
 
     def _create_calibration_path(self):
         side_length = self.controller.params['grid_size']

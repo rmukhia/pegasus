@@ -14,7 +14,7 @@ import tf2_geometry_msgs
 import tf2_ros
 from geodesy import utm
 from geometry_msgs.msg import PoseStamped, TransformStamped, PointStamped
-from mavros_msgs.msg import State
+from mavros_msgs.msg import State as MavrosState
 from mavros_msgs.srv import SetMode, CommandBool
 from nav_msgs.msg import Path
 from sensor_msgs.msg import NavSatFix
@@ -23,8 +23,8 @@ from std_srvs.srv import Trigger, TriggerResponse
 from tf.transformations import quaternion_from_euler
 
 from pegasus_controller.agent import Agent
-from pegasus_controller.pegasus_controller_state import PegasusControllerState
-from pegasus_controller.pegasus_controller_thread import PegasusControllerThread
+from pegasus_controller.state import State
+from pegasus_controller.controller_thread import ControllerThread
 
 
 class PegasusController(object):
@@ -41,7 +41,7 @@ class PegasusController(object):
         self._subscribe_map_origin()
         self.services = {}
         self._create_services()
-        self.state = PegasusControllerState.IDLE
+        self.state = State.IDLE
 
     def spin(self):
         rate = rospy.Rate(10)
@@ -60,16 +60,16 @@ class PegasusController(object):
 
     def _start_mission(self, request):
         rospy.loginfo('Starting mission')
-        if self.state == PegasusControllerState.IDLE:
-            self.state = PegasusControllerState.OFFBOARD_MODE
+        if self.state == State.IDLE:
+            self.state = State.PLAN
             return TriggerResponse(True, 'Mission started.')
         else:
             return TriggerResponse(False, 'Mission in progress.')
 
     def _abort_mission(self, request):
         rospy.loginfo('Aborting mission')
-        if self.state not in (PegasusControllerState.COMPLETE, PegasusControllerState.IDLE):
-            self.state = PegasusControllerState.COMPLETE
+        if self.state not in (State.COMPLETE, State.IDLE):
+            self.state = State.COMPLETE
             return TriggerResponse(True, 'Mission aborted.')
         else:
             return TriggerResponse(False, 'Mission not running.')
@@ -337,7 +337,7 @@ if __name__ == '__main__':
     #    , localTransforms,
     #                                      {'agentsHoverHeight': float(zHeight), 'gridSize': float(gridSize),
     #                                       'mapOriginTopic': mapOriginTopic})
-    controller_thread = PegasusControllerThread(controller, 0)
+    controller_thread = ControllerThread(controller, 0)
 
     controller_thread.start()
 

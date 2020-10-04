@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<launch>
+    <group ns="uav0">
+        <include file="$(find pegasus_ros)/launch/pegasus_commander.launch">
+            <arg name="mavros_namespace" value="/uav0/mavros"/>
+            <arg name="udp_port" value="8444"/>
+        </include>
+        <include file="$(find pegasus_ros)/launch/gscam.launch">
+            <arg name="video_udp_port" value="5600" />
+            <arg name="cam_name" value="/uav0/camera" />
+        </include>
+        <include file="$(find pegasus_ros)/launch/pegasus_video_streamer.launch">
+            <arg name="mavros_namespace" value="/uav0/mavros"/>
+            <arg name="udp_port" value="7400" />
+            <arg name="cam_name" value="/uav0/camera" />
+        </include>
+    </group>
+    <group ns="uav1">
+        <include file="$(find pegasus_ros)/launch/pegasus_commander.launch">
+            <arg name="mavros_namespace" value="/uav1/mavros"/>
+            <arg name="udp_port" value="8445"/>
+        </include>
+        <include file="$(find pegasus_ros)/launch/gscam.launch">
+            <arg name="video_udp_port" value="5601" />
+            <arg name="cam_name" value="/uav1/camera" />
+        </include>
+        <include file="$(find pegasus_ros)/launch/pegasus_video_streamer.launch">
+            <arg name="mavros_namespace" value="/uav1/mavros"/>
+            <arg name="udp_port" value="7401" />
+            <arg name="cam_name" value="/uav1/camera" />
+        </include>
+    </group>
+    <group ns="uav2">
+        <include file="$(find pegasus_ros)/launch/pegasus_commander.launch">
+            <arg name="mavros_namespace" value="/uav2/mavros"/>
+            <arg name="udp_port" value="8446"/>
+        </include>
+        <include file="$(find pegasus_ros)/launch/gscam.launch">
+            <arg name="video_udp_port" value="5602" />
+            <arg name="cam_name" value="/uav2/camera" />
+        </include>
+        <include file="$(find pegasus_ros)/launch/pegasus_video_streamer.launch">
+            <arg name="mavros_namespace" value="/uav2/mavros"/>
+            <arg name="udp_port" value="7402" />
+            <arg name="cam_name" value="/uav2/camera" />
+        </include>
+    </group>
+</launch>
