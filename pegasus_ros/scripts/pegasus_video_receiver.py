@@ -26,6 +26,7 @@ class PegasusVideoReceiver(object):
     def _create_services(self):
         self.services['start_capture'] = rospy.Service('start_capture', Trigger, self._start_capture)
         self.services['stop_capture'] = rospy.Service('stop_capture', Trigger, self._stop_capture)
+        self.services['grab_image'] = rospy.Service('grab_image', Trigger, self._grab_image)
 
     def _start_capture(self, request):
         rospy.loginfo('Start Capture')
@@ -43,46 +44,47 @@ class PegasusVideoReceiver(object):
         else:
             return TriggerResponse(False, 'Capture not started.')
 
-    def _get_image(self):
-        now = rospy.get_rostime()
-        if self.interval is not None and now - self.interval < rospy.Duration(self.params['interval']):
-            return
+    def _grab_image(self, request):
+        # now = rospy.get_rostime()
+        # if self.interval is not None and now - self.interval < rospy.Duration(self.params['interval']):
+        #    return
         self.socket.send('REQ')
         self.socket.settimeout(None)
         buf_size = 1024
         no_header = True
-        self.interval = now
+        # self.interval = now
         while no_header:
             try:
                 header = self.socket.recv(buf_size)
             except socket.timeout:
-                break
+                return TriggerResponse(False, 'socket timeout')
             self.socket.settimeout(2)
             print header
             if header[0:3] == 'RES':
                 n_fragments = int(header[4:])
                 no_header = False
         if no_header:
-            return
+            return TriggerResponse(False, 'no data')
         data = ''
         for i in range(n_fragments):
             self.socket.settimeout(2)
             try:
                 data += self.socket.recv(buf_size)
             except socket.timeout:
-                return
+                return TriggerResponse(False, 'socket timeout - data')
         filename = os.path.join(self.params['save_directory'],
                                 '%s-%s.jpeg' % (self.params['agent_name'], self.counter))
         f = open(filename, 'wb')
         f.write(data)
         f.close()
         self.counter += 1
+        return TriggerResponse(True, 'Image captured.')
 
     def spin(self):
         rate = rospy.Rate(20)
         while not rospy.is_shutdown():
-            if self.running:
-                self._get_image()
+            # if self.running:
+                # self._get_image()
             rate.sleep()
 
 
@@ -103,5 +105,5 @@ if __name__ == '__main__':
         'interval': interval,
         'save_directory': save_directory,
     })
-    pegasus_video_receiver.spin()
+    # pegasus_video_receiver.spin()
     rospy.spin()

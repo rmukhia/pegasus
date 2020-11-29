@@ -9,6 +9,7 @@ from geometry_msgs.msg import PoseStamped, TransformStamped
 from mavros_msgs.msg import State as MavrosState
 from nav_msgs.msg import Path
 from sensor_msgs.msg import NavSatFix
+from std_srvs.srv import Trigger
 from tf.transformations import quaternion_from_euler, quaternion_from_matrix, translation_from_matrix
 from geodesy import utm
 from tf2_geometry_msgs import tf2_geometry_msgs
@@ -290,6 +291,23 @@ class Agent(object):
         transformed_pose = tf2_geometry_msgs.do_transform_pose(local_pose, trans)
         transformed_pose.header.frame_id = self.controller.global_map_name
         return transformed_pose
+
+    def grab_image(self):
+        image_service_path = '/%s/grab_image' % (self.namespace, )
+        success = False
+        while not success:
+            rospy.loginfo('waiting for service %s' % (image_service_path, ))
+            rospy.wait_for_service(image_service_path)
+            try:
+                image_service = rospy.ServiceProxy(image_service_path, Trigger)
+                resp = image_service()
+            except rospy.ServiceException as e:
+                rospy.loginfo("Service call failed: %s"%e)
+                return
+            if not resp.success:
+                rospy.logerr(resp)
+            else:
+                success = True
 
     def spin(self):
         self._send_heartbeat()

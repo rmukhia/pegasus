@@ -108,25 +108,25 @@
       <pose frame=''>0 0 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>1458 713000000</sim_time>
-      <real_time>32 494438481</real_time>
-      <wall_time>1601890359 363355673</wall_time>
-      <iterations>32376</iterations>
+      <sim_time>1892 977000000</sim_time>
+      <real_time>447 208394161</real_time>
+      <wall_time>1602063574 530338226</wall_time>
+      <iterations>434264</iterations>
       <model name='House 1'>
-        <pose frame=''>-20.9091 -21.4904 12.2611 0 -0 0</pose>
+        <pose frame=''>5.92404 28.7339 12.2611 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-20.9091 -21.4904 12.2611 0 -0 0</pose>
+          <pose frame=''>5.92404 28.7339 12.2611 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='House 2'>
-        <pose frame=''>-20.664 14.8198 10.9095 0 -0 0</pose>
+        <pose frame=''>-9.68374 14.0693 10.9095 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-20.664 14.8198 10.9095 0 -0 0</pose>
+          <pose frame=''>-9.68374 14.0693 10.9095 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -153,20 +153,20 @@
         </link>
       </model>
       <model name='law_office'>
-        <pose frame=''>15.1308 54.7393 7.76569 0 -0 0</pose>
+        <pose frame=''>-1.95226 -12.1769 7.76569 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>15.1308 54.7393 7.76569 0 -0 0</pose>
+          <pose frame=''>-1.95226 -12.1769 7.76569 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree'>
-        <pose frame=''>24.8328 -6.0595 9.97844 0 -0 0</pose>
+        <pose frame=''>17.2718 -16.9894 9.97844 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>24.8328 -6.0595 9.97844 0 -0 0</pose>
+          <pose frame=''>17.2718 -16.9894 9.97844 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -183,90 +183,90 @@
         </link>
       </model>
       <model name='oak_tree_clone_0'>
-        <pose frame=''>15.1863 -4.56968 10.3921 0 -0 0</pose>
+        <pose frame=''>11.6977 -7.16132 10.3921 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>15.1863 -4.56968 10.3921 0 -0 0</pose>
+          <pose frame=''>11.6977 -7.16132 10.3921 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1'>
-        <pose frame=''>32.9051 -53.5805 9.40175 0 -0 0</pose>
+        <pose frame=''>3.95486 -19.4099 9.40175 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>32.9051 -53.5805 9.40175 0 -0 0</pose>
+          <pose frame=''>3.95486 -19.4099 9.40175 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone'>
-        <pose frame=''>10.6669 -58.8854 9.54148 0 -0 0</pose>
+        <pose frame=''>32.4197 -23.5836 9.54148 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>10.6669 -58.8854 9.54148 0 -0 0</pose>
+          <pose frame=''>32.4197 -23.5836 9.54148 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_0'>
-        <pose frame=''>18.1506 -60.114 9.25754 0 -0 0</pose>
+        <pose frame=''>-0.412708 -45.4563 9.25754 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>18.1506 -60.114 9.25754 0 -0 0</pose>
+          <pose frame=''>-0.412708 -45.4563 9.25754 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_1'>
-        <pose frame=''>1.30667 -59.1128 9.66829 0 -0 0</pose>
+        <pose frame=''>-10.6051 -27.2299 9.66829 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>1.30667 -59.1128 9.66829 0 -0 0</pose>
+          <pose frame=''>-10.6051 -27.2299 9.66829 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_2'>
-        <pose frame=''>-4.24435 -58.7425 10.1929 0 -0 0</pose>
+        <pose frame=''>2.96617 -34.877 10.1929 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-4.24435 -58.7425 10.1929 0 -0 0</pose>
+          <pose frame=''>2.96617 -34.877 10.1929 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_3'>
-        <pose frame=''>-10.9118 -54.5609 10.9827 0 -0 0</pose>
+        <pose frame=''>-30.5682 16.3434 10.9827 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-10.9118 -54.5609 10.9827 0 -0 0</pose>
+          <pose frame=''>-30.5682 16.3434 10.9827 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_4'>
-        <pose frame=''>23.9239 51.0908 10.4248 0 -0 0</pose>
+        <pose frame=''>12.3463 41.1815 10.4248 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>23.9239 51.0908 10.4248 0 -0 0</pose>
+          <pose frame=''>12.3463 41.1815 10.4248 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_5'>
-        <pose frame=''>7.64593 51.2042 10.6962 0 -0 0</pose>
+        <pose frame=''>-7.6383 3.67882 10.6962 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>7.64593 51.2042 10.6962 0 -0 0</pose>
+          <pose frame=''>-7.6383 3.67882 10.6962 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -283,40 +283,40 @@
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_7'>
-        <pose frame=''>38.6293 45.4731 8.51608 0 -0 0</pose>
+        <pose frame=''>-0.721127 42.2368 8.51608 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>38.6293 45.4731 8.51608 0 -0 0</pose>
+          <pose frame=''>-0.721127 42.2368 8.51608 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_8'>
-        <pose frame=''>38.7338 14.7184 8.61537 0 -0 0</pose>
+        <pose frame=''>30.0648 15.1068 8.61537 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>38.7338 14.7184 8.61537 0 -0 0</pose>
+          <pose frame=''>30.0648 15.1068 8.61537 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_8_clone'>
-        <pose frame=''>39.582 7.25005 8.41421 0 -0 0</pose>
+        <pose frame=''>32.5871 6.99198 8.41421 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>39.582 7.25005 8.41421 0 -0 0</pose>
+          <pose frame=''>32.5871 6.99198 8.41421 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_8_clone_0'>
-        <pose frame=''>40.5137 0.880933 8.52455 0 -0 0</pose>
+        <pose frame=''>-33.8397 27.8335 8.52455 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>40.5137 0.880933 8.52455 0 -0 0</pose>
+          <pose frame=''>-33.8397 27.8335 8.52455 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -333,10 +333,10 @@
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_8_clone_2'>
-        <pose frame=''>40.0257 29.5184 9.22862 0 -0 0</pose>
+        <pose frame=''>22.8771 34.8052 9.22862 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>40.0257 29.5184 9.22862 0 -0 0</pose>
+          <pose frame=''>22.8771 34.8052 9.22862 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -353,20 +353,20 @@
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_8_clone_4'>
-        <pose frame=''>-23.0428 -4.47716 11.6252 0 -0 0</pose>
+        <pose frame=''>-19.3528 -6.89606 11.6252 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-23.0428 -4.47716 11.6252 0 -0 0</pose>
+          <pose frame=''>-19.3528 -6.89606 11.6252 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='oak_tree_clone_1_clone_8_clone_5'>
-        <pose frame=''>-19.6812 -10.0575 11.8063 0 -0 0</pose>
+        <pose frame=''>-23.2228 -19.4725 11.8063 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-19.6812 -10.0575 11.8063 0 -0 0</pose>
+          <pose frame=''>-23.2228 -19.4725 11.8063 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -393,110 +393,110 @@
         </link>
       </model>
       <model name='pine_tree'>
-        <pose frame=''>45.1836 -57.106 8.68033 0 -0 0</pose>
+        <pose frame=''>-1.62146 -5.2157 8.68033 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>45.1836 -57.106 8.68033 0 -0 0</pose>
+          <pose frame=''>-1.62146 -5.2157 8.68033 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone'>
-        <pose frame=''>41.1272 -54.1782 8.54149 0 -0 0</pose>
+        <pose frame=''>2.18135 -6.20427 8.54149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>41.1272 -54.1782 8.54149 0 -0 0</pose>
+          <pose frame=''>2.18135 -6.20427 8.54149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0'>
-        <pose frame=''>36.1738 -58.1732 7.53906 0 -0 0</pose>
+        <pose frame=''>29.3943 27.8064 7.53906 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>36.1738 -58.1732 7.53906 0 -0 0</pose>
+          <pose frame=''>29.3943 27.8064 7.53906 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0_clone'>
-        <pose frame=''>38.009 -62.8223 8.73261 0 -0 0</pose>
+        <pose frame=''>22.9855 22.0661 8.73261 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>38.009 -62.8223 8.73261 0 -0 0</pose>
+          <pose frame=''>22.9855 22.0661 8.73261 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0_clone_0'>
-        <pose frame=''>42.145 -57.8917 8.68572 0 -0 0</pose>
+        <pose frame=''>-6.91102 -6.61673 8.68572 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>42.145 -57.8917 8.68572 0 -0 0</pose>
+          <pose frame=''>-6.91102 -6.61673 8.68572 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0_clone_1'>
-        <pose frame=''>42.6398 -63.6185 8.48196 0 -0 0</pose>
+        <pose frame=''>-12.6273 -3.02322 8.48196 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>42.6398 -63.6185 8.48196 0 -0 0</pose>
+          <pose frame=''>-12.6273 -3.02322 8.48196 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0_clone_2'>
-        <pose frame=''>32.4667 -64.105 8.6067 0 -0 0</pose>
+        <pose frame=''>17.9684 26.858 8.6067 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>32.4667 -64.105 8.6067 0 -0 0</pose>
+          <pose frame=''>17.9684 26.858 8.6067 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0_clone_3'>
-        <pose frame=''>38.3787 -66.6176 9.05563 0 -0 0</pose>
+        <pose frame=''>28.8895 21.6386 9.05563 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>38.3787 -66.6176 9.05563 0 -0 0</pose>
+          <pose frame=''>28.8895 21.6386 9.05563 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0_clone_4'>
-        <pose frame=''>38.8999 -50.6428 9.175 0 -0 0</pose>
+        <pose frame=''>22.967 26.7903 9.175 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>38.8999 -50.6428 9.175 0 -0 0</pose>
+          <pose frame=''>22.967 26.7903 9.175 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0_clone_5'>
-        <pose frame=''>31.0716 -58.4784 7.53906 0 -0 0</pose>
+        <pose frame=''>-24.4111 -14.7088 11.0766 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>31.0716 -58.4784 7.53906 0 -0 0</pose>
+          <pose frame=''>-24.4111 -14.7088 11.0766 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0_clone_6'>
-        <pose frame=''>47.0519 -49.0293 9.01802 0 -0 0</pose>
+        <pose frame=''>-21.9979 10.7704 9.01802 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>47.0519 -49.0293 9.01802 0 -0 0</pose>
+          <pose frame=''>-21.9979 10.7704 9.01802 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -613,30 +613,30 @@
         </link>
       </model>
       <model name='pine_tree_clone_0_clone_8_clone_5_clone_1'>
-        <pose frame=''>-10.2922 -23.6595 10.5925 0 -0 0</pose>
+        <pose frame=''>1.65026 11.1864 10.5925 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-10.2922 -23.6595 10.5925 0 -0 0</pose>
+          <pose frame=''>1.65026 11.1864 10.5925 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0_clone_8_clone_5_clone_2'>
-        <pose frame=''>-9.93854 -28.4043 11.3379 0 -0 0</pose>
+        <pose frame=''>3.64187 5.81033 11.3379 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-9.93854 -28.4043 11.3379 0 -0 0</pose>
+          <pose frame=''>3.64187 5.81033 11.3379 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='pine_tree_clone_0_clone_8_clone_5_clone_3'>
-        <pose frame=''>-7.00647 -25.5349 11.3662 0 -0 0</pose>
+        <pose frame=''>2.68198 16.2762 11.3662 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-7.00647 -25.5349 11.3662 0 -0 0</pose>
+          <pose frame=''>2.68198 16.2762 11.3662 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -663,10 +663,10 @@
         </link>
       </model>
       <model name='police_station'>
-        <pose frame=''>35.5895 -24.8159 10.4367 0 -0 0</pose>
+        <pose frame=''>13.7936 9.05717 10.4367 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>35.5895 -24.8159 10.4367 0 -0 0</pose>
+          <pose frame=''>13.7936 9.05717 10.4367 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -678,7 +678,7 @@
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose frame=''>26.9735 -270.473 257.446 0 0.611457 1.47938</pose>
+        <pose frame=''>-5.39769 -7.42986 191.268 3.14159 1.57079 3.14159</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>

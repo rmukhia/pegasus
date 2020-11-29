@@ -6,8 +6,9 @@ from tf.transformations import quaternion_from_euler
 
 
 class Agent(object):
-    def __init__(self, a_id):
+    def __init__(self, a_id, hover_height):
         self.a_id = a_id
+        self.hover_height = hover_height
         self.initial_position = None
         self.path_plan = []  # { points: [], steps: int }
         self.path = Path()
@@ -40,7 +41,7 @@ class Agent(object):
             x, y = self.path_plan['points'][k]
             pose.pose.position.x = x
             pose.pose.position.y = y
-            pose.pose.position.z = 10
+            pose.pose.position.z = self.hover_height
             pose.pose.orientation.x = q[0]
             pose.pose.orientation.y = q[1]
             pose.pose.orientation.z = q[2]

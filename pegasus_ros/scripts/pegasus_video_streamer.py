@@ -68,7 +68,7 @@ class PegasusVideoStreamer(object):
         with self.lock['global_gps']:
             global_gps = copy.deepcopy(self.data['global_gps'])
         try:
-            image = self.cv_bridge.imgmsg_to_cv2(image_raw)
+            image = self.cv_bridge.imgmsg_to_cv2(image_raw, desired_encoding="bgr8")
         except CvBridgeError as e:
             rospy.logerr(e)
             return ['ERR']
@@ -83,7 +83,7 @@ class PegasusVideoStreamer(object):
             piexif.GPSIFD.GPSLongitudeRef: "W",
             piexif.GPSIFD.GPSLongitude: self._get_degree_minute_second(global_gps.longitude),
             piexif.GPSIFD.GPSAltitudeRef: 0,
-            piexif.GPSIFD.GPSAltitude: self._get_altitude(global_gps.altitude)
+            piexif.GPSIFD.GPSAltitude: self._get_altitude(global_gps.altitude + 50)
         }
         print (exif_dict)
         exif_bytes = piexif.dump(exif_dict)

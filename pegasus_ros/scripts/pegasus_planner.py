@@ -27,7 +27,7 @@ class PegasusPlanner(object):
         self.agents = []
         self.mavros_namespaces = _mavros_namespaces
         for agent in _mavros_namespaces:
-            self.agents.append(Agent(agent))
+            self.agents.append(Agent(agent, params['agents_hover_height']))
         self.services = {}
         self.subscribe_and_publish()
         self.create_service()
@@ -70,8 +70,8 @@ class PegasusPlanner(object):
         self.publisher_marker.publish(marker)
 
     def create_cell_container(self):
-        self.cell_container = CellContainer(self.grid_cells.bounding_box, self.grid_cells, self.params['gridSize'],
-                                            num_directions=8, agents_hover_height=self.params['agentsHoverHeight'])
+        self.cell_container = CellContainer(self.grid_cells.bounding_box, self.grid_cells, self.params['grid_size'],
+                                            num_directions=8, agents_hover_height=self.params['agents_hover_height'])
 
     def calculate_path(self):
         state = State(0, np.zeros((self.cell_container.i_max, self.cell_container.j_max), dtype=float),
@@ -91,7 +91,7 @@ class PegasusPlanner(object):
         for i in range(num_points):
             polygon[i] = (data.polygon.points[i].x, data.polygon.points[i].y)
 
-        self.grid_cells = get_grid_cells(polygon, self.params['gridSize'])
+        self.grid_cells = get_grid_cells(polygon, self.params['grid_size'])
         rospy.loginfo('Calculated cells...')
         self.create_grid_markers()
         self.visited_points = []
@@ -118,8 +118,8 @@ if __name__ == '__main__':
     grid_size = rospy.get_param('grid_size')
 
     pegasus_planner = PegasusPlanner(mavros_namespaces, {
-        'agentsHoverHeight': float(z_height),
-        'gridSize': float(grid_size)
+        'agents_hover_height': float(z_height),
+        'grid_size': float(grid_size)
     }
                                      )
 

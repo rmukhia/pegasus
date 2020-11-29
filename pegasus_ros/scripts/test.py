@@ -60,7 +60,6 @@ data = request.SerializeToString()
 print(len(data))
 
 clisock.sendto(data, ('127.0.0.1', 4444))
-
 received = clisock.recv(1024)
 
 reply = messages_pb2.Reply()
