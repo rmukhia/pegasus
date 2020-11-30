@@ -4,7 +4,7 @@
   <arg name="udp_port" default="4444" />
   <arg name="map_transform" default="map" />
   <arg name="base_link_transform" default="base_link" />
-  <node pkg="pegasus_ros" type="pegasus_commander.py" name="pegasus_commander" respawn="false" output="screen">
+  <node pkg="pegasus_uav_ros" type="pegasus_commander.py" name="pegasus_commander" respawn="false" output="screen">
     <param name="mavros_namespace" value="$(arg mavros_namespace)"/>
     <param name="udp_port" value="$(arg udp_port)"/>
     <param name="map_transform" value="$(arg map_transform)"/>
