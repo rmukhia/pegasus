@@ -51,7 +51,6 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>protobuf-dev</build_depend>
-  <build_depend>python-protobuf</build_depend>
   <build_depend>swri_transform_util</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
@@ -65,6 +64,7 @@
   <build_export_depend>geodesy</build_export_depend>
   <build_export_depend>tf2</build_export_depend>
   <build_export_depend>tf2_ros</build_export_depend>
+  <exec_depend>python-protobuf</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>geometric_msgs</exec_depend>
   <exec_depend>geographic_msgs</exec_depend>

@@ -21,7 +21,12 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Protobuf REQUIRED)
 set(PP_PROTO_SRC ${PROJECT_SOURCE_DIR}/scripts/pegasus_messages.proto)
 protobuf_generate_python(PROTO_PY ${PP_PROTO_SRC})
-configure_file(${CMAKE_CURRENT_BINARY_DIR}/pegasus_messages_pb2.py ${PROJECT_SOURCE_DIR}/scripts/messages/ COPYONLY)
+add_custom_target(protomsgs ALL DEPENDS ${PROTO_PY})
+add_custom_command(TARGET protomsgs PRE_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy 
+    ${CMAKE_CURRENT_BINARY_DIR}/pegasus_messages_pb2.py 
+    ${PROJECT_SOURCE_DIR}/scripts/messages/pegasus_messages_pb2.py)
+
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
