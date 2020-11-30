@@ -120,7 +120,6 @@ if __name__ == '__main__':
     pegasus_planner = PegasusPlanner(mavros_namespaces, {
         'agents_hover_height': float(z_height),
         'grid_size': float(grid_size)
-    }
-                                     )
+    })
 
     rospy.spin()

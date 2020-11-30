@@ -1,33 +1,20 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(pegasus_ros)
+project(pegasus_uav_ros)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+# add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
   rospy
-  std_msgs
+  cv_bridge
   geometry_msgs
-  geographic_msgs
-  nav_msgs
-  visualization_msgs
-  tf2
-  tf2_ros
-  geodesy
-  swri_transform_util
+  mavros_msgs
+  sensor_msgs
+  std_msgs
 )
-
-if(MSVC)  
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")  
-else()  
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")  
-endif()
-
-
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -86,7 +73,7 @@ endif()
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs
+#   geometry_msgs#   mavros_msgs#   sensor_msgs#   std_msgs
 # )
 
 ################################################
@@ -120,8 +107,8 @@ endif()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES pegasus_controller
-#  CATKIN_DEPENDS marti_common std_msgs
+#  LIBRARIES pegasus_uav_ros
+#  CATKIN_DEPENDS cv_bridge geometry_msgs mavros_msgs sensor_msgs std_msgs
 #  DEPENDS system_lib
 )
 
@@ -138,7 +125,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/pegasus_controller.cpp
+#   src/${PROJECT_NAME}/pegasus_uav_ros.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -149,7 +136,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_network_status_util src/utils/pegasus_network_status_util_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/pegasus_uav_ros_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -162,9 +149,10 @@ add_executable(${PROJECT_NAME}_network_status_util src/utils/pegasus_network_sta
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_network_status_util
-  ${catkin_LIBRARIES}
-)
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
+
 #############
 ## Install ##
 #############
@@ -175,9 +163,8 @@ target_link_libraries(${PROJECT_NAME}_network_status_util
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/pegasus_planner.py
-  scripts/pegasus_controller.py
-  scripts/pegasus_video_receiver.py
+  scripts/pegasus_commander.py
+  scripts/pegasus_video_streamer.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -214,11 +201,10 @@ catkin_install_python(PROGRAMS
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_pegasus_controller.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_pegasus_uav_ros.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-

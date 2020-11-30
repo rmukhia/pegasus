@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+enum Command {
+  NONE_COMMAND = 0;
+  SET_OFFBOARD = 1;
+  SET_ARM = 2;
+  SET_RETURN_TO_HOME = 3;
+  GOTO = 4;
+  HEARTBEAT = 7;
+}
+
+/*
+enum CommanderState {
+  IDLE = 0;
+  PREP_STATE = 1;
+  OFFBOARD_MODE = 2;
+  ARMING = 3;
+  HOVER = 4;
+  RUN = 5;
+  RETURN_TO_HOME = 6;
+}
+*/
+/* Pegasus Controller */
+message Request {
+  uint64 timestamp = 1;
+  uint64 id = 2;
+  Command command = 3;
+  bytes req_data = 10; // ROS data
+}
+
+/* Pegasus Commander */
+message HeartBeatData {
+  uint64 last_command_id = 1;
+  bool last_command_completed = 2; // True: Completed, False: Running
+  bytes mavros_state = 3;
+  bytes base_link_transform = 4;
+  bytes local_pose = 5;
+  bytes gps_nav_sat = 6;
+}
+
+message Reply {
+  uint64 timestamp = 1;
+  HeartBeatData heartbeat_data = 5; // Heartbeat
+}
+
