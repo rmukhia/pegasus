@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find pegasus_uav_ros)/launch/px4.launch">
+        <arg name="fcu_url" default="/dev/ttyUSB0:57600" />
+    </include>
+    <include file="$(find pegasus_uav_ros)/launch/pegasus_commander.launch">
+        <arg name="mavros_namespace" value="/uav0/mavros"/>
+        <arg name="udp_port" value="8444"/>
+    </include>
+    <!--
+    <include file="$(find pegasus_uav_ros)/launch/gscam.launch">
+        <arg name="video_udp_port" value="5600" />
+        <arg name="cam_name" value="/uav0/camera" />
+    </include>
+    <include file="$(find pegasus_uav_ros)/launch/pegasus_video_streamer.launch">
+        <arg name="mavros_namespace" value="/uav0/mavros"/>
+        <arg name="udp_port" value="7400" />
+        <arg name="cam_name" value="/uav0/camera" />
+    </include>
+    -->
+</launch>
