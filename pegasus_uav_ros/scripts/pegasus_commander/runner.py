@@ -5,6 +5,13 @@ import numpy as np
 import messages.pegasus_messages_pb2 as messages_pb2
 
 
+def create_return_to_home_message():
+    request = messages_pb2.Request()
+    request.id = 1
+    request.command = messages_pb2.Command.SET_RETURN_TO_HOME
+    return request
+
+
 def is_at_position(expected_pose, actual_pose, offset):
     """ Actually its PoseStamped"""
     desired = np.array((expected_pose.pose.position.x,
@@ -41,6 +48,7 @@ class Runner(threading.Thread):
         return self
 
     def request_offboard(self, request):
+        self.commander.running = True
         now = rospy.get_rostime()
         while self.commander.mavros_gw.get_mavros_state().mode != 'OFFBOARD':
             if self.request_offboard_time is not None and now - self.request_offboard_time < rospy.Duration(5):
@@ -59,9 +67,12 @@ class Runner(threading.Thread):
             except rospy.ServiceException as e:
                 rospy.logerr(e)
                 self.request_offboard_time = now
+            if not self.commander.running:
+                break
             self.rate.sleep()
 
     def request_arm(self, request):
+        self.commander.running = True
         now = rospy.get_rostime()
         while not self.commander.mavros_gw.get_mavros_state().armed:
             if self.request_arm_time is not None and now - self.request_arm_time < rospy.Duration(5):
@@ -75,6 +86,8 @@ class Runner(threading.Thread):
             except rospy.ServiceException as e:
                 self.request_arm_time = now
                 rospy.logerr(e)
+            if not self.commander.running:
+                break
             self.rate.sleep()
 
     def request_return_to_home(self, request):
@@ -94,6 +107,7 @@ class Runner(threading.Thread):
             self.rate.sleep()
 
     def request_goto(self, request):
+        self.commander.running = True
         self.commander.current_pose.deserialize(request.req_data)
         while not rospy.is_shutdown():
             actual_pose = self.commander.mavros_gw.get_mavros_local_pose()
@@ -101,6 +115,8 @@ class Runner(threading.Thread):
             if is_at_position(expected_pose, actual_pose, 0.5):
                 return
             self.commander.mavros_gw.set_mavros_local_pose(expected_pose)
+            if not self.commander.running:
+                break
             self.rate.sleep()
 
     def request_heartbeat(self, request):
@@ -118,9 +134,18 @@ class Runner(threading.Thread):
         b_gps = BytesIO()
         b_bl_trans = BytesIO()
 
-        m_state.serialize(b_state)
-        m_local_pose.serialize(b_local_pose)
-        m_gps.serialize(b_gps)
+        if m_state is not None:
+            m_state.serialize(b_state)
+            reply.heartbeat_data.mavros_state = b_state.getvalue()
+
+        if m_local_pose is not None:
+            m_local_pose.serialize(b_local_pose)
+            reply.heartbeat_data.local_pose = b_local_pose.getvalue()
+
+        if m_gps is not None:
+            m_gps.serialize(b_gps)
+            reply.heartbeat_data.gps_nav_sat = b_gps.getvalue()
+
         if m_bl_trans is not None:
             m_bl_trans.serialize(b_bl_trans)
             reply.heartbeat_data.base_link_transform = b_bl_trans.getvalue()
@@ -128,10 +153,6 @@ class Runner(threading.Thread):
         l_cmd_id, l_cmd_completed = self.commander.get_last_command()
         reply.heartbeat_data.last_command_id = l_cmd_id
         reply.heartbeat_data.last_command_completed = l_cmd_completed
-
-        reply.heartbeat_data.mavros_state = b_state.getvalue()
-        reply.heartbeat_data.local_pose = b_local_pose.getvalue()
-        reply.heartbeat_data.gps_nav_sat = b_gps.getvalue()
 
         data = reply.SerializeToString()
         rospy.loginfo('%s: Reply size %s', self.commander.namespace, len(data))
