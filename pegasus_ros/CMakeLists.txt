@@ -22,6 +22,10 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(Protobuf REQUIRED)
+find_package(Protobuf REQUIRED)
+set(PP_PROTO_SRC ${PROJECT_SOURCE_DIR}/scripts/pegasus_messages.proto)
+protobuf_generate_python(PROTO_PY ${PP_PROTO_SRC})
+configure_file(${CMAKE_CURRENT_BINARY_DIR}/pegasus_messages_pb2.py ${PROJECT_SOURCE_DIR}/scripts/messages/ COPYONLY)
 
 if(MSVC)  
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")  
