@@ -7,7 +7,7 @@ import threading
 import Queue
 
 from geometry_msgs.msg import PoseStamped
-from pegasus_commander.runner import Runner, create_return_to_home_request
+from pegasus_commander.runner import Runner, create_return_to_home_message
 from pegasus_commander.mavros_gw import MavrosGw
 from pegasus_commander.message_server import get_message_server_thread
 
@@ -22,6 +22,7 @@ class PegasusCommander(object):
         self.current_pose.pose.position.y = 0
         self.current_pose.pose.position.z = 0
         self.running = False
+        self.return_to_home = False
         self.last_command = {
             'command': 1,
             'completed': True,
@@ -58,14 +59,15 @@ class PegasusCommander(object):
 
     def heartbeat_check(self):
         now = rospy.get_rostime()
-        if self.heartbeat_time is not None and now - self.heartbeat_time  > rospy.Duration(15):
+        if self.heartbeat_time is not None and now - self.heartbeat_time  > rospy.Duration(15) and self.return_to_home == False:
             # we lost heartbeat
             # empty command queue
             while not self.queue.empty():
                 self.queue.get()
-            rth_request = create_return_to_home_request()
-            self.queue.put(rth_request)
+            rth_request = create_return_to_home_message()
+            self.queue.put((0, 'localhost', rth_request.SerializeToString()))
             self.running = False
+            self.return_to_home = True
 
     def spin(self):
         self.cmd_server_thread.start()

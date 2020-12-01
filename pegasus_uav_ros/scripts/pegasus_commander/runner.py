@@ -121,6 +121,7 @@ class Runner(threading.Thread):
 
     def request_heartbeat(self, request):
         self.commander.heartbeat_time = rospy.get_rostime()
+        self.commander.return_to_home = False
         reply = messages_pb2.Reply()
         reply.timestamp = int(self.commander.heartbeat_time.to_sec())
         m_state = self.commander.mavros_gw.get_mavros_state()
