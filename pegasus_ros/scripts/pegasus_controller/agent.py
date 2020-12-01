@@ -108,12 +108,15 @@ class Agent(object):
             reply.heartbeat_data.last_command_completed
         )
         rospy.loginfo(self.last_command)
-        self.mavros_state.deserialize(reply.heartbeat_data.mavros_state)
-        self.local_pose.deserialize(reply.heartbeat_data.local_pose)
-        self.global_position.deserialize(reply.heartbeat_data.gps_nav_sat)
-        self.publishers['mavros_state'].publish(self.mavros_state)
-        self.publishers['local_pose'].publish(self.local_pose)
-        self.publishers['global_position'].publish(self.global_position)
+        if reply.heartbeat_data.mavros_state is not None and len(reply.heartbeat_data.mavros_state) > 0:
+            self.mavros_state.deserialize(reply.heartbeat_data.mavros_state)
+            self.publishers['mavros_state'].publish(self.mavros_state)
+        if reply.heartbeat_data.local_pose is not None and len(reply.heartbeat_data.local_pose) > 0:
+            self.local_pose.deserialize(reply.heartbeat_data.local_pose)
+            self.publishers['local_pose'].publish(self.local_pose)
+        if reply.heartbeat_data.gps_nav_sat is not None and len(reply.heartbeat_data.gps_nav_sat) > 0:
+            self.global_position.deserialize(reply.heartbeat_data.gps_nav_sat)
+            self.publishers['global_position'].publish(self.global_position)
         if self.local_map_transform_calculated:
             transformed_pose = self.local_pose_to_global_pose(self.local_pose)
             self.publishers['global_pose'].publish(transformed_pose)
