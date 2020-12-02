@@ -76,18 +76,19 @@ class PegasusVideoStreamer(object):
         name = '%s-pegasus_video_streamer.jpg' % (os.path.dirname(self.params['mavros_namespace'])[1:],)
         filename = os.path.join(tempfile.gettempdir(), name)
         cv2.imwrite(filename, image, params)
-        exif_dict = piexif.load(filename)
-        exif_dict['GPS'] = {
-            piexif.GPSIFD.GPSLatitudeRef: "N",
-            piexif.GPSIFD.GPSLatitude: self._get_degree_minute_second(global_gps.latitude),
-            piexif.GPSIFD.GPSLongitudeRef: "W",
-            piexif.GPSIFD.GPSLongitude: self._get_degree_minute_second(global_gps.longitude),
-            piexif.GPSIFD.GPSAltitudeRef: 0,
-            piexif.GPSIFD.GPSAltitude: self._get_altitude(global_gps.altitude + 50)
-        }
-        print (exif_dict)
-        exif_bytes = piexif.dump(exif_dict)
-        piexif.insert(exif_bytes, filename)
+        if global_gps is not None:
+            exif_dict = piexif.load(filename)
+            exif_dict['GPS'] = {
+                piexif.GPSIFD.GPSLatitudeRef: "N",
+                piexif.GPSIFD.GPSLatitude: self._get_degree_minute_second(global_gps.latitude),
+                piexif.GPSIFD.GPSLongitudeRef: "W",
+                piexif.GPSIFD.GPSLongitude: self._get_degree_minute_second(global_gps.longitude),
+                piexif.GPSIFD.GPSAltitudeRef: 0,
+                piexif.GPSIFD.GPSAltitude: self._get_altitude(global_gps.altitude + 50)
+            }
+            print (exif_dict)
+            exif_bytes = piexif.dump(exif_dict)
+            piexif.insert(exif_bytes, filename)
         data = []
         buf_size = 1024
         f = open(filename, 'rb')

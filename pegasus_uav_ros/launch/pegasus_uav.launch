@@ -7,15 +7,10 @@
 	<arg name="mavros_namespace" value="/mavros"/>
         <arg name="udp_port" value="8444"/>
     </include>
-    <!--
-    <include file="$(find pegasus_uav_ros)/launch/gscam.launch">
-        <arg name="video_udp_port" value="5600" />
-        <arg name="cam_name" value="/uav0/camera" />
-    </include>
-    <include file="$(find pegasus_uav_ros)/launch/pegasus_video_streamer.launch">
-        <arg name="mavros_namespace" value="/uav0/mavros"/>
+    <include file="$(find pegasus_uav_ros)/launch/gscam_real.launch">
+        <arg name="mavros_namespace" value="/mavros"/>
         <arg name="udp_port" value="7400" />
-        <arg name="cam_name" value="/uav0/camera" />
+        <arg name="cam_name" value="/camera" />
     </include>
     -->
 </launch>
