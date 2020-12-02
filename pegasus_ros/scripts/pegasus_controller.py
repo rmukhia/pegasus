@@ -35,6 +35,7 @@ class PegasusController(object):
         self.services = {}
         self._create_services()
         self.state = State.IDLE
+        self.heartbeat_active = False
 
     def spin(self):
         rate = rospy.Rate(10)
@@ -52,6 +53,10 @@ class PegasusController(object):
         self.services['abort_mission'] = rospy.Service('abort_mission', Trigger, self._abort_mission)
         self.services['start_mission_no_plan'] = rospy.Service('start_mission_no_plan', Trigger,
                                                                self._start_mission_no_plan)
+        self.services['start_heartbeat'] = rospy.Service('start_heartbeat', Trigger,
+                                                               self._start_heartbeat)
+        self.services['stop_heartbeat'] = rospy.Service('stop_heartbeat', Trigger,
+                                                         self._stop_heartbeat)
 
     def _start_mission(self, request):
         rospy.loginfo('Starting mission')
@@ -68,6 +73,16 @@ class PegasusController(object):
             return TriggerResponse(True, 'Mission aborted.')
         else:
             return TriggerResponse(False, 'Mission not running.')
+
+    def _start_heartbeat(self, request):
+        rospy.loginfo('Starting heartbeat')
+        self.heartbeat_active = True
+        return TriggerResponse(True, 'Heartbeat started.')
+
+    def _stop_heartbeat(self, request):
+        rospy.loginfo('Stopping heartbeat')
+        self.heartbeat_active = False
+        return TriggerResponse(True, 'Heartbeat stopped.')
 
     def _start_mission_no_plan(self, request):
         rospy.loginfo('Starting mission')

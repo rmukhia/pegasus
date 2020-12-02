@@ -77,11 +77,11 @@ class PegasusPlanner(object):
         state = State(0, np.zeros((self.cell_container.i_max, self.cell_container.j_max), dtype=float),
                       self.cell_container)
         agent_objects = []
-        for  agent in self.agents:
+        for agent in self.agents:
             agent.set_initial_position((0,0))
 
         self.path_finder = PathFinder(self.agents, self.cell_container)
-        goal = self.path_finder.find(8, 4)
+        goal = self.path_finder.find(self.params['depth_exit'], self.params['retry_threshold'], self.params['early_exit'])
         return goal
 
     def recv_polygon(self, data):
@@ -116,10 +116,16 @@ if __name__ == '__main__':
     mavros_namespaces = rospy.get_param('pegasus_mavros_namespaces')
     z_height = rospy.get_param('agents_hover_height')
     grid_size = rospy.get_param('grid_size')
+    depth_exit = rospy.get_param('param_depth_exit')
+    retry_threshold = rospy.get_param('param_retry_threshold')
+    early_exit = rospy.get_param('param_early_exit')
 
     pegasus_planner = PegasusPlanner(mavros_namespaces, {
         'agents_hover_height': float(z_height),
-        'grid_size': float(grid_size)
+        'grid_size': float(grid_size),
+        'depth_exit': int(depth_exit),
+        'retry_threshold': int(retry_threshold),
+        'early_exit': int(early_exit)
     })
 
     rospy.spin()

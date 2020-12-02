@@ -313,8 +313,9 @@ class Agent(object):
                 success = True
 
     def spin(self):
-        self._send_heartbeat()
-        self._broadcast_transforms()
+        if self.controller.heartbeat_active:
+            self._send_heartbeat()
+            self._broadcast_transforms()
         try:
             reply = self.recv_q.get_nowait()
             self._process_reply(reply)

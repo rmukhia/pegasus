@@ -186,14 +186,14 @@ class PathFinder(object):
 
             closed_list.append(current)
 
-    def find(self, depth_exit, sigma_t):
+    def find(self, depth_exit, sigma_t, early_exit):
         start_time = time.time()
         goal = None
         goals = []
         prev_h = len(self.cell_container.valid_cells)
         sigma = 0
         while True:
-            ret, goal = self.search(epoch_stop=2048, depth_exit=depth_exit, previous_goal=copy.deepcopy(goal))
+            ret, goal = self.search(epoch_stop=early_exit, depth_exit=depth_exit, previous_goal=copy.deepcopy(goal))
             rospy.loginfo(ret)
             goals.append(goal)
             h = goal.h
