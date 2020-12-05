@@ -8,11 +8,63 @@ import tempfile
 import threading
 from fractions import Fraction
 from threading import Lock
-
 import piexif
 import rospy
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import NavSatFix, Image
+import messages.pegasus_messages_pb2 as messages_pb2
+
+sock_buffsize = 1024
+
+class ImageContainer(object):
+    def __init__(self, data=None):
+        super(ImageContainer, self).__init__()
+        self.total_pkts = 0
+        self.pkts = []
+        if data is not None:
+            self.initialize(data)
+
+    @staticmethod
+    def parse_proto_buf(buf):
+        """
+        Call this method first.
+        Then pass the result to other methods.
+        """
+        image_request = messages_pb2.ImageRequest()
+        image_request.ParseFromString(buf)
+        return image_request
+
+    @staticmethod
+    def get_err_pkt():
+        response = messages_pb2.ImageRequest()
+        response.command = messages_pb2.ImageCommand.ERR
+        return response
+
+    def reset(self):
+        self.total_pkts = 0
+        self.pkts = []
+
+    def initialize(self, image_pkts):
+        self.reset()
+        self.pkts = image_pkts
+        self.total_pkts = len(image_pkts)
+
+    def get_meta_pkt(self):
+        response = messages_pb2.ImageRequest()
+        response.command = messages_pb2.ImageCommand.REPLY
+        response.total_pkts = self.total_pkts
+        return response
+
+    def get_packet(self, pkt_no):
+        response = messages_pb2.ImageRequest()
+        if pkt_no < self.total_pkts:
+            response.command = messages_pb2.ImageCommand.PKT
+            response.pkt_no = pkt_no
+            response.data = self.pkts[pkt_no]
+            # rospy.loginfo(type(self.pkts[pkt_no]))
+        else:
+            response.command = messages_pb2.ImageCommand.ERR
+        return response
 
 
 class PegasusVideoStreamer(object):
@@ -29,6 +81,8 @@ class PegasusVideoStreamer(object):
         }
         self.cv_bridge = CvBridge()
         self._subscribe()
+        self.image_container = ImageContainer()
+        self.pkts = []
 
     def _subscribe(self):
         global_gps_topic = '%s/global_position/global' % (self.params['mavros_namespace'],)
@@ -73,7 +127,7 @@ class PegasusVideoStreamer(object):
             rospy.logerr(e)
             return ['ERR']
         params = [cv2.IMWRITE_JPEG_QUALITY, self.params['jpeg_quality']]
-        name = '%s-pegasus_video_streamer.jpg' % (os.path.dirname(self.params['mavros_namespace'])[1:],)
+        name = '%s_pegasus_video_streamer.jpg' % (os.path.dirname(self.params['mavros_namespace'])[1:],)
         filename = os.path.join(tempfile.gettempdir(), name)
         cv2.imwrite(filename, image, params)
         if global_gps is not None:
@@ -90,7 +144,7 @@ class PegasusVideoStreamer(object):
             exif_bytes = piexif.dump(exif_dict)
             piexif.insert(exif_bytes, filename)
         data = []
-        buf_size = 1024
+        buf_size = sock_buffsize - 64# buffer size to fit in 1024 protobuf packet
         f = open(filename, 'rb')
         d = f.read(buf_size)
         while d:
@@ -109,17 +163,36 @@ class UDPServerRequestHandler(SocketServer.BaseRequestHandler):
         SocketServer.BaseRequestHandler.__init__(h, request,
                                                  client_address, _server)
 
+    def _clear_socket_buf(self, socket):
+        sock_timeout = socket.gettimeout()
+        socket.settimeout(0)
+        rospy.loginfo('Streamer clearing udp buffer!')
+        try:
+            while socket.recv(1024):
+                pass
+        except:
+            pass
+        rospy.loginfo('Streamer cleared udp buffer!')
+        socket.settimeout(sock_timeout)
+
     def handle(self):
         data = self.request[0]
         socket = self.request[1]
-        rospy.loginfo('Received %s', str(data))
-        if data[0:3] == 'REQ':
-            data = self.video_streamer.get_packet()
-            rospy.loginfo('Sending image!')
-            rospy.loginfo(self.client_address)
-            socket.sendto('RES %s' % (len(data),), self.client_address)
-            for d in data:
-                socket.sendto(d, self.client_address)
+        response = ImageContainer.get_err_pkt()
+        try:
+            image_request = ImageContainer.parse_proto_buf(data)
+            # rospy.loginfo('Received:\n%s', image_request)
+            if image_request.command == messages_pb2.ImageCommand.REQUEST:
+                image_pkts = self.video_streamer.get_packet()
+                self._clear_socket_buf(socket)
+                self.video_streamer.image_container.initialize(image_pkts)
+                response = self.video_streamer.image_container.get_meta_pkt()
+            elif image_request.command == messages_pb2.ImageCommand.PKT:
+                response = self.video_streamer.image_container.get_packet(image_request.pkt_no)
+        except Exception as e:
+            rospy.logerr(str(e))
+        # rospy.loginfo('Replied:\n%s', response)
+        socket.sendto(response.SerializeToString(), self.client_address)
 
 
 class UDPServer(SocketServer.ThreadingMixIn, SocketServer.UDPServer):

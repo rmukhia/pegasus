@@ -13,7 +13,7 @@
         -->
         <rosparam param="agents">
             [
-            ["uav0", ["192.41.170.210", 8444], 5444],
+            ["uav0", ["10.42.0.35", 8444], 5444],
             ]
         </rosparam>
         <param name="agents_hover_height" value="40"/>
@@ -23,9 +23,10 @@
     <group ns="uav0">
         <include file="$(find pegasus_ros)/launch/pegasus_video_receiver.launch">
             <arg name="agent_name" value="uav0" />
-            <arg name="agent_ip" value="localhost" />
+            <arg name="agent_ip" value="10.42.0.35" />
             <arg name="agent_remote_port" value="7400" />
             <arg name="udp_port" value="8200" />
+            <arg name="save_directory" default="/home/rmukhia/sfm2/" />
         </include>
     </group>
     <!--

@@ -9,17 +9,6 @@ enum Command {
   HEARTBEAT = 7;
 }
 
-/*
-enum CommanderState {
-  IDLE = 0;
-  PREP_STATE = 1;
-  OFFBOARD_MODE = 2;
-  ARMING = 3;
-  HOVER = 4;
-  RUN = 5;
-  RETURN_TO_HOME = 6;
-}
-*/
 /* Pegasus Controller */
 message Request {
   uint64 timestamp = 1;
@@ -38,8 +27,24 @@ message HeartBeatData {
   bytes gps_nav_sat = 6;
 }
 
+/* Pegasus Commander */
 message Reply {
   uint64 timestamp = 1;
   HeartBeatData heartbeat_data = 5; // Heartbeat
+}
+
+enum ImageCommand {
+  REQUEST = 0;
+  REPLY = 1;
+  PKT = 2;
+  ERR = 3;
+}
+
+/* Pegasus Image */
+message ImageRequest {
+  ImageCommand command = 1;
+  uint32 total_pkts = 2;
+  uint32 pkt_no = 3;
+  bytes data = 4;
 }
 
