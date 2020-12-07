@@ -1,16 +1,19 @@
 #!/usr/bin/env python
-import rospy
-import socket
 import os
-from std_srvs.srv import Trigger, TriggerResponse
-import messages.pegasus_messages_pb2 as messages_pb2
+import socket
 
-sock_timeout = 5 # 5 seconds
-sock_bufsize = 1024 # buffer of 1024 size
+import rospy
+from std_srvs.srv import Trigger, TriggerResponse
+
+import messages.pegasus_messages_pb2 as messages_pb2
+import pegasus_verify_data as verify_data
+
+sock_timeout = 5  # 5 seconds
+sock_bufsize = 1024  # buffer of 1024 size
 
 
 class ImageContainer(object):
-    def __init__(self, data=None):
+    def __init__(self):
         super(ImageContainer, self).__init__()
         self.total_pkts = 0
         self.pkt_no = 0
@@ -55,12 +58,6 @@ class ImageContainer(object):
         self.pkts.append(response.data)
         self.pkt_no += 1
 
-    def get_image(self):
-        data = b''
-        for d in self.pkts:
-            data += d
-        return d
-
     def write_to_file(self, filename):
         f = open(filename, 'wb')
         for data in self.pkts:
@@ -93,23 +90,32 @@ class PegasusVideoReceiver(object):
 
     def _clear_socket_buf(self):
         self.socket.settimeout(0)
-        rospy.loginfo('clearing')
+        rospy.loginfo('Receiver clearing udp buffer!')
         try:
             while self.socket.recv(sock_bufsize):
                 pass
         except:
             pass
-        rospy.loginfo('cleared')
+        rospy.loginfo('Receiver cleared udp buffer!')
         self.socket.settimeout(sock_timeout)
+
+    def _send_msg(self, data):
+        msg = verify_data.pack_msg(data)
+        self.socket.sendto(msg, self.address)
+
+    def _recv_msg(self):
+        msg = self.socket.recv(sock_bufsize)
+        data = verify_data.verify_msg(msg)
+        return data
 
     def _get_image_meta(self):
         self._clear_socket_buf()
         image_request = self.image_container.get_meta_pkt()
-        rospy.loginfo('Receiver Sending REQ')
-        self.socket.sendto(image_request.SerializeToString(), self.address)
+        rospy.loginfo('Receiver Sending REQ %s', image_request)
+        self._send_msg(image_request.SerializeToString())
         self.socket.settimeout(sock_timeout)
         try:
-            data = self.socket.recv(sock_bufsize)
+            data = self._recv_msg()
             image_response = ImageContainer.parse_proto_buf(data)
             rospy.loginfo('Total packets %s', image_response.total_pkts)
             if image_response.command == messages_pb2.ImageCommand.REPLY:
@@ -118,7 +124,8 @@ class PegasusVideoReceiver(object):
                 return TriggerResponse(False, 'wrong header data')
         except socket.timeout:
             return TriggerResponse(False, 'socket timeout')
-
+        except verify_data.VerifyError as e:
+            return TriggerResponse(False, str(e))
         return None
 
     def _get_image_data(self):
@@ -129,9 +136,9 @@ class PegasusVideoReceiver(object):
                 break
             image_request = self.image_container.get_request_pkt()
             # rospy.loginfo(image_request)
-            self.socket.sendto(image_request.SerializeToString(),self.address)
+            self._send_msg(image_request.SerializeToString())
             try:
-                data = self.socket.recv(sock_bufsize)
+                data = self._recv_msg()
                 image_response = ImageContainer.parse_proto_buf(data)
                 # rospy.loginfo(image_response)
                 if image_response.command == messages_pb2.ImageCommand.PKT:

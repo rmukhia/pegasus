@@ -2,14 +2,15 @@
 """
 Pegasus Commander.
 """
-import rospy
-import threading
 import Queue
+import threading
 
+import rospy
 from geometry_msgs.msg import PoseStamped
-from pegasus_commander.runner import Runner, create_return_to_home_message
+
 from pegasus_commander.mavros_gw import MavrosGw
 from pegasus_commander.message_server import get_message_server_thread
+from pegasus_commander.runner import Runner, create_return_to_home_message
 
 
 class PegasusCommander(object):
@@ -59,7 +60,9 @@ class PegasusCommander(object):
 
     def heartbeat_check(self):
         now = rospy.get_rostime()
-        if self.heartbeat_time is not None and now - self.heartbeat_time  > rospy.Duration(15) and self.return_to_home == False:
+        if self.heartbeat_time is not None and \
+                now - self.heartbeat_time > rospy.Duration(15) and \
+                self.return_to_home is False:
             # we lost heartbeat
             # empty command queue
             while not self.queue.empty():
@@ -77,6 +80,7 @@ class PegasusCommander(object):
                 self.mavros_gw.set_mavros_local_pose(self.current_pose)
             self.heartbeat_check()
             rate.sleep()
+
 
 """
 import pydevd_pycharm

@@ -2,7 +2,9 @@ import socket
 import threading
 import time
 from io import BytesIO
+
 from mavros_msgs.msg import State
+
 import messages.pegasus_messages_pb2 as messages_pb2
 
 
@@ -12,7 +14,7 @@ def heartbeat(hsock):
     data = request.SerializeToString()
     print(len(data))
     hsock.sendto(data, ('127.0.0.1', 4444))
-    received = hsock.recv(1024)
+    received = hsock._recv_msg(1024)
     reply = messages_pb2.Reply()
     reply.ParseFromString(received)
     a = BytesIO()

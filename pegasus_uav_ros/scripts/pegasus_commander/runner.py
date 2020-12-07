@@ -1,8 +1,10 @@
-import rospy
+import numpy as np
 import threading
 from io import BytesIO
-import numpy as np
+
 import messages.pegasus_messages_pb2 as messages_pb2
+import pegasus_verify_data as verify_data
+import rospy
 
 
 def create_return_to_home_message():
@@ -157,7 +159,8 @@ class Runner(threading.Thread):
 
         data = reply.SerializeToString()
         rospy.loginfo('%s: Reply size %s', self.commander.namespace, len(data))
-        self.socket.sendto(data, self.clientAddress)
+        msg = verify_data.pack_msg(data)
+        self.socket.sendto(msg, self.clientAddress)
 
     def run(self):
         request_processors = {

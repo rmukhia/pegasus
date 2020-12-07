@@ -54,9 +54,9 @@ class PegasusController(object):
         self.services['start_mission_no_plan'] = rospy.Service('start_mission_no_plan', Trigger,
                                                                self._start_mission_no_plan)
         self.services['start_heartbeat'] = rospy.Service('start_heartbeat', Trigger,
-                                                               self._start_heartbeat)
+                                                         self._start_heartbeat)
         self.services['stop_heartbeat'] = rospy.Service('stop_heartbeat', Trigger,
-                                                         self._stop_heartbeat)
+                                                        self._stop_heartbeat)
 
     def _start_mission(self, request):
         rospy.loginfo('Starting mission')

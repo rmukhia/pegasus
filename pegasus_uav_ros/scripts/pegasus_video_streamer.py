@@ -8,21 +8,25 @@ import tempfile
 import threading
 from fractions import Fraction
 from threading import Lock
+
 import piexif
 import rospy
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import NavSatFix, Image
+
 import messages.pegasus_messages_pb2 as messages_pb2
+import pegasus_verify_data as verify_data
 
 sock_buffsize = 1024
 
+
 class ImageContainer(object):
-    def __init__(self, data=None):
+    def __init__(self, image_pkts=None):
         super(ImageContainer, self).__init__()
         self.total_pkts = 0
         self.pkts = []
-        if data is not None:
-            self.initialize(data)
+        if image_pkts is not None:
+            self.initialize(image_pkts)
 
     @staticmethod
     def parse_proto_buf(buf):
@@ -144,7 +148,7 @@ class PegasusVideoStreamer(object):
             exif_bytes = piexif.dump(exif_dict)
             piexif.insert(exif_bytes, filename)
         data = []
-        buf_size = sock_buffsize - 64# buffer size to fit in 1024 protobuf packet
+        buf_size = sock_buffsize - 64 - verify_data.HASH_SIZE  # buffer size to fit in 1024 protobuf packet
         f = open(filename, 'rb')
         d = f.read(buf_size)
         while d:
@@ -175,11 +179,16 @@ class UDPServerRequestHandler(SocketServer.BaseRequestHandler):
         rospy.loginfo('Streamer cleared udp buffer!')
         socket.settimeout(sock_timeout)
 
+    def _send_msg(self, socket, data):
+        msg = verify_data.pack_msg(data)
+        socket.sendto(msg, self.client_address)
+
     def handle(self):
-        data = self.request[0]
+        msg = self.request[0]
         socket = self.request[1]
         response = ImageContainer.get_err_pkt()
         try:
+            data = verify_data.verify_msg(msg)
             image_request = ImageContainer.parse_proto_buf(data)
             # rospy.loginfo('Received:\n%s', image_request)
             if image_request.command == messages_pb2.ImageCommand.REQUEST:
@@ -192,7 +201,7 @@ class UDPServerRequestHandler(SocketServer.BaseRequestHandler):
         except Exception as e:
             rospy.logerr(str(e))
         # rospy.loginfo('Replied:\n%s', response)
-        socket.sendto(response.SerializeToString(), self.client_address)
+        self._send_msg(socket, response.SerializeToString())
 
 
 class UDPServer(SocketServer.ThreadingMixIn, SocketServer.UDPServer):

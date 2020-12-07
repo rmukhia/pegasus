@@ -1,13 +1,9 @@
-import cv2
-import numpy as np
 import threading
 
 import rospy
-import tf2_geometry_msgs
-import tf2_ros
 from geometry_msgs.msg import PoseStamped
 from std_srvs.srv import Trigger
-from tf.transformations import quaternion_from_matrix, translation_from_matrix
+
 from messages.pegasus_messages_pb2 import Command
 from state import State
 
@@ -33,7 +29,7 @@ class ControllerThread(threading.Thread):
             start_planning = rospy.ServiceProxy('start_planning', Trigger)
             resp = start_planning()
         except rospy.ServiceException as e:
-            rospy.loginfo("Service call failed: %s"%e)
+            rospy.loginfo("Service call failed: %s", e)
             self.controller.state = State.IDLE
             return
         if not resp.success:

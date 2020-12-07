@@ -1,11 +1,9 @@
-import time
 import copy
 import numpy as np
+import time
+
 import rospy
-from state import State
-import copy
-import numpy as np
-import time
+
 from state import State
 
 
@@ -66,7 +64,7 @@ class PathFinder(object):
         rospy.loginfo('--------parent end------------')
 
     def get_depth(self, state):
-        i = 0;
+        i = 0
         current = state
         while current is not None:
             i += 1
@@ -96,7 +94,7 @@ class PathFinder(object):
             if current.parent.h > h:
                 return current
             current = current.parent
-        return goa
+        return goal
 
     def search(self, depth_exit=0, epoch_stop=0, previous_goal=None):
         num_conf = self.cell_container.NUM_DIRECTIONS

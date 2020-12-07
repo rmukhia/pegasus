@@ -1,10 +1,11 @@
+from threading import Lock
+
 import rospy
 import tf2_ros
-from threading import Lock
 from geometry_msgs.msg import PoseStamped
-from sensor_msgs.msg import NavSatFix
 from mavros_msgs.msg import State
 from mavros_msgs.srv import SetMode, CommandBool
+from sensor_msgs.msg import NavSatFix
 
 
 class MavrosGw(object):

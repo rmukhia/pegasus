@@ -34,10 +34,11 @@ message Reply {
 }
 
 enum ImageCommand {
-  REQUEST = 0;
-  REPLY = 1;
-  PKT = 2;
-  ERR = 3;
+  NONE = 0;
+  REQUEST = 1;
+  REPLY = 2;
+  PKT = 3;
+  ERR = 4;
 }
 
 /* Pegasus Image */

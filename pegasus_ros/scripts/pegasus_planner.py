@@ -1,16 +1,23 @@
 #!/usr/bin/env python
-import rospy
 import numpy as np
-from geometry_msgs.msg import PolygonStamped, Point, PoseStamped, PointStamped
-from nav_msgs.msg import Path
+
+import rospy
+from geometry_msgs.msg import PolygonStamped, Point
 from std_srvs.srv import Trigger, TriggerResponse
-from tf.transformations import quaternion_from_euler
 from visualization_msgs.msg import Marker
+
+from pegasus_planner_2.agent import Agent
+from pegasus_planner_2.cell_container import CellContainer
+from pegasus_planner_2.grid_cells import get_grid_cells
+from pegasus_planner_2.path_finder import PathFinder
+from pegasus_planner_2.state import State
+'''
 from pegasus_planner.agent import Agent
 from pegasus_planner.cell_container import CellContainer
 from pegasus_planner.grid_cells import get_grid_cells
 from pegasus_planner.path_finder import PathFinder
 from pegasus_planner.state import State
+'''
 
 
 class PegasusPlanner(object):
@@ -78,10 +85,12 @@ class PegasusPlanner(object):
                       self.cell_container)
         agent_objects = []
         for agent in self.agents:
-            agent.set_initial_position((0,0))
+            agent.set_initial_position((0, 0))
 
         self.path_finder = PathFinder(self.agents, self.cell_container)
-        goal = self.path_finder.find(self.params['depth_exit'], self.params['retry_threshold'], self.params['early_exit'])
+        goal = self.path_finder.find(self.params['depth_exit'],
+                                     self.params['retry_threshold'],
+                                     self.params['early_exit'])
         return goal
 
     def recv_polygon(self, data):

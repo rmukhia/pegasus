@@ -1,20 +1,22 @@
+import Queue
+import cv2
+import numpy as np
 import socket
 import threading
 from io import BytesIO
-import cv2
+
 import rospy
-import Queue
-import numpy as np
+from geodesy import utm
 from geometry_msgs.msg import PoseStamped, TransformStamped
 from mavros_msgs.msg import State as MavrosState
 from nav_msgs.msg import Path
 from sensor_msgs.msg import NavSatFix
 from std_srvs.srv import Trigger
 from tf.transformations import quaternion_from_euler, quaternion_from_matrix, translation_from_matrix
-from geodesy import utm
 from tf2_geometry_msgs import tf2_geometry_msgs
 
 import messages.pegasus_messages_pb2 as messages_pb2
+import pegasus_verify_data as verify_data
 
 
 def _set_offboard():
@@ -60,6 +62,7 @@ class Agent(object):
         self.local_pose = PoseStamped()
         self.global_position = NavSatFix()
         self.rx_port = rx_port
+        self.server_address = address
         self._create_socket(address)
         self.recv_q = Queue.Queue()
         self.recv_thread = threading.Thread(target=self._recv_thread)
@@ -85,7 +88,15 @@ class Agent(object):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind(("0.0.0.0", self.rx_port))
         rospy.loginfo('connecting to %s, bound to %s' % (address, self.rx_port))
-        self.socket.connect(tuple(address))
+
+    def _send_msg(self, data):
+        msg = verify_data.pack_msg(data)
+        self.socket.sendto(msg, tuple(self.server_address))
+
+    def _recv_msg(self):
+        msg = self.socket.recv(1024)
+        data = verify_data.verify_msg(msg)
+        return data
 
     def _broadcast_transforms(self):
         if self.local_map_transform_calculated:
@@ -93,14 +104,15 @@ class Agent(object):
 
     def _recv_thread(self):
         while not rospy.is_shutdown():
-            data = self.socket.recv(1024)
-            reply = messages_pb2.Reply()
             try:
+                data = self._recv_msg()
+                reply = messages_pb2.Reply()
                 reply.ParseFromString(data)
                 self.recv_q.put(reply)
+            except verify_data.VerifyError as e:
+                rospy.logerr(str(e))
             except Exception as e:
                 rospy.logerr(str(e) + ' data: ' + str(self.data))
-                return
 
     def _process_reply(self, reply):
         self.last_command = (
@@ -128,7 +140,7 @@ class Agent(object):
         request = messages_pb2.Request()
         request.timestamp = int(now.to_sec())
         request.command = messages_pb2.Command.HEARTBEAT
-        self.socket.send(request.SerializeToString())
+        self._send_msg(request.SerializeToString())
         self.heartbeat_time = now
 
     def _register_publisher(self):
@@ -217,9 +229,9 @@ class Agent(object):
         retry_counter = 0
         while not rospy.is_shutdown():
             if retry_counter == 0:
-                self.socket.send(request.SerializeToString())
+                self._send_msg(request.SerializeToString())
             retry_counter = (retry_counter + 1) % 100  # 5 seconds?
-            if self.last_command[1] == True and self.last_command[0] == command_id:
+            if self.last_command[1] is True and self.last_command[0] == command_id:
                 return
             rate.sleep()
 
@@ -305,7 +317,7 @@ class Agent(object):
                 image_service = rospy.ServiceProxy(image_service_path, Trigger)
                 resp = image_service()
             except rospy.ServiceException as e:
-                rospy.loginfo("Service call failed: %s"%e)
+                rospy.loginfo("Service call failed: %s", e)
                 return
             if not resp.success:
                 rospy.logerr(resp)
