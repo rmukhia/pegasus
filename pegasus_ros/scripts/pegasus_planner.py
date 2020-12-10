@@ -6,18 +6,11 @@ from geometry_msgs.msg import PolygonStamped, Point
 from std_srvs.srv import Trigger, TriggerResponse
 from visualization_msgs.msg import Marker
 
-from pegasus_planner_2.agent import Agent
-from pegasus_planner_2.cell_container import CellContainer
-from pegasus_planner_2.grid_cells import get_grid_cells
-from pegasus_planner_2.path_finder import PathFinder
-from pegasus_planner_2.state import State
-'''
 from pegasus_planner.agent import Agent
 from pegasus_planner.cell_container import CellContainer
 from pegasus_planner.grid_cells import get_grid_cells
 from pegasus_planner.path_finder import PathFinder
 from pegasus_planner.state import State
-'''
 
 
 class PegasusPlanner(object):
@@ -46,39 +39,42 @@ class PegasusPlanner(object):
         self.subscriber_polygon = rospy.Subscriber('/mapviz/region_selected', PolygonStamped, self.recv_polygon)
         self.publisher_marker = rospy.Publisher('/pegasus/grid_markers', Marker, latch=True, queue_size=1000)
 
-    def create_grid_markers(self):
-        for k in range(self.grid_cells.min_max[0] * self.grid_cells.min_max[1]):
-            ith, jth = self.grid_cells.get_index(self.grid_cells.min_max[0], self.grid_cells.min_max[1], k)
-            if self.grid_cells.valid[k]:
+    # noinspection PyMethodMayBeStatic
+    def create_grid_markers(self, grid_cells):
+        points = []
+        for k in range(grid_cells.min_max[0] * grid_cells.min_max[1]):
+            ith, jth = grid_cells.get_index(grid_cells.min_max[0], grid_cells.min_max[1], k)
+            if grid_cells.valid[k]:
                 # append markers here
                 p = Point()
-                p.x, p.y = self.grid_cells.cells_center[k]
+                p.x, p.y = grid_cells.cells_center[k]
                 p.z = 0
-                self.unvisited_points.append(p)
+                points.append(p)
+        return points
 
-    def publish_grid(self):
+    def publish_grid(self, points):
         marker = Marker()
         marker.header.frame_id = 'pegasus_map'
-        marker.ns = 'unvisited'
+        marker.ns = 'grids'
         marker.id = 0
         marker.type = marker.POINTS
         marker.action = marker.ADD
         marker.pose.orientation.w = 1
 
-        marker.points = self.unvisited_points
+        marker.points = points
         marker.lifetime = rospy.Duration()
-        marker.scale.x = 5
-        marker.scale.y = 5
-        marker.scale.z = 5
+        marker.scale.x = 3
+        marker.scale.y = 3
+        marker.scale.z = 3
         marker.color.g = 1
         marker.color.r = 1
         marker.color.b = 0
         marker.color.a = 1
         self.publisher_marker.publish(marker)
 
-    def create_cell_container(self):
-        self.cell_container = CellContainer(self.grid_cells.bounding_box, self.grid_cells, self.params['grid_size'],
-                                            num_directions=8, agents_hover_height=self.params['agents_hover_height'])
+    def create_cell_container(self, grid_cells):
+        self.cell_container = CellContainer(grid_cells.bounding_box, grid_cells, self.params['grid_size'],
+                                            num_directions=9, agents_hover_height=self.params['agents_hover_height'])
 
     def calculate_path(self):
         state = State(0, np.zeros((self.cell_container.i_max, self.cell_container.j_max), dtype=float),
@@ -100,12 +96,13 @@ class PegasusPlanner(object):
         for i in range(num_points):
             polygon[i] = (data.polygon.points[i].x, data.polygon.points[i].y)
 
-        self.grid_cells = get_grid_cells(polygon, self.params['grid_size'])
+        grid_cells = get_grid_cells(polygon, self.params['grid_size'])
         rospy.loginfo('Calculated cells...')
-        self.create_grid_markers()
         self.visited_points = []
-        self.publish_grid()
-        self.create_cell_container()
+        self.create_cell_container(grid_cells)
+        points = self.create_grid_markers(grid_cells)
+        self.publish_grid(points)
+        rospy.loginfo('Published grids...')
 
     def _start_planning(self, request):
         rospy.loginfo('Start planning path...')
@@ -113,12 +110,28 @@ class PegasusPlanner(object):
         agents_pose = self.path_finder.get_movement_plan_from_goal(goal)
         for i, poses in enumerate(agents_pose):
             self.agents[i].set_path_plan(poses)
+        marker_id = 0
+        path_markers = []
         for agent in self.agents:
             agent.create_path()
             agent.publish_path()
+            marker_start, marker_end = agent.get_start_end_markers()
+            marker_start.id = marker_id
+            marker_end.id = marker_id + 1
+            marker_id += 2
+            self.publisher_marker.publish(marker_start)
+            self.publisher_marker.publish(marker_end)
+            path_markers.extend(agent.get_path_markers())
+        for i in range(len(path_markers)):
+            path_markers[i].id = i
+            self.publisher_marker.publish(path_markers[i])
+
         return TriggerResponse(True, 'Planned')
 
 
+
+# import pydevd_pycharm
+# pydevd_pycharm.settrace('localhost', port=7779, stdoutToServer=True, stderrToServer=True)
 if __name__ == '__main__':
     rospy.init_node('pegasus_planner')
     rospy.loginfo('Starting pegasus planner...')

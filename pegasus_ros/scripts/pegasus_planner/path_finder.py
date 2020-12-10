@@ -1,10 +1,10 @@
 import copy
 import numpy as np
 import time
-
 import rospy
+# import traceback
 
-from state import State
+from state import State, StateHelper
 
 
 class PathFinder(object):
@@ -27,16 +27,16 @@ class PathFinder(object):
                 try:
                     cell = self.cell_container.position_to_cell(agent.initial_position)
                     cell = self.cell_container.move_and_get_cell(direction, current_cell=cell)
-                    direction -= 1
-                    state.add_agent_action(agent.a_id, 99, cell)
+                    StateHelper.add_agent_action(state, agent.a_id, 99, cell)
                     break
                 except:
+                    # traceback.print_exc()
                     pass
-
-            state.check_constraints(self.cell_container.NUM_DIRECTIONS)
-            state.update_visited_cells()
-        state.calculate_G(self.cell_container.NUM_DIRECTIONS)
-        state.calculate_H(self.cell_container.valid_cells)
+                direction -= 1
+            StateHelper.check_constraints(state, self.cell_container.NUM_DIRECTIONS)
+            StateHelper.update_visited_cells(state)
+        StateHelper.calculate_G(state, self.cell_container.NUM_DIRECTIONS)
+        StateHelper.calculate_H(state, self.cell_container.valid_cells)
         return state
 
     def get_neighbour(self, state, movement):
@@ -44,12 +44,12 @@ class PathFinder(object):
         agent = self.agents[agent_ctr]
         new_state = State(state.g, state.visited_cells, self.cell_container)
         cell = self.cell_container.move_and_get_cell(movement, state.agent_cells[agent.a_id])
-        new_state.add_agent_action(agent.a_id, movement, cell, state.agent_cells, state.movement_counter)
-        new_state.check_constraints(self.cell_container.NUM_DIRECTIONS, state)
-        new_state.update_visited_cells()
-        new_state.calculate_G(self.cell_container.NUM_DIRECTIONS)
-        new_state.calculate_H(self.cell_container.valid_cells)
-        new_state.set_agent_ctr(agent_ctr)
+        StateHelper.add_agent_action(new_state, agent.a_id, movement, cell, state.agent_cells, state.movement_counter)
+        StateHelper.check_constraints(new_state, self.cell_container.NUM_DIRECTIONS, state)
+        StateHelper.update_visited_cells(new_state)
+        StateHelper.calculate_G(new_state, self.cell_container.NUM_DIRECTIONS)
+        StateHelper.calculate_H(new_state, self.cell_container.valid_cells)
+        StateHelper.set_agent_ctr(new_state, agent_ctr)
         return new_state
 
     def getNextAgent(self, agent_ctr):
@@ -83,7 +83,7 @@ class PathFinder(object):
         for g in goals:
             base = self.get_base_parent(g)
             if goal_last is not None and goal_last.parent is not None:
-                base.setParent(goal_last.parent)
+                StateHelper.set_parent(base, goal_last.parent)
             goal_last = g
         return goal_last
 
@@ -106,7 +106,7 @@ class PathFinder(object):
         initial_state = None
 
         if previous_goal:
-            previous_goal.setParent(None)
+            StateHelper.set_parent(previous_goal, None)
             initial_state = previous_goal
         else:
             try:
@@ -132,8 +132,10 @@ class PathFinder(object):
             # current - lowest f() in open list
             current = open_list[0]
             for state in open_list:
-                if current.f() > state.f():
+                if StateHelper.f(current) > StateHelper.f(state):
                     current = state
+
+            # rospy.loginfo('start state cost g: %s, h: %s', current.g, current.h)
 
             open_list.remove(current)
 
@@ -144,7 +146,7 @@ class PathFinder(object):
                     early_exit['minCostState'] = current
                 else:
                     early_exit['epochs'] += 1
-                    if early_exit['minCostState'].f() > current.f():
+                    if StateHelper.f(early_exit['minCostState']) > StateHelper.f(current):
                         early_exit['minCostState'] = current
 
                 # early exit
@@ -180,7 +182,7 @@ class PathFinder(object):
                 else:
                     open_list.append(successor)
                 successor.g = successor_cost
-                successor.setParent(current)
+                StateHelper.set_parent(successor, current)
 
             closed_list.append(current)
 
@@ -195,7 +197,7 @@ class PathFinder(object):
             rospy.loginfo(ret)
             goals.append(goal)
             h = goal.h
-            rospy.loginfo('h= %s, g= %s, f=%s' % (h, goal.g, goal.f()))
+            rospy.loginfo('h= %s, g= %s, f=%s' % (h, goal.g, StateHelper.f(goal)))
             rospy.loginfo(goal.visited_cells.T)
             if prev_h <= h:
                 # Does not converge
