@@ -1,10 +1,14 @@
 import copy
+import math
 import numpy as np
 import time
 import rospy
 # import traceback
 
-from state import State, StateHelper
+from state_helper import StateHelper
+from state import State, StateKeyWrapper
+
+timing = 0
 
 
 class PathFinder(object):
@@ -16,12 +20,11 @@ class PathFinder(object):
         pass
 
     def get_initial_state(self):
-        visited_cells = np.zeros((self.cell_container.i_max, self.cell_container.j_max), dtype=float)
-        state = State(0, visited_cells, self.cell_container)
+        cell_cost = np.zeros((self.cell_container.get_size_valid_cells()), dtype=float)
+        state = State(cell_cost, self.cell_container)
         # TODO change this algorithm
         for i, agent in enumerate(self.agents):
             # cell = self.cell_container.cells[i][i]
-
             direction = self.cell_container.MOVE['STAY']
             while direction >= 0:
                 try:
@@ -40,9 +43,11 @@ class PathFinder(object):
         return state
 
     def get_neighbour(self, state, movement):
+        global timing
+        start = time.time()
         agent_ctr = self.getNextAgent(state.agent_ctr)
         agent = self.agents[agent_ctr]
-        new_state = State(state.g, state.visited_cells, self.cell_container)
+        new_state = State(state.cell_cost, self.cell_container)
         cell = self.cell_container.move_and_get_cell(movement, state.agent_cells[agent.a_id])
         StateHelper.add_agent_action(new_state, agent.a_id, movement, cell, state.agent_cells, state.movement_counter)
         StateHelper.check_constraints(new_state, self.cell_container.NUM_DIRECTIONS, state)
@@ -50,6 +55,9 @@ class PathFinder(object):
         StateHelper.calculate_G(new_state, self.cell_container.NUM_DIRECTIONS)
         StateHelper.calculate_H(new_state, self.cell_container.valid_cells)
         StateHelper.set_agent_ctr(new_state, agent_ctr)
+        end = time.time()
+        t = end - start
+        timing += t
         return new_state
 
     def getNextAgent(self, agent_ctr):
@@ -127,18 +135,14 @@ class PathFinder(object):
 
         while True:
             if len(open_list) == 0:
-                return 'not-found', None
+                return 'not-found', current
+
+            #for s in open_list:
+            #    print(s)
 
             # current - lowest f() in open list
-            current = open_list[0]
-            for state in open_list:
-                if StateHelper.f(current) > StateHelper.f(state):
-                    current = state
-
+            current = open_list.pop(0)
             # rospy.loginfo('start state cost g: %s, h: %s', current.g, current.h)
-
-            open_list.remove(current)
-
             if epoch_stop != 0:
                 if current.h < early_exit['h']:
                     early_exit['h'] = current.h
@@ -159,46 +163,72 @@ class PathFinder(object):
             if current.h == 0:
                 return 'found', current
 
-            # confgs = [x for x in range(numConf)]
-            for cnf in range(num_conf):
-                # while len(confgs) > 0:
-                successor = None
-                successor_cost = current.g + 1
-                # print (successorCost)
-                try:
-                    # cnf = confgs.pop(random.randrange(len(confgs)))
-                    successor = self.get_neighbour(current, cnf)
-                except Exception as e:
-                    # print (e, current.h)
-                    continue
-                if successor in open_list:
-                    if successor.g <= successor_cost:
-                        continue
-                elif successor in closed_list:
-                    if successor.g <= successor_cost:
-                        continue
-                    open_list.append(successor)
-                    closed_list.remove(successor)
-                else:
-                    open_list.append(successor)
-                successor.g = successor_cost
-                StateHelper.set_parent(successor, current)
-
             closed_list.append(current)
 
-    def find(self, depth_exit, sigma_t, early_exit):
+            for cnf in range(num_conf):
+                successor = None
+                try:
+                    successor = self.get_neighbour(current, cnf)
+                except Exception as e:
+                    # print e
+                    continue
+
+                if successor in closed_list:
+                    index = closed_list.index(successor)
+                    prev_node = closed_list[index]
+                    if prev_node.g > successor.g:
+                        StateHelper.set_parent(successor, current)
+                        closed_list.pop(index)
+                        StateKeyWrapper.insert_sorted(open_list, successor)
+                        continue
+
+                if successor in open_list:
+                    index = open_list.index(successor)
+                    prev_node = open_list[index]
+                    if prev_node.g > successor.g:
+                        # print ('Prev node g %s new g %s' % (prev_node.g, successor.g))
+                        StateHelper.set_parent(successor, current)
+                        open_list.pop(index)
+                        StateKeyWrapper.insert_sorted(open_list, successor)
+                else:
+                    StateHelper.set_parent(successor, current)
+                    StateKeyWrapper.insert_sorted(open_list, successor)
+
+    def get_weighted_curve(self, current_h, depth_exit, c):
+        total_h = self.cell_container.get_size_valid_cells()
+        # power curve
+        # y = ax^c + b, a = 1, b= 0, c = 4
+        total_covered = total_h - current_h
+        x = float(total_covered)/total_h
+        a = 1
+        b = 0
+        y = a * math.pow(x, c) + b
+        weight = y * depth_exit
+        # cutoff at 2 least
+        if weight < 2:
+            weight = 2
+        # cutoff at depth_exit
+        if weight > depth_exit:
+            weight = depth_exit
+        rospy.loginfo ('Depth weight %s', int(weight))
+        return int(weight)
+
+    def find(self, depth_exit, sigma_t, early_exit, c_power):
         start_time = time.time()
         goal = None
         goals = []
-        prev_h = len(self.cell_container.valid_cells)
+        prev_h = self.cell_container.get_size_valid_cells()
         sigma = 0
+        depth_exit_weight = self.get_weighted_curve(prev_h, depth_exit, c_power)
+        start_h = 0
         while True:
-            ret, goal = self.search(epoch_stop=early_exit, depth_exit=depth_exit, previous_goal=copy.deepcopy(goal))
+            ret, goal = self.search(epoch_stop=early_exit, depth_exit=depth_exit_weight, previous_goal=copy.deepcopy(goal))
             rospy.loginfo(ret)
             goals.append(goal)
             h = goal.h
-            rospy.loginfo('h= %s, g= %s, f=%s' % (h, goal.g, StateHelper.f(goal)))
-            rospy.loginfo(goal.visited_cells.T)
+            depth_exit_weight = self.get_weighted_curve(h, depth_exit, c_power)
+            rospy.loginfo('h= %s, g= %s, f=%s early_exit_weight= %s' % (h, goal.g, StateHelper.f(goal), depth_exit_weight))
+            rospy.loginfo(goal.cell_cost)
             if prev_h <= h:
                 # Does not converge
                 sigma += 1
@@ -211,9 +241,9 @@ class PathFinder(object):
                 sigma = 0
             prev_h = h
         rospy.loginfo("Total Time Taken: %s seconds." % (time.time() - start_time,))
+        rospy.loginfo("Time spent in get_neighbour %s.", timing)
         final_goal = self.concatenate_goals(goals)
         final_goal = self.trim_goals(final_goal)
-        rospy.loginfo(final_goal.visited_cells.T)
         rospy.loginfo("Steps : %s " % (self.get_depth(final_goal)))
         return final_goal
 

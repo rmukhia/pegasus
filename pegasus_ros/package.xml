@@ -64,13 +64,15 @@
   <build_export_depend>geodesy</build_export_depend>
   <build_export_depend>tf2</build_export_depend>
   <build_export_depend>tf2_ros</build_export_depend>
-  <exec_depend>python-protobuf</exec_depend>
+  <!-- version mismatch install from pip python-protobuf -->
+  <!-- <exec_depend>python-protobuf</exec_depend> -->
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>geometric_msgs</exec_depend>
   <exec_depend>geographic_msgs</exec_depend>
   <exec_depend>geodesy</exec_depend>
   <exec_depend>tf2</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>python-sortedcontainers-pip</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

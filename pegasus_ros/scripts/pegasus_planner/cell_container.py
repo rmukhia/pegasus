@@ -17,14 +17,14 @@ class CellContainer(object):
     }
 
     MOVEMENT = np.array([
-        [1, 0],
-        [-1, 0],
         [0, 1],
         [0, -1],
+        [1, 0],
+        [-1, 0],
         [1, 1],
-        [-1 , 1],
-        [-1, -1],
         [1, -1],
+        [-1, -1],
+        [-1, 1],
         [0, 0]
     ], dtype=int)
 
@@ -37,7 +37,7 @@ class CellContainer(object):
         self.agents_hover_height = agents_hover_height
         self.NUM_DIRECTIONS = num_directions
         self.cells = [None] * self.i_max
-        self.cell_index = np.full((self.i_max, self.j_max), -1, dtype=int)
+        self.cell_index = np.full((self.j_max, self.i_max), -1, dtype=int)
         self.cell_positions = None
         for i in range(self.i_max):
             self.cells[i] = [None] * self.j_max
@@ -57,12 +57,17 @@ class CellContainer(object):
                     self.cell_positions = np.array([self.cells[ith][jth].data[2:4]], dtype=float)
                 else:
                     self.cell_positions = np.append(self.cell_positions, [self.cells[ith][jth].data[2:4]], axis=0)
-                self.cell_index[ith, jth] = self.cell_positions.shape[0] - 1
+                self.cell_index[jth, ith] = self.cell_positions.shape[0] - 1
                 self.valid_cells.append(self.cells[ith][jth])
 
+    def get_size_valid_cells(self):
+        return self.cell_positions.shape[0]
+
     def check_validity(self, index):
+        if index[0] < 0 or index[1] < 0:
+            raise Exception('Invalid grid range %s.' % str(index))
         try:
-            result = self.cell_index[index[0], index[1]]
+            result = self.cell_index[index[1], index[0]]
         except Exception as e:
             raise e
         else:

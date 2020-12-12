@@ -74,19 +74,21 @@ class PegasusPlanner(object):
 
     def create_cell_container(self, grid_cells):
         self.cell_container = CellContainer(grid_cells.bounding_box, grid_cells, self.params['grid_size'],
-                                            num_directions=9, agents_hover_height=self.params['agents_hover_height'])
+                                            num_directions=self.params['num_directions'],
+                                            agents_hover_height=self.params['agents_hover_height'])
 
     def calculate_path(self):
-        state = State(0, np.zeros((self.cell_container.i_max, self.cell_container.j_max), dtype=float),
-                      self.cell_container)
-        agent_objects = []
+        # state = State(0, np.zeros((self.cell_container.i_max, self.cell_container.j_max), dtype=float),
+        #              self.cell_container)
+        # agent_objects = []
         for agent in self.agents:
             agent.set_initial_position((0, 0))
 
         self.path_finder = PathFinder(self.agents, self.cell_container)
         goal = self.path_finder.find(self.params['depth_exit'],
                                      self.params['retry_threshold'],
-                                     self.params['early_exit'])
+                                     self.params['early_exit'],
+                                     self.params['c_power'])
         return goal
 
     def recv_polygon(self, data):
@@ -140,14 +142,18 @@ if __name__ == '__main__':
     grid_size = rospy.get_param('grid_size')
     depth_exit = rospy.get_param('param_depth_exit')
     retry_threshold = rospy.get_param('param_retry_threshold')
+    num_directions = rospy.get_param('param_num_directions')
     early_exit = rospy.get_param('param_early_exit')
+    c_power = rospy.get_param('param_c_power')
 
     pegasus_planner = PegasusPlanner(mavros_namespaces, {
         'agents_hover_height': float(z_height),
         'grid_size': float(grid_size),
         'depth_exit': int(depth_exit),
         'retry_threshold': int(retry_threshold),
-        'early_exit': int(early_exit)
+        'early_exit': int(early_exit),
+        'num_directions': int(num_directions),
+        'c_power': float(c_power)
     })
 
     rospy.spin()
