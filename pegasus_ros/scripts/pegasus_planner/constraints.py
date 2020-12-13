@@ -1,5 +1,5 @@
 CONSTRAINTS = {
-    'MAX_DISTANCE': 50,
-    'CS_POSITION': (0, 0)
+    'MAX_DISTANCE': None,
+    'CS_POSITION': None
 }
 

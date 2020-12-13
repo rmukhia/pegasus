@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import numpy as np
-
+import json
 import rospy
 from geometry_msgs.msg import PolygonStamped, Point
 from std_srvs.srv import Trigger, TriggerResponse
@@ -10,7 +10,7 @@ from pegasus_planner.agent import Agent
 from pegasus_planner.cell_container import CellContainer
 from pegasus_planner.grid_cells import get_grid_cells
 from pegasus_planner.path_finder import PathFinder
-from pegasus_planner.state import State
+from pegasus_planner.constraints import CONSTRAINTS
 
 
 class PegasusPlanner(object):
@@ -31,6 +31,10 @@ class PegasusPlanner(object):
         self.services = {}
         self.subscribe_and_publish()
         self.create_service()
+
+        CONSTRAINTS['MAX_DISTANCE'] = params['mesh_distance']
+        CONSTRAINTS['CS_POSITION'] = json.loads(params['cs_position'])
+        print(CONSTRAINTS)
 
     def create_service(self):
         self.services['start_planning'] = rospy.Service('start_planning', Trigger, self._start_planning)
@@ -140,6 +144,8 @@ if __name__ == '__main__':
     mavros_namespaces = rospy.get_param('pegasus_mavros_namespaces')
     z_height = rospy.get_param('agents_hover_height')
     grid_size = rospy.get_param('grid_size')
+    mesh_distance =  rospy.get_param('mesh_distance')
+    cs_pos =  rospy.get_param('control_station_position')
     depth_exit = rospy.get_param('param_depth_exit')
     retry_threshold = rospy.get_param('param_retry_threshold')
     num_directions = rospy.get_param('param_num_directions')
@@ -150,6 +156,8 @@ if __name__ == '__main__':
         'agents_hover_height': float(z_height),
         'grid_size': float(grid_size),
         'depth_exit': int(depth_exit),
+        'mesh_distance': float(mesh_distance),
+        'cs_position': cs_pos,
         'retry_threshold': int(retry_threshold),
         'early_exit': int(early_exit),
         'num_directions': int(num_directions),

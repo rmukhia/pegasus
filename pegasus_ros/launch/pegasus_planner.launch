@@ -16,11 +16,13 @@
   </rosparam>
   <param name="agents_hover_height" value="40"/>
   <param name="grid_size" value="5"/>
-  <param name="param_depth_exit" value="12"/>
-  <param name="param_c_power" value="0.7"/>
-  <param name="param_retry_threshold" value="8"/>
+  <param name="mesh_distance" value ="10" />
+  <param name="control_station_position" value ="[0, 0]" />
+  <param name="param_depth_exit" value="8"/>
+  <param name="param_c_power" value="0.4"/>
+  <param name="param_retry_threshold" value="4"/>
   <param name="param_early_exit" value="4092"/>
-  <param name="param_num_directions" value="8" />
+  <param name="param_num_directions" value="9" />
   <node pkg="pegasus_ros" type="pegasus_planner.py" name="pegasus_planner" respawn="false" output="screen">
   </node>
 </launch>

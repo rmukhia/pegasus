@@ -38,13 +38,11 @@ class CellContainer(object):
         self.NUM_DIRECTIONS = num_directions
         self.cells = [None] * self.i_max
         self.cell_index = np.full((self.j_max, self.i_max), -1, dtype=int)
-        self.cell_positions = None
+        self.cell_data = None
         for i in range(self.i_max):
             self.cells[i] = [None] * self.j_max
         self.valid_cells = []
         self.fill_cells()
-        print (self.cell_index)
-        print (self.cell_positions)
 
     def fill_cells(self):
         for k in range(self.i_max * self.j_max):
@@ -53,15 +51,15 @@ class CellContainer(object):
                                         self.grid_cells.cells_center[k],
                                         self.grid_cells.valid[k])
             if self.grid_cells.valid[k]:
-                if self.cell_positions is None:
-                    self.cell_positions = np.array([self.cells[ith][jth].data[2:4]], dtype=float)
+                if self.cell_data is None:
+                    self.cell_data = np.array([self.cells[ith][jth].data[0:4]], dtype=float)
                 else:
-                    self.cell_positions = np.append(self.cell_positions, [self.cells[ith][jth].data[2:4]], axis=0)
-                self.cell_index[jth, ith] = self.cell_positions.shape[0] - 1
+                    self.cell_data = np.append(self.cell_data, [self.cells[ith][jth].data[0:4]], axis=0)
+                self.cell_index[jth, ith] = self.cell_data.shape[0] - 1
                 self.valid_cells.append(self.cells[ith][jth])
 
     def get_size_valid_cells(self):
-        return self.cell_positions.shape[0]
+        return self.cell_data.shape[0]
 
     def check_validity(self, index):
         if index[0] < 0 or index[1] < 0:

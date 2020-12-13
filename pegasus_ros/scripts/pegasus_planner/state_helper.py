@@ -132,18 +132,43 @@ class StateHelper(object):
     @staticmethod
     def update_visited_cells(state):
         agent_id = state.current_agent_id
-        index = state.cell_container.cell_index[state.agent_cells[agent_id].index]
+        _index = state.agent_cells[agent_id].get_np_index()
+        index = state.cell_container.cell_index[_index]
+        movement = state.movements[agent_id]
+        diag_cost = 1.44
         if state.cell_cost[index] == 0:
-            state.cell_cost[index] = 1
+            state.cell_cost[index] = 1 if movement <= state.cell_container.MOVE['DOWN'] else diag_cost
         else:
-            state.cell_cost[index] *= 2.5
+            state.cell_cost[index] *= 3
+            if movement >= state.cell_container.MOVE['DOWN']:
+                state.cell_cost[index] += diag_cost
 
     @staticmethod
     def calculate_G(state, num_directions):
         state.g = np.sum(state.cell_cost)
 
     @staticmethod
-    def calculate_H(state, valid_cells):
-        # call this after all add cells
-        state.h = np.sum(np.equal([0.], state.cell_cost))
+    def calculate_H(state):
+        empty_cells = np.equal(state.cell_cost, [0.])
+        num_agents = len(state.agent_cells.values())
+        empty_ones = state.cell_container.cell_data[empty_cells, 0:2]
+        # Number of free cells
+        state.h = empty_ones.shape[0]
+        if state.h == 0:
+            return
+        # Process now
+        empty_ones = np.tile(empty_ones, (num_agents,1))
+        curr_pos = None
+        for i in range(num_agents):
+            _index = state.agent_cells.values()[i].get_np_index()
+            if curr_pos is None:
+                curr_pos = np.array([_index, ] * state.h)
+            else:
+                curr_pos = np.append(curr_pos, np.array([_index, ] * state.h), axis=0)
+        dist = np.sqrt(np.sum((empty_ones - curr_pos) ** 2, axis=1))
+        heuristic = np.median(dist)
+        state.h = float(state.h)
+        if heuristic > 1.:
+            state.h += heuristic - 1
+        # state.h += heuristic
         return state.h
