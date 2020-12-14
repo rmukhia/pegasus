@@ -57,17 +57,17 @@ class StateHelper(object):
         # check distance of any agent with controlStation
         max_distance = CONSTRAINTS['MAX_DISTANCE']
         control_station = CONSTRAINTS['CS_POSITION']
+        height = CONSTRAINTS['HEIGHT']
         num_agents = len(state.agent_cells.values())
 
         # At least one agent should be within reach.
-        cpos = np.full((num_agents, 2), control_station[0])
+        cpos = np.full((num_agents, 3), control_station + [0])
         apos = np.zeros((num_agents, 2))
-
         for i, id_l in enumerate(state.agent_cells):
             apos[i] = state.agent_cells[id_l].position
+        apos = np.append(apos, np.full((num_agents, 1), height), axis=1)
 
         dist = np.sqrt(np.sum((cpos - apos) ** 2, axis=1))
-
         if np.min(dist) >= max_distance:
             raise Exception('At least one agent needs to be in control station range.')
 
@@ -100,8 +100,9 @@ class StateHelper(object):
 
     @staticmethod
     def check_constraints(state, num_directions, old_state=None):
-        StateHelper.constraint1(state, num_directions)
-        StateHelper.constraint2(state)
+        if CONSTRAINTS["HEURISTIC_TYPE"] == 2:
+            StateHelper.constraint1(state, num_directions)
+            StateHelper.constraint2(state)
         StateHelper.constraint3(state)
 
         if old_state is not None:
@@ -139,23 +140,34 @@ class StateHelper(object):
         if state.cell_cost[index] == 0:
             state.cell_cost[index] = 1 if movement <= state.cell_container.MOVE['DOWN'] else diag_cost
         else:
-            state.cell_cost[index] *= 3
+            state.cell_cost[index] *= 5.
             if movement >= state.cell_container.MOVE['DOWN']:
-                state.cell_cost[index] += diag_cost
+                state.cell_cost[index] += 5 * diag_cost
 
     @staticmethod
     def calculate_G(state, num_directions):
         state.g = np.sum(state.cell_cost)
 
     @staticmethod
-    def calculate_H(state):
+    def get_free_cell_number(state):
+        empty_cells = np.equal(state.cell_cost, [0.])
+        empty_ones = state.cell_container.cell_data[empty_cells, 0:2]
+        return empty_ones.shape[0]
+
+    @staticmethod
+    def heuristic_1(state):
+        """
+        Works for multiple drones
+        f = h + g
+        h = number of free cells, plus the median of distance between free nodes
+        """
         empty_cells = np.equal(state.cell_cost, [0.])
         num_agents = len(state.agent_cells.values())
         empty_ones = state.cell_container.cell_data[empty_cells, 0:2]
         # Number of free cells
         state.h = empty_ones.shape[0]
         if state.h == 0:
-            return
+            return state.h
         # Process now
         empty_ones = np.tile(empty_ones, (num_agents,1))
         curr_pos = None
@@ -166,9 +178,33 @@ class StateHelper(object):
             else:
                 curr_pos = np.append(curr_pos, np.array([_index, ] * state.h), axis=0)
         dist = np.sqrt(np.sum((empty_ones - curr_pos) ** 2, axis=1))
-        heuristic = np.median(dist)
+        heuristic = np.mean(dist)
         state.h = float(state.h)
         if heuristic > 1.:
             state.h += heuristic - 1
-        # state.h += heuristic
         return state.h
+
+    @staticmethod
+    def heuristic_2(state):
+        """
+        Works for single drone
+        f = h + g
+        h = 2.2e-308.. very small number ~= 0
+        Djikster's algorithm
+        """
+        n_free_cells = StateHelper.get_free_cell_number(state)
+        if n_free_cells == 0:
+            state.h == 0
+            return state.h
+        state.h = 2.2e-308
+        return state.h
+
+    @staticmethod
+    def calculate_H(state):
+        h_type = CONSTRAINTS['HEURISTIC_TYPE']
+        if h_type == 1:
+            return StateHelper.heuristic_1(state)
+        elif h_type == 2:
+            return StateHelper.heuristic_2(state)
+        else:
+            raise Exception('No heuristic type given')

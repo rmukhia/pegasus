@@ -5,7 +5,7 @@ import time
 import rospy
 import random
 # import traceback
-
+from pegasus_planner.constraints import CONSTRAINTS
 from state_helper import StateHelper
 from state import State, StateKeyWrapper
 
@@ -75,31 +75,6 @@ class PathFinder(object):
             current = current.parent
         return i
 
-    @staticmethod
-    def get_base_parent(state):
-        current = state
-        while current.parent is not None:
-            current = current.parent
-        return current
-
-    def concatenate_goals(self, goals):
-        goal_last = None
-        for g in goals:
-            base = self.get_base_parent(g)
-            if goal_last is not None and goal_last.parent is not None:
-                StateHelper.set_parent(base, goal_last.parent)
-            goal_last = g
-        return goal_last
-
-    def trim_goals(self, goal):
-        current = goal
-        h = current.h
-        while current.parent is not None:
-            if current.parent.h > h:
-                return current
-            current = current.parent
-        return goal
-
     def search(self, depth_exit=0, epoch_stop=0, previous_goal=None):
         num_conf = self.cell_container.NUM_DIRECTIONS
         open_list = []
@@ -124,7 +99,7 @@ class PathFinder(object):
         if epoch_stop != 0:
             # If heuristics does not increase for certain epochs..then stop
             early_exit = {
-                'h': len(self.cell_container.valid_cells),
+                'cost': len(self.cell_container.valid_cells),
                 'epochs': 0,
                 'minCostState': initial_state
             }
@@ -140,8 +115,12 @@ class PathFinder(object):
             current = open_list.pop(0)
             # rospy.loginfo('start state cost g: %s, h: %s', current.g, current.h)
             if epoch_stop != 0:
-                if current.h < early_exit['h']:
-                    early_exit['h'] = current.h
+                if CONSTRAINTS['HEURISTIC_TYPE'] == 1 and current.h < early_exit['cost']:
+                    early_exit['cost'] = current.h
+                    early_exit['epochs'] = 0
+                    early_exit['minCostState'] = current
+                elif CONSTRAINTS['HEURISTIC_TYPE'] == 2 and StateHelper.get_free_cell_number(current) < early_exit['cost']:
+                    early_exit['cost'] = StateHelper.get_free_cell_number(current)
                     early_exit['epochs'] = 0
                     early_exit['minCostState'] = current
                 else:
@@ -154,7 +133,8 @@ class PathFinder(object):
                     return 'early-exit', early_exit['minCostState']
 
             if depth_exit != 0 and self.get_depth(current) > depth_exit:
-                return 'depth-exit', current.parent
+                return 'depth-exit', early_exit['minCostState']
+                # return 'depth-exit', current.parent
 
             if current.h == 0:
                 return 'found', current
@@ -213,6 +193,49 @@ class PathFinder(object):
         rospy.loginfo ('Depth weight %s', int(weight))
         return int(weight)
 
+    @staticmethod
+    def get_base_parent(state):
+        current = state
+        while current.parent is not None:
+            current = current.parent
+        return current
+
+    def concatenate_goals(self, goals):
+        goal_last = None
+        for g in goals:
+            base = self.get_base_parent(g)
+            if goal_last is not None and goal_last.parent is not None:
+                StateHelper.set_parent(base, goal_last.parent)
+            goal_last = g
+        return goal_last
+
+    def trim_goals(self, goal):
+        current = goal
+        h = current.h
+        while current.parent is not None:
+            if current.parent.h > h:
+                return current
+            current = current.parent
+        return goal
+
+    def remove_inactive_steps(self, goal):
+        real_goal = goal
+        # remove dangling inactive steps
+        while real_goal.parent is not None:
+            movement = real_goal.movements.values()[0]
+            if movement != real_goal.cell_container.MOVE['STAY']:
+                break
+            real_goal = real_goal.parent
+        current = real_goal
+        while current.parent is not None and current.parent.parent is not None:
+            parent = current.parent
+            movement = parent.movements.values()[0]
+            if movement == real_goal.cell_container.MOVE['STAY']:
+                current.parent = parent.parent
+                current = parent.parent
+            current = parent
+        return real_goal
+
     def find(self, depth_exit, sigma_t, early_exit, c_power):
         start_time = time.time()
         goal = None
@@ -226,6 +249,8 @@ class PathFinder(object):
             rospy.loginfo(ret)
             goals.append(goal)
             h = goal.h
+            if CONSTRAINTS['HEURISTIC_TYPE'] == 2:
+                h = StateHelper.get_free_cell_number(goal)
             depth_exit_weight = self.get_weighted_curve(h, depth_exit, c_power)
             rospy.loginfo('h= %s,  g= %s, f=%s depth_weight= %s' % (h, goal.g, StateHelper.f(goal), depth_exit_weight))
             rospy.loginfo(goal.cell_cost)
@@ -233,6 +258,7 @@ class PathFinder(object):
                 # Does not converge
                 sigma += 1
                 if sigma >= sigma_t:
+                    goals = goals[0:-sigma]
                     break
             elif h == 0:
                 # converged
@@ -244,7 +270,10 @@ class PathFinder(object):
         rospy.loginfo("Total Cells to Travel %s.", self.cell_container.cell_data.shape[0])
         final_goal = self.concatenate_goals(goals)
         final_goal = self.trim_goals(final_goal)
+        if CONSTRAINTS['HEURISTIC_TYPE'] == 2:
+            final_goal = self.remove_inactive_steps(final_goal)
         rospy.loginfo("Steps : %s " % (self.get_depth(final_goal)))
+        rospy.loginfo(final_goal.cell_cost)
         return final_goal
 
     @staticmethod

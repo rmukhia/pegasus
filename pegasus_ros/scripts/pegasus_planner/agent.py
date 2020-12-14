@@ -5,12 +5,12 @@ from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
 from tf.transformations import quaternion_from_euler
 from visualization_msgs.msg import Marker
+from constraints import CONSTRAINTS
 
 
 class Agent(object):
-    def __init__(self, a_id, hover_height):
+    def __init__(self, a_id):
         self.a_id = a_id
-        self.hover_height = hover_height
         self.initial_position = None
         self.path_plan = []  # { points: [], steps: int }
         self.path = Path()
@@ -43,7 +43,7 @@ class Agent(object):
             x, y = self.path_plan['points'][k]
             pose.pose.position.x = x
             pose.pose.position.y = y
-            pose.pose.position.z = self.hover_height
+            pose.pose.position.z = CONSTRAINTS['HEIGHT']
             pose.pose.orientation.x = q[0]
             pose.pose.orientation.y = q[1]
             pose.pose.orientation.z = q[2]

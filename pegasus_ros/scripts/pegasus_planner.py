@@ -27,14 +27,14 @@ class PegasusPlanner(object):
         self.agents = []
         self.mavros_namespaces = _mavros_namespaces
         for agent in _mavros_namespaces:
-            self.agents.append(Agent(agent, params['agents_hover_height']))
+            self.agents.append(Agent(agent))
         self.services = {}
         self.subscribe_and_publish()
         self.create_service()
 
         CONSTRAINTS['MAX_DISTANCE'] = params['mesh_distance']
         CONSTRAINTS['CS_POSITION'] = json.loads(params['cs_position'])
-        print(CONSTRAINTS)
+        CONSTRAINTS['HEIGHT'] = params['agents_hover_height']
 
     def create_service(self):
         self.services['start_planning'] = rospy.Service('start_planning', Trigger, self._start_planning)
@@ -112,6 +112,12 @@ class PegasusPlanner(object):
 
     def _start_planning(self, request):
         rospy.loginfo('Start planning path...')
+        if len(self.agents) == 1:
+            rospy.loginfo('Running heuristic type 2')
+            CONSTRAINTS['HEURISTIC_TYPE'] = 2
+        else:
+            rospy.loginfo('Running heuristic type 1')
+            CONSTRAINTS['HEURISTIC_TYPE'] = 1
         goal = self.calculate_path()
         agents_pose = self.path_finder.get_movement_plan_from_goal(goal)
         for i, poses in enumerate(agents_pose):

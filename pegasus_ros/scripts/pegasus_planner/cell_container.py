@@ -25,7 +25,7 @@ class CellContainer(object):
         [1, -1],
         [-1, -1],
         [-1, 1],
-        [0, 0]
+        [0, 0],
     ], dtype=int)
 
     def __init__(self, bounding_box, grid_cells, cell_size, num_directions=9, agents_hover_height=10):
