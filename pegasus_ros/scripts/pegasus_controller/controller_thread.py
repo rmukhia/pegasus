@@ -1,5 +1,5 @@
 import threading
-
+import copy
 import rospy
 from geometry_msgs.msg import PoseStamped
 from std_srvs.srv import Trigger
@@ -14,8 +14,8 @@ class ControllerThread(threading.Thread):
         self.thread_id = thread_id
         self.controller = controller
 
-    def _wait_for_agents(self):
-        for agent in self.controller.agents:
+    def _wait_for_agents(self, agents):
+        for agent in agents:
             agent.wait_for_command()
 
     # noinspection PyMethodMayBeStatic
@@ -40,16 +40,20 @@ class ControllerThread(threading.Thread):
 
     def _offboard_state(self):
         rospy.loginfo('_offboard_state')
+        agents = []
         for agent in self.controller.agents:
             agent.run_command(Command.SET_OFFBOARD)
-        self._wait_for_agents()
+            agents.append(agent)
+        self._wait_for_agents(agents)
         self.controller.state = State.ARMING
 
     def _arming_state(self):
         rospy.loginfo('_arming_state')
+        agents = []
         for agent in self.controller.agents:
             agent.run_command(Command.SET_ARM)
-        self._wait_for_agents()
+            agents.append(agent)
+        self._wait_for_agents(agents)
         self.controller.state = State.TAKE_OFF
 
     def _takeoff_state(self):
@@ -58,18 +62,22 @@ class ControllerThread(threading.Thread):
         pose.pose.position.x = 0
         pose.pose.position.y = 0
         pose.pose.position.z = self.controller.params['z_height']
+        agents = []
         for agent in self.controller.agents:
             agent.run_command(Command.GOTO, (pose,))
-        self._wait_for_agents()
+            agents.append(agent)
+        self._wait_for_agents(agents)
         self.controller.state = State.CALIBRATE
 
     def _calibrate_state(self):
         rospy.loginfo('_calibrate_state')
         path_len = len(self.controller.agents[0].calibration_path.poses)
+        agents = []
         for i in range(path_len):
             for agent in self.controller.agents:
                 agent.run_command(Command.GOTO, (agent.calibration_path.poses[i], ))
-            self._wait_for_agents()
+                agents.append(agent)
+            self._wait_for_agents(agents)
             for agent in self.controller.agents:
                 agent.capture_calibration_pose()
         self.controller.state = State.GENERATE_TRANSFORMS
@@ -82,6 +90,7 @@ class ControllerThread(threading.Thread):
 
     def _pre_run_state(self):
         rospy.loginfo('_pre_run_state')
+        agents = []
         for agent in self.controller.agents:
             global_pose = PoseStamped()
             global_pose.header.frame_id = self.controller.global_map_name
@@ -92,8 +101,17 @@ class ControllerThread(threading.Thread):
             pose = agent.global_pose_to_local_pose(global_pose)
             pose.header.frame_id = 'map'
             agent.run_command(Command.GOTO, (pose,))
-        self._wait_for_agents()
+            agents.append(agent)
+        self._wait_for_agents(agents)
         self.controller.state = State.RUN
+
+    def _realign_pose(self, pose):
+        new_pose = copy.deepcopy(pose)
+        new_pose.pose.orientation.x = 0
+        new_pose.pose.orientation.y = 0
+        new_pose.pose.orientation.z = 0
+        new_pose.pose.orientation.w = 1
+        return new_pose
 
     def _run_state(self):
         rospy.loginfo('_run_state')
@@ -102,23 +120,33 @@ class ControllerThread(threading.Thread):
         path_index = 0
         while running:
             running = False
+            agents = []
+            realigned_pose = []
             for agent in self.controller.agents:
                 if len(agent.path.poses) <= path_index:
                     continue
                 rospy.loginfo("%s pose index %s", agent.a_id, path_index)
-                agent.run_command(Command.GOTO, (agent.global_pose_to_local_pose(agent.path.poses[path_index]), ))
+                pose = agent.global_pose_to_local_pose(agent.path.poses[path_index])
+                agent.run_command(Command.GOTO, (pose, ))
                 running = True
+                agents.append(agent)
+                realigned_pose.append(self._realign_pose(pose))
             path_index += 1
-            self._wait_for_agents()
-            for agent in self.controller.agents:
+            self._wait_for_agents(agents)
+            for agent, new_pose in zip(agent, realigned_pose):
+                agent.run_command(Command.GOTO, (new_pose, ))
+            self._wait_for_agents(agents)
+            for agent in agents:
                 agent.grab_image()
         self.controller.state = State.COMPLETE
 
     def _complete_state(self):
         rospy.loginfo('_complete_state')
+        agents = []
         for agent in self.controller.agents:
             agent.run_command(Command.SET_RETURN_TO_HOME)
-        self._wait_for_agents()
+            agents.append(agent)
+        self._wait_for_agents(agents)
         self.controller.state = State.IDLE
 
     def run(self):

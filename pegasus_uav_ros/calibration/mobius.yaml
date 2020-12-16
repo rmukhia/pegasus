@@ -1,0 +1,26 @@
+image_width: 1280
+image_height: 960
+camera_name: mobius
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [ 620.84342,    0.     ,  646.42393,
+            0.     ,  700.74483,  487.06458,
+            0.     ,    0.     ,    1.     ]
+camera_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [-0.252235, 0.039293, 0.000363, -0.001835, 0.000000]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [ 1.,  0.,  0.,
+          0.,  1.,  0.,
+          0.,  0.,  1.]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [ 395.18283,    0.     ,  638.2737 ,    0.     ,
+            0.     ,  598.44409,  490.80876,    0.     ,
+            0.     ,    0.     ,    1.     ,    0.     ]

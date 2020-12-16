@@ -1,15 +1,21 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="cam_name" default="cam"/>
+    <arg name="cam_name" default="mobius"/>
     <arg name="mavros_namespace" default="/mavros"/>
     <arg name="device" default="/dev/video0" />
     <arg name="udp_port" default="7400" />
-    <env name="GSCAM_CONFIG" value="v4l2src device=$(arg device) ! video/x-raw,format=YUY2,framerate=5/1,width=1280,height=960 ! videoconvert"/>
+    <!--<env name="GSCAM_CONFIG" value="v4l2src device=$(arg device) ! video/x-raw,format=YUY2,framerate=5/1,width=1280,height=960 ! videoconvert"/>-->
+    <env name="GSCAM_CONFIG" value="v4l2src device=$(arg device) ! image/jpeg, width=1280, height=960, framerate=10/1, format=MJPG ! jpegparse ! jpegdec ! videoconvert"/>
 
     <node pkg="gscam" type="gscam" name="gscam">
         <param name="camera_name" value="$(arg cam_name)"/>
+        <param name="camera_info_url" value="package://pegasus_uav_ros/calibration/mobius.yaml"/>
         <remap from="camera/image_raw" to="$(arg cam_name)/image_raw"/>
     </node>
+
+    <node pkg="image_proc" type="image_proc" name="image_proc"
+        ns="$(arg cam_name)" />
+
     <include file="$(find pegasus_uav_ros)/launch/pegasus_video_streamer.launch">
 	    <arg name="mavros_namespace" value="$(arg mavros_namespace)"/>
 	    <arg name="udp_port" value="$(arg udp_port)" />

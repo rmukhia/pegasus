@@ -75,8 +75,7 @@ class PathFinder(object):
             current = current.parent
         return i
 
-    def search(self, depth_exit=0, epoch_stop=0, previous_goal=None):
-        num_conf = self.cell_container.NUM_DIRECTIONS
+    def search(self, depth_exit=0, epoch_stop=0, previous_goal=None, configurations=range(9)):
         open_list = []
         closed_list = []
 
@@ -119,8 +118,8 @@ class PathFinder(object):
                     early_exit['cost'] = current.h
                     early_exit['epochs'] = 0
                     early_exit['minCostState'] = current
-                elif CONSTRAINTS['HEURISTIC_TYPE'] == 2 and StateHelper.get_free_cell_number(current) < early_exit['cost']:
-                    early_exit['cost'] = StateHelper.get_free_cell_number(current)
+                elif CONSTRAINTS['HEURISTIC_TYPE'] == 2 and StateHelper.get_free_cell_number(current)[0] < early_exit['cost']:
+                    early_exit['cost'] = StateHelper.get_free_cell_number(current)[0]
                     early_exit['epochs'] = 0
                     early_exit['minCostState'] = current
                 else:
@@ -142,7 +141,7 @@ class PathFinder(object):
             closed_list.append(current)
 
             # for cnf in random.sample(range(num_conf), num_conf):
-            for cnf in range(num_conf):
+            for cnf in configurations:
                 successor = None
                 try:
                     successor = self.get_neighbour(current, cnf)
@@ -151,6 +150,8 @@ class PathFinder(object):
                     continue
 
                 if successor in closed_list:
+                    continue
+                    '''
                     index = closed_list.index(successor)
                     prev_node = closed_list[index]
                     if prev_node.g > successor.g:
@@ -158,6 +159,7 @@ class PathFinder(object):
                         closed_list.pop(index)
                         StateKeyWrapper.insert_sorted(open_list, successor)
                         continue
+                    '''
 
                 if successor in open_list:
                     index = open_list.index(successor)
@@ -244,13 +246,28 @@ class PathFinder(object):
         sigma = 0
         depth_exit_weight = self.get_weighted_curve(int(prev_h), depth_exit, c_power)
         start_h = 0
+        # Get the configurations list
+        num_conf = self.cell_container.NUM_DIRECTIONS
+        configurations_list = [
+            list(range(num_conf)),  # normal
+            list(range(num_conf-1, -1, -1)),  # reverse
+        ]
+        for i in range(2, sigma_t):
+            configurations_list.append(random.sample(configurations_list[0], num_conf))
+
+        configurations = configurations_list[0]
         while True:
-            ret, goal = self.search(epoch_stop=early_exit, depth_exit=depth_exit_weight, previous_goal=copy.deepcopy(goal))
+            ret, goal = self.search(
+                epoch_stop=early_exit,
+                depth_exit=depth_exit_weight,
+                previous_goal=copy.deepcopy(goal),
+                configurations=configurations)
+            configurations = configurations_list[0]  # default configuration is normal sequence of movements
             rospy.loginfo(ret)
             goals.append(goal)
             h = goal.h
             if CONSTRAINTS['HEURISTIC_TYPE'] == 2:
-                h = StateHelper.get_free_cell_number(goal)
+                h = StateHelper.get_free_cell_number(goal)[0]
             depth_exit_weight = self.get_weighted_curve(h, depth_exit, c_power)
             rospy.loginfo('h= %s,  g= %s, f=%s depth_weight= %s' % (h, goal.g, StateHelper.f(goal), depth_exit_weight))
             rospy.loginfo(goal.cell_cost)

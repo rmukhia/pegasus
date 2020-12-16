@@ -40,6 +40,10 @@ class State(object):
         for agentId in self.agent_cells:
             if self.agent_cells[agentId] != other_state.agent_cells[agentId]:
                 return False
+        if not np.all(np.equal(
+                StateHelper.get_free_cell_number(self)[1],
+                StateHelper.get_free_cell_number(other_state)[1])):
+            return False
         return True
 
     def __str__(self):

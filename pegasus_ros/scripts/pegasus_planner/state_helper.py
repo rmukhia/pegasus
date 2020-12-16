@@ -101,7 +101,7 @@ class StateHelper(object):
     @staticmethod
     def check_constraints(state, num_directions, old_state=None):
         if CONSTRAINTS["HEURISTIC_TYPE"] == 2:
-            StateHelper.constraint1(state, num_directions)
+            # StateHelper.constraint1(state, num_directions)
             StateHelper.constraint2(state)
         StateHelper.constraint3(state)
 
@@ -150,9 +150,30 @@ class StateHelper(object):
 
     @staticmethod
     def get_free_cell_number(state):
+        """
+        returns (num free cells, boolean array if index of free cells, empty_cells_index)
+        """
         empty_cells = np.equal(state.cell_cost, [0.])
         empty_ones = state.cell_container.cell_data[empty_cells, 0:2]
-        return empty_ones.shape[0]
+        return empty_ones.shape[0], empty_cells, empty_ones
+
+    @staticmethod
+    def get_calculated_heuristic(state, _empty_ones):
+        num_agents = len(state.agent_cells.values())
+        empty_ones = np.tile(_empty_ones, (num_agents,1))
+        curr_pos = None
+        for i in range(num_agents):
+            _index = state.agent_cells.values()[i].get_np_index()
+            if curr_pos is None:
+                curr_pos = np.array([_index, ] * state.h)
+            else:
+                curr_pos = np.append(curr_pos, np.array([_index, ] * state.h), axis=0)
+        dist = np.sqrt(np.sum((empty_ones - curr_pos) ** 2, axis=1))
+        # The main equation of this thesis
+        heuristic = np.min(dist)
+        if heuristic > 1.:
+            return heuristic - 1
+        return 0
 
     @staticmethod
     def heuristic_1(state):
@@ -169,20 +190,9 @@ class StateHelper(object):
         if state.h == 0:
             return state.h
         # Process now
-        empty_ones = np.tile(empty_ones, (num_agents,1))
-        curr_pos = None
-        for i in range(num_agents):
-            _index = state.agent_cells.values()[i].get_np_index()
-            if curr_pos is None:
-                curr_pos = np.array([_index, ] * state.h)
-            else:
-                curr_pos = np.append(curr_pos, np.array([_index, ] * state.h), axis=0)
-        dist = np.sqrt(np.sum((empty_ones - curr_pos) ** 2, axis=1))
-        heuristic = np.mean(dist)
-        state.h = float(state.h)
-        if heuristic > 1.:
-            state.h += heuristic - 1
+        state.h = float(state.h) + StateHelper.get_calculated_heuristic(state, empty_ones)
         return state.h
+
 
     @staticmethod
     def heuristic_2(state):
@@ -192,7 +202,7 @@ class StateHelper(object):
         h = 2.2e-308.. very small number ~= 0
         Djikster's algorithm
         """
-        n_free_cells = StateHelper.get_free_cell_number(state)
+        n_free_cells = StateHelper.get_free_cell_number(state)[0]
         if n_free_cells == 0:
             state.h == 0
             return state.h
