@@ -19,6 +19,8 @@ import pegasus_verify_data as verify_data
 
 sock_buffsize = 1024
 
+NUM_FRAMES = 7
+
 
 class ImageContainer(object):
     def __init__(self, image_pkts=None):
@@ -77,7 +79,8 @@ class PegasusVideoStreamer(object):
         self.subscribers = {}
         self.data = {
             'global_gps': None,
-            'image_raw': None,
+            'image_raw': [],
+            'image_ctr': 0,
         }
         self.lock = {
             'global_gps': Lock(),
@@ -93,7 +96,7 @@ class PegasusVideoStreamer(object):
         rospy.loginfo('Subscriber to global gps: %s' % (global_gps_topic,))
         self.subscribers['global_gps'] = rospy.Subscriber(global_gps_topic,
                                                           NavSatFix, self._recv_global_gps)
-        image_raw_topic = '%s/image_raw' % (self.params['camera_namespace'],)
+        image_raw_topic = self.params['camera_topic']
         rospy.loginfo('Subscriber to image: %s' % (image_raw_topic,))
         self.subscribers['image_raw'] = rospy.Subscriber(image_raw_topic,
                                                          Image, self._recv_image_raw)
@@ -104,7 +107,10 @@ class PegasusVideoStreamer(object):
 
     def _recv_image_raw(self, data):
         with self.lock['image_raw']:
-            self.data['image_raw'] = data
+            if len(self.data['image_raw']) >= NUM_FRAMES:
+                self.data['image_raw'].pop(0)
+            self.data['image_raw'].append(data)
+            self.data['image_ctr'] += 1
 
     @staticmethod
     def _get_degree_minute_second(value):
@@ -121,15 +127,37 @@ class PegasusVideoStreamer(object):
         return result, 1
 
     def get_packet(self):
+        ctr = self.data['image_ctr']
+        rate = rospy.Rate(50)
+        while ctr + NUM_FRAMES > self.data['image_ctr']:
+            rate.sleep()
+        images = []
         with self.lock['image_raw']:
-            image_raw = copy.deepcopy(self.data['image_raw'])
+            for image in self.data['image_raw']:
+                images.append(copy.deepcopy(image))
         with self.lock['global_gps']:
             global_gps = copy.deepcopy(self.data['global_gps'])
+
+        """
+        with self.lock['image_raw']:
+            image_raw = copy.deepcopy(self.data['image_raw'])
         try:
             image = self.cv_bridge.imgmsg_to_cv2(image_raw, desired_encoding="bgr8")
         except CvBridgeError as e:
             rospy.logerr(e)
             return ['ERR']
+        """
+
+        cv_images = []
+        for image in images:
+            try:
+                cv_images.append(self.cv_bridge.imgmsg_to_cv2(image, desired_encoding="bgr8"))
+            except CvBridgeError as e:
+                rospy.logerr(e)
+                return ['ERR']
+
+        image = cv2.fastNlMeansDenoisingColoredMulti(cv_images, 3, 3)
+
         params = [cv2.IMWRITE_JPEG_QUALITY, self.params['jpeg_quality']]
         name = '%s_pegasus_video_streamer.jpg' % (os.path.dirname(self.params['mavros_namespace'])[1:],)
         filename = os.path.join(tempfile.gettempdir(), name)
@@ -221,13 +249,13 @@ if __name__ == '__main__':
     rospy.loginfo('Starting pegasus_video_streamer...')
     mavros_namespace = rospy.get_param('~mavros_namespace')
     udp_port = rospy.get_param('~udp_port')
-    camera_namespace = rospy.get_param('~cam_name')
+    camera_topic = rospy.get_param('~camera_topic')
     jpeg_quality = rospy.get_param('~jpeg_quality')
 
     pegasus_video_streamer = PegasusVideoStreamer({
         'mavros_namespace': mavros_namespace,
         'udp_port': udp_port,
-        'camera_namespace': camera_namespace,
+        'camera_topic': camera_topic,
         'jpeg_quality': jpeg_quality,
     })
 

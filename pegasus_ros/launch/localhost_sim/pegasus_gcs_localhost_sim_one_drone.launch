@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find pegasus_ros)/launch/mapviz.launch"/>
+    <node pkg="pegasus_ros" type="pegasus_controller.py" name="pegasus_controller" respawn="false" output="screen">
+        <rosparam param="agents">
+            [
+            ["uav0", ["localhost", 8444], 4444],
+            ]
+        </rosparam>
+        <param name="agents_hover_height" value="30"/>
+        <param name="calibration_size" value="15"/>
+        <param name="map_origin_topic" value="/local_xy_origin"/>
+    </node>
+    <group ns="uav0">
+        <include file="$(find pegasus_ros)/launch/pegasus_video_receiver.launch">
+            <arg name="agent_name" value="uav0" />
+            <arg name="agent_ip" value="localhost" />
+            <arg name="agent_remote_port" value="7400" />
+            <arg name="udp_port" value="8200" />
+            <arg name="save_directory" default="/home/rmukhia/pegasus/sim/localhost/one" />
+        </include>
+    </group>
+</launch>

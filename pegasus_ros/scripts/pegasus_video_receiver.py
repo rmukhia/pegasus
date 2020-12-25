@@ -8,7 +8,7 @@ from std_srvs.srv import Trigger, TriggerResponse
 import messages.pegasus_messages_pb2 as messages_pb2
 import pegasus_verify_data as verify_data
 
-sock_timeout = 5  # 5 seconds
+sock_timeout = 20  # 5 seconds
 sock_bufsize = 1024  # buffer of 1024 size
 
 

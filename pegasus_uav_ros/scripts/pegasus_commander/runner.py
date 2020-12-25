@@ -5,6 +5,7 @@ from io import BytesIO
 import messages.pegasus_messages_pb2 as messages_pb2
 import pegasus_verify_data as verify_data
 import rospy
+from tf.transformations import euler_from_quaternion
 
 
 def create_return_to_home_message():
@@ -14,7 +15,20 @@ def create_return_to_home_message():
     return request
 
 
-def is_at_position(expected_pose, actual_pose, offset):
+def get_yaw_from_quaternion(orientation):
+    yaw = euler_from_quaternion(
+        [orientation.x,
+         orientation.y,
+         orientation.z,
+         orientation.w])[2]
+    if yaw < 0:
+        yaw = 2 * np.pi - (-yaw % 2 * np.pi)
+    else:
+        yaw = yaw % 2 * np.pi
+    return yaw
+
+
+def is_at_position(expected_pose, actual_pose, offset_distance, offset_yaw):
     """ Actually its PoseStamped"""
     desired = np.array((expected_pose.pose.position.x,
                         expected_pose.pose.position.y,
@@ -22,7 +36,12 @@ def is_at_position(expected_pose, actual_pose, offset):
     actual = np.array((actual_pose.pose.position.x,
                        actual_pose.pose.position.y,
                        actual_pose.pose.position.z))
-    return np.linalg.norm(desired - actual) < offset
+    real_offset_distance = np.linalg.norm(desired - actual)
+    desired_yaw = get_yaw_from_quaternion(expected_pose.pose.orientation)
+    actual_yaw = get_yaw_from_quaternion(actual_pose.pose.orientation)
+    real_yaw_difference = abs(desired_yaw - actual_yaw)
+    rospy.loginfo_throttle(1, "desired %s actual %s difference %s" % (desired_yaw, actual_yaw, real_yaw_difference))
+    return real_offset_distance < offset_distance and real_yaw_difference < offset_yaw
 
 
 class Runner(threading.Thread):
@@ -94,18 +113,19 @@ class Runner(threading.Thread):
 
     def request_return_to_home(self, request):
         now = rospy.get_rostime()
-        while self.commander.mavros_gw.get_mavros_state().armed:
+        while self.commander.mavros_gw.get_mavros_state().mode != 'AUTO.RTL':
             if self.request_rtl_time is not None and now - self.request_rtl_time < rospy.Duration(5):
                 self.rate.sleep()
                 continue
             try:
-                res = self.commander.mavros_gw.mavros_service['arming'](False)
-                if not res.success:
-                    rospy.logerr("failed to send disarm command")
+                res = self.commander.mavros_gw.mavros_service['set_mode'](
+                    base_mode=0, custom_mode='AUTO.RTL')
+                if not res.mode_sent:
+                    rospy.logerr("failed to send mode command")
                     self.request_rtl_time = now
             except rospy.ServiceException as e:
-                self.request_rtl_time = now
                 rospy.logerr(e)
+                self.request_rtl_time = now
             self.rate.sleep()
 
     def request_goto(self, request):
@@ -114,7 +134,9 @@ class Runner(threading.Thread):
         while not rospy.is_shutdown():
             actual_pose = self.commander.mavros_gw.get_mavros_local_pose()
             expected_pose = self.commander.current_pose
-            if is_at_position(expected_pose, actual_pose, 0.5):
+            # half a meter, 0.5 degrees
+            degrees = 0.5 * np.pi/180
+            if is_at_position(expected_pose, actual_pose, 0.5, degrees):
                 return
             self.commander.mavros_gw.set_mavros_local_pose(expected_pose)
             if not self.commander.running:

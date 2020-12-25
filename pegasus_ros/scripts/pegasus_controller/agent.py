@@ -17,6 +17,7 @@ from tf2_geometry_msgs import tf2_geometry_msgs
 
 import messages.pegasus_messages_pb2 as messages_pb2
 import pegasus_verify_data as verify_data
+from pegasus_controller.state import State
 
 
 def _set_offboard():
@@ -48,7 +49,7 @@ def _goto(param):
 
 
 class Agent(object):
-    def __init__(self, controller, a_id, namespace, address, rx_port):
+    def __init__(self, controller, a_id, namespace, address, rx_port, calibration_size):
         self.calibration_path = Path()
         self.controller = controller
         self.a_id = a_id
@@ -63,6 +64,7 @@ class Agent(object):
         self.global_position = NavSatFix()
         self.rx_port = rx_port
         self.server_address = address
+        self.calibration_size = calibration_size
         self._create_socket(address)
         self.recv_q = Queue.Queue()
         self.recv_thread = threading.Thread(target=self._recv_thread)
@@ -75,6 +77,7 @@ class Agent(object):
         self.calibration_poses = []
         self.command_thread = None
         self.last_command = (1, True)  # last_command_id, last_command_completed
+        self.traversed_points = None
         rospy.loginfo("%s: Initialized", self.namespace)
 
     def _get_command_id(self):
@@ -112,7 +115,7 @@ class Agent(object):
             except verify_data.VerifyError as e:
                 rospy.logerr(str(e))
             except Exception as e:
-                rospy.logerr(str(e) + ' data: ' + str(self.data))
+                rospy.logerr(str(e))
 
     def _process_reply(self, reply):
         self.last_command = (
@@ -132,6 +135,10 @@ class Agent(object):
         if self.local_map_transform_calculated:
             transformed_pose = self.local_pose_to_global_pose(self.local_pose)
             self.publishers['global_pose'].publish(transformed_pose)
+
+        # capture points in calibration process
+        if self.controller.state == State.CALIBRATE:
+            self.capture_calibration_pose()
 
     def _send_heartbeat(self):
         now = rospy.get_rostime()
@@ -154,7 +161,7 @@ class Agent(object):
         rospy.loginfo('Publisher to mavros_state_topic: %s' % (mavros_state_topic,))
         self.publishers['mavros_state'] = rospy.Publisher(mavros_state_topic, MavrosState,
                                                           queue_size=1000)
-        local_pose_topic = '/pegasus/%s/local_position/pose' % (self.namespace,)
+        local_pose_topic = '/pegasus/%s/local_position/pose_stamped' % (self.namespace,)
         rospy.loginfo('Publisher to local_pose_topic: %s' % (local_pose_topic,))
         self.publishers['local_pose'] = rospy.Publisher(local_pose_topic, PoseStamped,
                                                         queue_size=1000)
@@ -163,7 +170,7 @@ class Agent(object):
         self.publishers['global_position'] = rospy.Publisher(global_position_topic, NavSatFix,
                                                              queue_size=1000)
 
-        global_pose_topic = '/pegasus/%s/global_position/pose' % (self.namespace,)
+        global_pose_topic = '/pegasus/%s/global_position/pose_stamped' % (self.namespace,)
         rospy.loginfo('Publisher to global_pose_topic: %s' % (global_pose_topic,))
         self.publishers['global_pose'] = rospy.Publisher(global_pose_topic, PoseStamped,
                                                          queue_size=1000)
@@ -182,9 +189,13 @@ class Agent(object):
         self.path = path
 
     def _create_calibration_path(self):
-        side_length = self.controller.params['grid_size']
         z_height = self.controller.params['z_height']
-        box_points = ((0., 0.), (side_length, 0.), (side_length, side_length), (0., side_length), (0., 0.))
+        box_points = (
+            (0., 0.),
+            (self.calibration_size, 0.),
+            (self.calibration_size, self.calibration_size),
+            (0, self.calibration_size),
+            (0., 0.))
         # box_points = ((0, 0), (sideLength, 0))
         num_points = len(box_points)
         v1 = np.array(box_points)
@@ -228,6 +239,8 @@ class Agent(object):
         rate = rospy.Rate(20)
         retry_counter = 0
         while not rospy.is_shutdown():
+            if self.controller.state == State.COMPLETE:
+                return
             if retry_counter == 0:
                 self._send_msg(request.SerializeToString())
             retry_counter = (retry_counter + 1) % 100  # 5 seconds?
@@ -243,6 +256,7 @@ class Agent(object):
     def wait_for_command(self):
         if self.command_thread is not None:
             self.command_thread.join()
+            self.command_thread = None
 
     def capture_calibration_pose(self):
         utm_pose = utm.fromLatLong(self.global_position.latitude,
@@ -272,18 +286,22 @@ class Agent(object):
         homography[3, 0:2] = h[2, 0:2]
         homography[3, 3] = h[2, 2]
         transform_q = quaternion_from_matrix(homography)
+        # normalize the quaternion d = norm(q) ;
+        q_arr = np.array(transform_q)
+        d = np.linalg.norm(q_arr)
+        q_arr = q_arr/d
         transform_t = translation_from_matrix(homography)
         self.local_map_transform.header.stamp = rospy.Time.now()
         self.local_map_transform.header.frame_id = self.controller.global_map_name
         self.local_map_transform.child_frame_id = self.local_map_name
-        self.local_map_transform.transform.rotation.x = transform_q[0]
-        self.local_map_transform.transform.rotation.y = transform_q[1]
-        self.local_map_transform.transform.rotation.z = transform_q[2]
-        self.local_map_transform.transform.rotation.w = transform_q[3]
+        self.local_map_transform.transform.rotation.x = q_arr[0]
+        self.local_map_transform.transform.rotation.y = q_arr[1]
+        self.local_map_transform.transform.rotation.z = q_arr[2]
+        self.local_map_transform.transform.rotation.w = q_arr[3]
         self.local_map_transform.transform.translation.x = transform_t[0]
         self.local_map_transform.transform.translation.y = transform_t[1]
         self.local_map_transform.transform.translation.z = 0
-        rospy.loginfo(transform_q)
+        rospy.loginfo(q_arr)
         rospy.loginfo(transform_t)
         self.local_map_transform_calculated = True
 
@@ -323,6 +341,22 @@ class Agent(object):
                 rospy.logerr(resp)
             else:
                 success = True
+
+    def add_pose_to_traversed(self, pose):
+        p = (pose.position.x, pose.position.y, pose.position.z)
+        if self.traversed_points is None:
+            self.traversed_points = np.array([p])
+        else:
+            self.traversed_points = np.append(self.traversed_points, [p], axis=0)
+
+    def check_if_traversed(self, pose):
+        if self.traversed_points is None:
+            return False
+        p = (pose.position.x, pose.position.y, pose.position.z)
+        return np.equal(self.traversed_points, p).all(axis=1).any()
+
+    def clear_traversed(self):
+        self.traversed_points = None
 
     def spin(self):
         if self.controller.heartbeat_active:

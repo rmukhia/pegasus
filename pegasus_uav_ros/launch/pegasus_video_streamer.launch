@@ -2,12 +2,12 @@
 <launch>
     <arg name="udp_port" default="7200" />
     <arg name="mavros_namespace" default="/mavros" />
-    <arg name="cam_name" default="/gazebo_cam" />
+    <arg name="camera_topic" default="/gazebo_cam/image_raw" />
     <arg name="jpeg_quality" default="99" />
     <node pkg="pegasus_uav_ros" type="pegasus_video_streamer.py" name="pegasus_video_streamer" respawn="true" output="screen">
         <param name="mavros_namespace" value="$(arg mavros_namespace)"/>
         <param name="udp_port" value="$(arg udp_port)"/>
-        <param name="cam_name" value="$(arg cam_name)" />
+        <param name="camera_topic" value="$(arg camera_topic)" />
         <param name="jpeg_quality" value="$(arg jpeg_quality)" />
     </node>
 </launch>

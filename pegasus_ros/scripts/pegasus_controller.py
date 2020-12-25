@@ -25,7 +25,15 @@ class PegasusController(object):
         self.params = params
         self.agents = []
         for a_id, agent in enumerate(params['agents']):
-            self.agents.append(Agent(self, a_id, agent[0], agent[1], agent[2]))
+            self.agents.append(
+                Agent(
+                    self,  # controller
+                    a_id,  # agent id
+                    agent[0],  # namespace
+                    agent[1],  # remote address
+                    agent[2],  # incoming port
+                    params['calibration_size'])
+            )
         self.tf_broadcaster = tf2_ros.TransformBroadcaster()
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
@@ -87,7 +95,7 @@ class PegasusController(object):
     def _start_mission_no_plan(self, request):
         rospy.loginfo('Starting mission')
         if self.state == State.IDLE:
-            self.state = State.OFFBOARD_MODE
+            self.state = State.PREP
             return TriggerResponse(True, 'Mission started.')
         else:
             return TriggerResponse(False, 'Mission in progress.')
@@ -114,22 +122,16 @@ if __name__ == '__main__':
     rospy.loginfo('Starting pegasus_controller...')
     agents = rospy.get_param('~agents')
     z_height = rospy.get_param('~agents_hover_height')
-    grid_size = rospy.get_param('~grid_size')
     map_origin_topic = rospy.get_param('~map_origin_topic')
+    calibration_size = rospy.get_param('~calibration_size')
     rospy.loginfo(agents[0])
-
     controller = PegasusController({
         'agents': agents,
         'z_height': z_height,
-        'grid_size': grid_size,
         'map_origin_topic': map_origin_topic,
+        'calibration_size': calibration_size,
     })
-    #    , localTransforms,
-    #                                      {'agentsHoverHeight': float(zHeight), 'gridSize': float(gridSize),
-    #                                       'mapOriginTopic': mapOriginTopic})
     controller_thread = ControllerThread(controller, 0)
-
     controller_thread.start()
-
     controller.spin()
     rospy.spin()

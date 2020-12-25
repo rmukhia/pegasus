@@ -2,14 +2,19 @@
 <launch>
     <arg name="cam_name" default="gazebo_cam"/>
     <arg name="video_udp_port" default="5600" />
+    <arg name="udp_port" default="7600" />
+    <arg name="mavros_namespace" default="/mavros" />
     <env name="GSCAM_CONFIG" value="udpsrc port=$(arg video_udp_port) ! application/x-rtp, encoding-name=H264 ! rtph264depay ! avdec_h264 ! videoconvert"/>
     <node pkg="gscam" type="gscam" name="gscam">
         <param name="camera_name" value="$(arg cam_name)"/>
         <remap from="camera/image_raw" to="$(arg cam_name)/image_raw"/>
     </node>
-    <!--
     <node pkg="image_view" type="image_view" name="gscam_view">
         <remap from="image" to="/$(arg cam_name)/image_raw" />
     </node>
-    -->
+    <include file="$(find pegasus_uav_ros)/launch/pegasus_video_streamer.launch">
+        <arg name="mavros_namespace" value="$(arg mavros_namespace)"/>
+        <arg name="udp_port" value="$(arg udp_port)" />
+        <arg name="camera_topic" value="$(arg cam_name)/image_raw" />
+    </include>
 </launch>
