@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+  <rosparam param="pegasus_mavros_namespaces">
+    [
+      "uav0"
+    ]
+  </rosparam>
+  <rosparam param="pegasus_local_transforms">
+    [
+      [ "map_0", "base_link_0"],
+    ]
+  </rosparam>
+  <param name="agents_hover_height" value="15"/>
+  <param name="grid_size" value="15"/>
+  <param name="mesh_distance" value ="60" />
+  <param name="control_station_position" value ="[0, 0]" />
+  <param name="param_depth_exit" value="64"/>
+  <param name="param_c_power" value="0.9"/>
+  <param name="param_retry_threshold" value="8"/>
+  <param name="param_num_directions" value="9" />
+  <param name="param_early_exit" value="224"/>
+  <node pkg="pegasus_ros" type="pegasus_planner.py" name="pegasus_planner" respawn="false" output="screen">
+  </node>
+</launch>

@@ -13,12 +13,14 @@
         <remap from="camera/image_raw" to="$(arg cam_name)/image_raw"/>
     </node>
 
+    <!--
     <node pkg="image_proc" type="image_proc" name="image_proc"
         ns="$(arg cam_name)" />
+    -->
 
     <include file="$(find pegasus_uav_ros)/launch/pegasus_video_streamer.launch">
 	    <arg name="mavros_namespace" value="$(arg mavros_namespace)"/>
 	    <arg name="udp_port" value="$(arg udp_port)" />
-	    <arg name="cam_name" value="$(arg cam_name)" />
+	    <arg name="camera_topic" value="$(arg cam_name)/image_raw" />
     </include>
 </launch>
