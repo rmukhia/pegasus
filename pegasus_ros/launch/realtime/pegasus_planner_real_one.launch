@@ -10,8 +10,8 @@
       [ "map_0", "base_link_0"],
     ]
   </rosparam>
-  <param name="agents_hover_height" value="15"/>
-  <param name="grid_size" value="15"/>
+  <param name="agents_hover_height" value="20"/>
+  <param name="grid_size" value="10"/>
   <param name="mesh_distance" value ="60" />
   <param name="control_station_position" value ="[0, 0]" />
   <param name="param_depth_exit" value="64"/>

@@ -19,7 +19,8 @@ import pegasus_verify_data as verify_data
 
 sock_buffsize = 1024
 
-NUM_FRAMES = 7
+# 3 for smoothing, 1 for instant
+NUM_FRAMES = 1
 
 
 class ImageContainer(object):
@@ -147,7 +148,6 @@ class PegasusVideoStreamer(object):
             rospy.logerr(e)
             return ['ERR']
         """
-
         cv_images = []
         for image in images:
             try:
@@ -156,7 +156,9 @@ class PegasusVideoStreamer(object):
                 rospy.logerr(e)
                 return ['ERR']
 
-        image = cv2.fastNlMeansDenoisingColoredMulti(cv_images, 3, 3)
+        image = cv_images[0]
+        if NUM_FRAMES > 1:
+            image = cv2.fastNlMeansDenoisingColoredMulti(cv_images, 1, 1)
 
         params = [cv2.IMWRITE_JPEG_QUALITY, self.params['jpeg_quality']]
         name = '%s_pegasus_video_streamer.jpg' % (os.path.dirname(self.params['mavros_namespace'])[1:],)

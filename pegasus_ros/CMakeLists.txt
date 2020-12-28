@@ -187,7 +187,8 @@ catkin_install_python(PROGRAMS
   scripts/pegasus_planner.py
   scripts/pegasus_controller.py
   scripts/pegasus_video_receiver.py
-  scripts/pegasus_planner_validator.py
+  scripts/pegasus_path_validator.py
+  scripts/pegasus_rectify_image.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

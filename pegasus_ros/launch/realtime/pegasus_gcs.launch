@@ -16,8 +16,8 @@
             ["uav0", ["192.168.41.200", 8444], 5444],
             ]
         </rosparam>
-        <param name="agents_hover_height" value="25"/>
-        <param name="grid_size" value="10"/>
+        <param name="agents_hover_height" value="20"/>
+        <param name="calibration_size" value="15"/>
         <param name="map_origin_topic" value="/local_xy_origin"/>
     </node>
     <group ns="uav0">
