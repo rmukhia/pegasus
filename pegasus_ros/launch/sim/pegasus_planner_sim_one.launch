@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <launch>
+  <env name="NS3_PATH" value="/home/rmukhia/thesis/ns-allinone-3.30.1/ns-3.30.1" />
+  <node pkg="pegasus_ros" type="pegasus-net-sim-start.sh" name="pegasus_net_sim" respawn="false" output="screen">
+  </node>
   <rosparam param="pegasus_mavros_namespaces">
     [
       "uav0"
@@ -11,8 +14,8 @@
     ]
   </rosparam>
   <param name="agents_hover_height" value="30"/>
-  <param name="grid_size" value="5"/>
-  <param name="mesh_distance" value ="60" />
+  <param name="grid_size" value="15"/>
+  <param name="mesh_distance" value ="40" />
   <param name="control_station_position" value ="[0, 0]" />
   <param name="param_depth_exit" value="64"/>
   <param name="param_c_power" value="0.9"/>

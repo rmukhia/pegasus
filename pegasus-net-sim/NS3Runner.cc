@@ -138,7 +138,7 @@ void NS3Runner::Create() {
 
 void NS3Runner::EnableTracing() {
   NS_LOG_FUNCTION(this);
-  m_physical.EnablePcap ("pegasus", m_controlStationDevice.Get (0));
+  m_physical.EnablePcapAll ("pegasus", true);
 }
 
 void NS3Runner::Set_m_pegasusVars(PegasusVariables * value)
