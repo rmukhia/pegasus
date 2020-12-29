@@ -1,5 +1,7 @@
 CONSTRAINTS = {
-    'MAX_DISTANCE': 70,
-    'CS_POSITION': (0, 0)
+    'MAX_DISTANCE': None,
+    'CS_POSITION': None,
+    'HEIGHT': None,
+    'HEURISTIC_TYPE': 1
 }
 

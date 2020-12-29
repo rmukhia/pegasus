@@ -1,7 +1,0 @@
-<launch>
-  <include file="$(find mavros)/launch/px4.launch">
-    <arg name="fcu_url" default="udp://:14540@localhost:14557"/> 
-    <arg name="respawn_mavros" value="true"/>
-  </include>
-  <include file="$(find pegasus)/launch/mapviz.launch" />
-</launch>

@@ -195,12 +195,12 @@ void Pegasus::Run(int argc, char** argv) {
   m_gazeboNode.Subscribe();
   m_pegasusSocketRunner.Start();
 
-  if (tracing == true)
-    m_ns3Runner.EnableTracing();
+  // if (tracing == true)
+  m_ns3Runner.EnableTracing();
 
   // Start a new subscriber thread
 
-  Simulator::Stop (Seconds (1000));
+  Simulator::Stop (Seconds (100000));
 
   Simulator::Schedule(Seconds(1), &Pegasus::ChangePosition);
   Simulator::Run ();

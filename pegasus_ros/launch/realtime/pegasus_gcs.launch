@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find pegasus_ros)/launch/mapviz.launch"/>
+    <node pkg="pegasus_ros" type="pegasus_controller.py" name="pegasus_controller" respawn="false" output="screen">
+        <!--
+        <rosparam param="agents">
+            [
+                ["uav0", ["localhost", 8444], 5444],
+                ["uav1", ["localhost", 8445], 5445],
+                ["uav2", ["localhost", 8446], 5446],
+            ]
+        </rosparam>
+        -->
+        <rosparam param="agents">
+            [
+            ["uav0", ["192.168.41.200", 8444], 5444],
+            ]
+        </rosparam>
+        <param name="agents_hover_height" value="20"/>
+        <param name="calibration_size" value="15"/>
+        <param name="map_origin_topic" value="/local_xy_origin"/>
+    </node>
+    <group ns="uav0">
+        <include file="$(find pegasus_ros)/launch/pegasus_video_receiver.launch">
+            <arg name="agent_name" value="uav0" />
+            <arg name="agent_ip" value="192.168.41.200" />
+            <arg name="agent_remote_port" value="7400" />
+            <arg name="udp_port" value="8200" />
+            <arg name="save_directory" default="/home/rmukhia/sfm2/" />
+        </include>
+    </group>
+    <!--
+    <group ns="uav1">
+        <include file="$(find pegasus_ros)/launch/pegasus_video_receiver.launch">
+            <arg name="agent_name" value="uav1" />
+            <arg name="agent_ip" value="localhost" />
+            <arg name="agent_remote_port" value="7401" />
+            <arg name="udp_port" value="8201" />
+        </include>
+    </group>
+    <group ns="uav2">
+        <include file="$(find pegasus_ros)/launch/pegasus_video_receiver.launch">
+            <arg name="agent_name" value="uav2" />
+            <arg name="agent_ip" value="localhost" />
+            <arg name="agent_remote_port" value="7402" />
+            <arg name="udp_port" value="8202" />
+        </include>
+    </group>
+    -->
+</launch>

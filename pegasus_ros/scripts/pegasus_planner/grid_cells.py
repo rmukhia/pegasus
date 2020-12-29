@@ -1,5 +1,5 @@
-import numpy as np
 import math
+import numpy as np
 
 
 def _get_min_max_vertices(polygon):

@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>pegasus_ros</name>
+  <name>pegasus_uav_ros</name>
   <version>0.0.0</version>
-  <description>The pegasus_controller package</description>
+  <description>The pegasus_uav_ros package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="raunak.mukhia@gmail.com">Raunak Mukhia</maintainer>
+  <maintainer email="rmukhia@todo.todo">rmukhia</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>GPLv3</license>
+  <license>TODO</license>
 
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/pegasus_controller</url> -->
+  <!-- <url type="website">http://wiki.ros.org/pegasus_uav_ros</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -32,8 +32,7 @@
   <!-- Dependencies can be catkin packages or system dependencies -->
   <!-- Examples: -->
   <!-- Use depend as a shortcut for packages that are both build and exec dependencies -->
-  <depend>roscpp</depend>
-  <depend>rospy</depend>
+  <!--   <depend>roscpp</depend> -->
   <!--   Note that this is equivalent to the following: -->
   <!--   <build_depend>roscpp</build_depend> -->
   <!--   <exec_depend>roscpp</exec_depend> -->
@@ -51,28 +50,25 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>protobuf-dev</build_depend>
-  <build_depend>swri_transform_util</build_depend>
-  <build_depend>std_msgs</build_depend>
+  <build_depend>cv_bridge</build_depend>
   <build_depend>geometry_msgs</build_depend>
-  <build_depend>geographic_msgs</build_depend>
-  <build_depend>geodesy</build_depend>
-  <build_depend>tf2</build_depend>
-  <build_depend>tf2_ros</build_depend>
-  <build_export_depend>std_msgs</build_export_depend>
+  <build_depend>mavros_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_export_depend>cv_bridge</build_export_depend>
   <build_export_depend>geometry_msgs</build_export_depend>
-  <build_export_depend>geographic_msgs</build_export_depend>
-  <build_export_depend>geodesy</build_export_depend>
-  <build_export_depend>tf2</build_export_depend>
-  <build_export_depend>tf2_ros</build_export_depend>
+  <build_export_depend>mavros_msgs</build_export_depend>
+  <build_export_depend>sensor_msgs</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <exec_depend>python-protobuf</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
   <!-- version mismatch install from pip python-protobuf -->
   <!-- <exec_depend>python-protobuf</exec_depend> -->
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>mavros_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-  <exec_depend>geometric_msgs</exec_depend>
-  <exec_depend>geographic_msgs</exec_depend>
-  <exec_depend>geodesy</exec_depend>
-  <exec_depend>tf2</exec_depend>
-  <exec_depend>tf2_ros</exec_depend>
-  <exec_depend>python-sortedcontainers-pip</exec_depend>
+  <exec_depend>tf</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

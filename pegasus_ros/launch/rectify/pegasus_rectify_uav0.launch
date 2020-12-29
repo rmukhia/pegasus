@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="in_dir" default="/home/rmukhia/sfm2" />
+    <arg name="out_dir" default="/home/rmukhia/sfm2_out" />
+    <arg name="agent" default="uav0" />
+    <arg name="camera_info_file" default="$(find pegasus_uav_ros)/calibration/mobius.yaml" />
+    <node pkg="pegasus_ros" type="pegasus_rectify_image.py" name="pegasus_rectify_image" respawn="false" output="screen">
+        <param name="in_dir" value="$(arg in_dir)" />
+        <param name="out_dir" value="$(arg out_dir)" />
+        <param name="agent" value="$(arg agent)" />
+        <param name="camera_info_file" value="$(arg camera_info_file)" />
+    </node>
+    <node pkg="image_proc" type="image_proc" name="image_proc" ns="$(arg agent)_cam"/>
+</launch>

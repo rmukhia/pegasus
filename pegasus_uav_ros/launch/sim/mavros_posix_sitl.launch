@@ -5,14 +5,14 @@
     <!-- vehicle pose -->
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
-    <arg name="z" default="2"/>
+    <arg name="z" default="0"/>
     <arg name="R" default="0"/>
     <arg name="P" default="0"/>
     <arg name="Y" default="0"/>
     <!-- vehicle model and world -->
     <arg name="est" default="ekf2"/>
     <arg name="vehicle" default="iris"/>
-    <arg name="world" default="$(find pegasus_ros)/worlds/AIT_world.world"/>
+    <arg name="world" default="$(find pegasus_uav_ros)/worlds/AIT_world2.world"/>
     <arg name="sdf" default="$(find mavlink_sitl_gazebo)/models/$(arg vehicle)/$(arg vehicle).sdf"/>
 
     <!-- gazebo configs -->
@@ -45,8 +45,8 @@
         <arg name="respawn_gazebo" value="$(arg respawn_gazebo)"/>
     </include>
     <!-- MAVROS -->
-    <include file="$(find pegasus_ros)/launch/px4.launch">
-      <arg name="config_yaml" value="$(find pegasus_ros)/launch/configs/px4_config_0.yaml" />
+    <include file="$(find pegasus_uav_ros)/launch/px4.launch">
+      <arg name="config_yaml" value="$(find pegasus_uav_ros)/launch/configs/px4_config_0.yaml" />
         <!-- GCS link is provided by SITL -->
         <arg name="gcs_url" value=""/>
         <arg name="fcu_url" value="$(arg fcu_url)"/>

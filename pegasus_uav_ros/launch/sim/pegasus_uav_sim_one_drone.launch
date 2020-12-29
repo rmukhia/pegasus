@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+    <env name="PX4_HOME_LAT" value="14.081104" />
+    <env name="PX4_HOME_LON" value="100.612743" />
+    <!-- set base altitude of 3~4 meters to align with real world -->
+    <env name="PX4_HOME_ALT" value="24" />
+    <arg name="gui" default="false" />
+    <include file="$(find pegasus_uav_ros)/launch/gazebo_sim/mavros_posix_sitl.launch">
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="x" value="1"/>
+        <arg name="y" value="0"/>
+        <arg name="z" value="11.1"/>
+    </include>
+    <include file="$(find pegasus_uav_ros)/launch/pegasus_commander.launch">
+        <arg name="mavros_namespace" value="/mavros"/>
+        <arg name="udp_port" value="4444"/>
+    </include>
+    <include file="$(find pegasus_uav_ros)/launch/gazebo_sim/gscam.launch">
+        <arg name="video_udp_port" value="5600" />
+        <arg name="cam_name" value="/uav0/camera" />
+        <arg name="udp_port" value="7400"/>
+    </include>
+</launch>

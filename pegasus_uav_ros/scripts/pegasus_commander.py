@@ -2,14 +2,15 @@
 """
 Pegasus Commander.
 """
-import rospy
-import threading
 import Queue
+import threading
 
+import rospy
 from geometry_msgs.msg import PoseStamped
-from pegasus_commander.runner import Runner
+
 from pegasus_commander.mavros_gw import MavrosGw
 from pegasus_commander.message_server import get_message_server_thread
+from pegasus_commander.runner import Runner, create_return_to_home_message
 
 
 class PegasusCommander(object):
@@ -21,6 +22,8 @@ class PegasusCommander(object):
         self.current_pose.pose.position.x = 0
         self.current_pose.pose.position.y = 0
         self.current_pose.pose.position.z = 0
+        self.running = False
+        self.return_to_home = False
         self.last_command = {
             'command': 1,
             'completed': True,
@@ -32,6 +35,8 @@ class PegasusCommander(object):
             params['mavros_namespace'],
             params['map_transform'],
             params['base_link_transform'])
+
+        self.heartbeat_time = None
         self.mavros_gw.subscribe_and_publish()
         self.mavros_gw.create_mavros_service_clients()
 
@@ -53,13 +58,29 @@ class PegasusCommander(object):
             runner.start()
             self.queue.task_done()
 
+    def heartbeat_check(self):
+        now = rospy.get_rostime()
+        if self.heartbeat_time is not None and \
+                now - self.heartbeat_time > rospy.Duration(15) and \
+                self.return_to_home is False:
+            # we lost heartbeat
+            # empty command queue
+            while not self.queue.empty():
+                self.queue.get()
+            rth_request = create_return_to_home_message()
+            self.queue.put((0, 'localhost', rth_request.SerializeToString()))
+            self.running = False
+            self.return_to_home = True
+
     def spin(self):
         self.cmd_server_thread.start()
         rate = rospy.Rate(20)
         while not rospy.is_shutdown():
-            if not self.cmd_server_lock.locked():
+            if not self.cmd_server_lock.locked() and self.running:
                 self.mavros_gw.set_mavros_local_pose(self.current_pose)
+            self.heartbeat_check()
             rate.sleep()
+
 
 """
 import pydevd_pycharm
