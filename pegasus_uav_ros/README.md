@@ -1,0 +1,1 @@
+rosinstall_generator ros_comm cv_bridge image_transport dynamic_reconfigure uuid_msgs  bondcpp camera_info_manager geographic_msgs  nodelet mavros_msgs  gscam image_proc mavros tf --rosdistro melodic --deps --wet-only --tar > melodic-custom_ros.rosinstall
